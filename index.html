@@ -11,148 +11,110 @@
 <title>Birthday Fireworks</title>
 
 <style>
-    * {
-        box-sizing: border-box;
-        -webkit-tap-highlight-color: transparent;
-    }
+* {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
 
-    html,
-    body {
-        margin: 0;
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-        background: #000008;
-        font-family: Arial, Helvetica, sans-serif;
-        touch-action: none;
-    }
+html,
+body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #000008;
+    touch-action: none;
+}
 
-    body {
-        position: fixed;
-        inset: 0;
-    }
+body {
+    position: fixed;
+    inset: 0;
+    font-family: Arial, Helvetica, sans-serif;
+}
 
-    canvas {
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        display: block;
-    }
+canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+}
 
-    #ui {
-        position: absolute;
-        inset: 0;
-        z-index: 5;
-        pointer-events: none;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
+#ui {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
-    #startScreen {
-        pointer-events: auto;
-        width: min(92vw, 520px);
-        padding: 30px;
-        border-radius: 24px;
-        background: rgba(8, 8, 20, 0.92);
-        border: 1px solid rgba(255, 255, 255, 0.14);
-        box-shadow:
-            0 20px 70px rgba(0, 0, 0, 0.55),
-            inset 0 1px 0 rgba(255, 255, 255, 0.08);
-        text-align: center;
-        backdrop-filter: blur(14px);
-        -webkit-backdrop-filter: blur(14px);
-    }
+#startScreen {
+    pointer-events: auto;
+    width: min(92vw, 520px);
+    padding: 30px;
+    border-radius: 24px;
+    background: rgba(8, 8, 20, 0.94);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow:
+        0 20px 70px rgba(0, 0, 0, 0.55),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    text-align: center;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+}
 
-    #startScreen h1 {
-        margin: 0 0 10px;
-        color: white;
-        font-size: clamp(30px, 8vw, 48px);
-        letter-spacing: 2px;
-    }
+#startScreen h1 {
+    margin: 0 0 10px;
+    color: white;
+    font-size: clamp(28px, 7vw, 42px);
+}
 
-    #startScreen p {
-        margin: 0 0 22px;
-        color: rgba(255, 255, 255, 0.72);
-        line-height: 1.5;
-        font-size: 15px;
-    }
+#startScreen p {
+    margin: 0 0 24px;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.5;
+    font-size: 15px;
+}
 
-    #nameInput {
-        width: 100%;
-        height: 52px;
-        border: 1px solid rgba(255, 255, 255, 0.18);
-        border-radius: 14px;
-        outline: none;
-        background: rgba(255, 255, 255, 0.07);
-        color: white;
-        text-align: center;
-        font-size: 18px;
-        padding: 0 16px;
-        margin-bottom: 14px;
-    }
+#nameInput {
+    width: 100%;
+    height: 54px;
+    padding: 0 18px;
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    outline: none;
+    background: rgba(255, 255, 255, 0.07);
+    color: white;
+    font-size: 18px;
+    text-align: center;
+}
 
-    #nameInput::placeholder {
-        color: rgba(255, 255, 255, 0.38);
-    }
+#nameInput::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
 
-    #startButton {
-        width: 100%;
-        height: 54px;
-        border: 0;
-        border-radius: 14px;
-        background: white;
-        color: #080812;
-        font-weight: 800;
-        font-size: 17px;
-        cursor: pointer;
-    }
+#startButton {
+    width: 100%;
+    height: 54px;
+    margin-top: 12px;
+    border: 0;
+    border-radius: 15px;
+    background: white;
+    color: #080810;
+    font-size: 17px;
+    font-weight: 700;
+    cursor: pointer;
+}
 
-    #startButton:active {
-        transform: scale(0.98);
-    }
+#startButton:active {
+    transform: scale(0.98);
+}
 
-    #finaleText {
-        position: absolute;
-        inset: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-size: clamp(38px, 12vw, 100px);
-        font-weight: 900;
-        letter-spacing: 5px;
-        text-align: center;
-        text-shadow:
-            0 0 10px white,
-            0 0 25px white,
-            0 0 50px white;
-        opacity: 0;
-        transition: opacity 0.25s ease;
-        pointer-events: none;
-    }
-
-    #finaleText.visible {
-        opacity: 1;
-    }
-
-    #hint {
-        position: absolute;
-        left: 50%;
-        bottom: 20px;
-        transform: translateX(-50%);
-        color: rgba(255,255,255,0.35);
-        font-size: 11px;
-        letter-spacing: 1px;
-        pointer-events: none;
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-        #finaleText {
-            transition: none;
-        }
-    }
+.hidden {
+    display: none !important;
+}
 </style>
 </head>
 
@@ -161,13 +123,12 @@
 <canvas id="canvas"></canvas>
 
 <div id="ui">
-
     <div id="startScreen">
         <h1>Birthday Fireworks</h1>
 
         <p>
-            A continuous 5-minute fireworks show followed by a special
-            fireworks finale.
+            A continuous 5-minute fireworks show followed by
+            a special text-firework finale.
         </p>
 
         <input
@@ -183,9 +144,6 @@
             Start Show
         </button>
     </div>
-
-    <div id="finaleText"></div>
-
 </div>
 
 <script>
@@ -196,15 +154,13 @@
 ========================================================= */
 
 const canvas = document.getElementById("canvas");
-const ctx = canvas.getContext("2d", {
-    alpha: false
-});
+const ctx = canvas.getContext("2d");
 
 let width = 0;
 let height = 0;
 let dpr = 1;
 
-function resizeCanvas() {
+function resize() {
     dpr = Math.min(window.devicePixelRatio || 1, 2);
 
     width = window.innerWidth;
@@ -219,44 +175,519 @@ function resizeCanvas() {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 }
 
-window.addEventListener("resize", resizeCanvas);
-resizeCanvas();
+window.addEventListener("resize", resize);
+resize();
 
 
 /* =========================================================
-   SHOW SETTINGS
+   AUDIO
 ========================================================= */
 
-const SHOW_DURATION = 5 * 60 * 1000;
+let audioContext = null;
+let masterGain = null;
+let audioReady = false;
 
-/*
-    Fireworks are still launched continuously.
+const FIREWORK_AUDIO_BUFFER = 0.4;
 
-    The 400ms buffer is NOT a visible pause.
-    It gives the scheduler room to spread expensive work
-    across frames instead of creating large simultaneous
-    CPU spikes.
-*/
-const FIREWORK_BUFFER = 400;
+function initAudio() {
 
-const MIN_LAUNCH_INTERVAL = 550;
-const MAX_LAUNCH_INTERVAL = 800;
+    if (audioReady) {
+        if (
+            audioContext &&
+            audioContext.state === "suspended"
+        ) {
+            audioContext.resume();
+        }
 
-const MAX_ROCKETS = 28;
-const MAX_PARTICLES = 3400;
+        return;
+    }
 
-let showActive = false;
-let showFinished = false;
-let showStartTime = 0;
-let showElapsed = 0;
+    const AudioContext =
+        window.AudioContext ||
+        window.webkitAudioContext;
 
-let nextContinuousLaunch = 0;
-let nextSpecialLaunch = 2500;
+    if (!AudioContext) {
+        return;
+    }
 
-let birthdayName = "";
+    audioContext = new AudioContext();
 
-let finaleRunning = false;
-let finaleStarted = false;
+    masterGain =
+        audioContext.createGain();
+
+    masterGain.gain.value = 0.24;
+
+    masterGain.connect(
+        audioContext.destination
+    );
+
+    audioReady = true;
+
+    if (audioContext.state === "suspended") {
+        audioContext.resume();
+    }
+}
+
+
+/* =========================================================
+   AUDIO HELPERS
+========================================================= */
+
+function audioTime() {
+
+    if (!audioContext) {
+        return 0;
+    }
+
+    return (
+        audioContext.currentTime +
+        FIREWORK_AUDIO_BUFFER / 1000
+    );
+}
+
+
+function createNoiseBuffer(duration) {
+
+    const sampleRate =
+        audioContext.sampleRate;
+
+    const length =
+        Math.max(
+            1,
+            Math.floor(
+                sampleRate * duration
+            )
+        );
+
+    const buffer =
+        audioContext.createBuffer(
+            1,
+            length,
+            sampleRate
+        );
+
+    const data =
+        buffer.getChannelData(0);
+
+    for (let i = 0; i < length; i++) {
+        data[i] =
+            Math.random() * 2 - 1;
+    }
+
+    return buffer;
+}
+
+
+/* =========================================================
+   ROCKET WHISTLE
+========================================================= */
+
+function playRocketSound(intensity = 1) {
+
+    if (!audioReady) {
+        return;
+    }
+
+    const now =
+        audioTime();
+
+    const oscillator =
+        audioContext.createOscillator();
+
+    const gain =
+        audioContext.createGain();
+
+    const filter =
+        audioContext.createBiquadFilter();
+
+    oscillator.type = "sine";
+
+    oscillator.frequency.setValueAtTime(
+        random(420, 650),
+        now
+    );
+
+    oscillator.frequency.exponentialRampToValueAtTime(
+        random(1250, 1900),
+        now + random(0.34, 0.62)
+    );
+
+    filter.type = "lowpass";
+
+    filter.frequency.setValueAtTime(
+        2800,
+        now
+    );
+
+    gain.gain.setValueAtTime(
+        0.0001,
+        now
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+        0.045 * intensity,
+        now + 0.035
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+        0.0001,
+        now + 0.58
+    );
+
+    oscillator.connect(filter);
+    filter.connect(gain);
+    gain.connect(masterGain);
+
+    oscillator.start(now);
+    oscillator.stop(now + 0.62);
+}
+
+
+/* =========================================================
+   FIREWORK BOOM
+========================================================= */
+
+function playBoom(
+    type = "normal",
+    intensity = 1
+) {
+
+    if (!audioReady) {
+        return;
+    }
+
+    const now =
+        audioTime();
+
+    let duration = 0.65;
+    let startFrequency = 75;
+    let endFrequency = 34;
+    let volume = 0.19;
+
+    if (type === "doubleRing") {
+        duration = 0.78;
+        startFrequency = 82;
+        endFrequency = 30;
+        volume = 0.22;
+    }
+
+    if (type === "willow") {
+        duration = 0.85;
+        startFrequency = 65;
+        endFrequency = 27;
+        volume = 0.15;
+    }
+
+    if (type === "crackle") {
+        duration = 0.48;
+        startFrequency = 90;
+        endFrequency = 38;
+        volume = 0.16;
+    }
+
+    if (type === "golden") {
+        duration = 0.82;
+        startFrequency = 70;
+        endFrequency = 28;
+        volume = 0.19;
+    }
+
+    if (type === "text") {
+        duration = 0.95;
+        startFrequency = 70;
+        endFrequency = 24;
+        volume = 0.24;
+    }
+
+    const oscillator =
+        audioContext.createOscillator();
+
+    const gain =
+        audioContext.createGain();
+
+    const filter =
+        audioContext.createBiquadFilter();
+
+    oscillator.type = "sine";
+
+    oscillator.frequency.setValueAtTime(
+        startFrequency,
+        now
+    );
+
+    oscillator.frequency.exponentialRampToValueAtTime(
+        endFrequency,
+        now + duration
+    );
+
+    filter.type = "lowpass";
+
+    filter.frequency.setValueAtTime(
+        420,
+        now
+    );
+
+    filter.frequency.exponentialRampToValueAtTime(
+        85,
+        now + duration
+    );
+
+    gain.gain.setValueAtTime(
+        0.0001,
+        now
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+        volume * intensity,
+        now + 0.012
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+        0.0001,
+        now + duration
+    );
+
+    oscillator.connect(filter);
+    filter.connect(gain);
+    gain.connect(masterGain);
+
+    oscillator.start(now);
+    oscillator.stop(now + duration + 0.03);
+}
+
+
+/* =========================================================
+   CRACKLE SOUND
+========================================================= */
+
+function playCrackle(
+    amount = 12,
+    intensity = 1
+) {
+
+    if (!audioReady) {
+        return;
+    }
+
+    const now =
+        audioTime();
+
+    const buffer =
+        createNoiseBuffer(0.035);
+
+    for (let i = 0; i < amount; i++) {
+
+        const source =
+            audioContext.createBufferSource();
+
+        const filter =
+            audioContext.createBiquadFilter();
+
+        const gain =
+            audioContext.createGain();
+
+        const start =
+            now +
+            random(0.04, 0.55);
+
+        source.buffer =
+            buffer;
+
+        filter.type =
+            "bandpass";
+
+        filter.frequency.value =
+            random(1500, 5000);
+
+        filter.Q.value =
+            random(0.5, 2.5);
+
+        gain.gain.setValueAtTime(
+            0.0001,
+            start
+        );
+
+        gain.gain.exponentialRampToValueAtTime(
+            random(0.012, 0.035) *
+            intensity,
+            start + 0.003
+        );
+
+        gain.gain.exponentialRampToValueAtTime(
+            0.0001,
+            start + 0.035
+        );
+
+        source.connect(filter);
+        filter.connect(gain);
+        gain.connect(masterGain);
+
+        source.start(start);
+        source.stop(start + 0.04);
+    }
+}
+
+
+/* =========================================================
+   RING TONE
+========================================================= */
+
+function playRingTone(
+    doubleRing = false,
+    intensity = 1
+) {
+
+    if (!audioReady) {
+        return;
+    }
+
+    const now =
+        audioTime();
+
+    const frequencies =
+        doubleRing
+            ? [420, 590, 780]
+            : [500, 690];
+
+    frequencies.forEach(
+        (frequency, index) => {
+
+            const oscillator =
+                audioContext.createOscillator();
+
+            const gain =
+                audioContext.createGain();
+
+            oscillator.type =
+                "sine";
+
+            oscillator.frequency.value =
+                frequency;
+
+            const start =
+                now +
+                index * 0.015;
+
+            const duration =
+                doubleRing
+                    ? 0.65
+                    : 0.48;
+
+            gain.gain.setValueAtTime(
+                0.0001,
+                start
+            );
+
+            gain.gain.exponentialRampToValueAtTime(
+                0.028 * intensity,
+                start + 0.008
+            );
+
+            gain.gain.exponentialRampToValueAtTime(
+                0.0001,
+                start + duration
+            );
+
+            oscillator.connect(gain);
+            gain.connect(masterGain);
+
+            oscillator.start(start);
+            oscillator.stop(
+                start + duration + 0.02
+            );
+        }
+    );
+}
+
+
+/* =========================================================
+   SPECIAL FIREWORK SOUND
+========================================================= */
+
+function playFireworkSound(
+    type,
+    intensity = 1
+) {
+
+    playBoom(
+        type,
+        intensity
+    );
+
+    if (
+        type === "ring" ||
+        type === "doubleRing"
+    ) {
+
+        playRingTone(
+            type === "doubleRing",
+            intensity
+        );
+    }
+
+    if (
+        type === "crackle" ||
+        type === "chrysanthemum"
+    ) {
+
+        playCrackle(
+            type === "crackle"
+                ? 18
+                : 8,
+            intensity
+        );
+    }
+
+    if (type === "willow") {
+
+        playCrackle(
+            7,
+            intensity * 0.65
+        );
+    }
+
+    if (type === "golden") {
+
+        playCrackle(
+            10,
+            intensity * 0.75
+        );
+    }
+
+    if (type === "rainbow") {
+
+        playRingTone(
+            false,
+            intensity * 0.9
+        );
+    }
+}
+
+
+/* =========================================================
+   SETTINGS
+========================================================= */
+
+const SHOW_DURATION =
+    5 * 60 * 1000;
+
+const FIREWORK_BUFFER =
+    400;
+
+const MIN_LAUNCH_INTERVAL =
+    550;
+
+const MAX_LAUNCH_INTERVAL =
+    800;
+
+const MAX_ROCKETS =
+    28;
+
+const MAX_PARTICLES =
+    3400;
+
+const MAX_TEXT_PARTICLES =
+    700;
 
 
 /* =========================================================
@@ -264,205 +695,52 @@ let finaleStarted = false;
 ========================================================= */
 
 const palettes = [
-    ["#ff304f", "#ff6b81", "#ffffff"],
-    ["#2d8cff", "#66b3ff", "#ffffff"],
-    ["#38e878", "#8affad", "#ffffff"],
-    ["#b44cff", "#d58cff", "#ffffff"],
-    ["#ff9d28", "#ffd166", "#ffffff"],
-    ["#22d3ee", "#67e8f9", "#ffffff"],
-    ["#ff4fd8", "#ff8de8", "#ffffff"],
-    ["#ffe45e", "#fff3a3", "#ffffff"],
-    ["#ff5c33", "#ff9b7a", "#ffffff"],
-    ["#7c5cff", "#a996ff", "#ffffff"],
-    ["#35ffca", "#8ffff0", "#ffffff"],
-    ["#ff4477", "#ffb0c5", "#ffffff"]
+    ["#ff4d6d", "#ff758f", "#ffffff"],
+    ["#4dabf7", "#74c0fc", "#ffffff"],
+    ["#51cf66", "#8ce99a", "#ffffff"],
+    ["#ffd43b", "#ffe066", "#ffffff"],
+    ["#da77f2", "#e599f7", "#ffffff"],
+    ["#ff922b", "#ffa94d", "#ffffff"],
+    ["#22b8cf", "#66d9e8", "#ffffff"],
+    ["#f06595", "#faa2c1", "#ffffff"],
+    ["#845ef7", "#b197fc", "#ffffff"],
+    ["#fcc419", "#fff3bf", "#ffffff"],
+    ["#20c997", "#63e6be", "#ffffff"],
+    ["#ff6b6b", "#ff8787", "#ffffff"]
 ];
 
 
 /* =========================================================
-   FIREWORK PRESETS
-   100+ VARIETIES
+   HELPERS
 ========================================================= */
 
-const showItems = [
+function random(min, max) {
+    return Math.random() *
+        (max - min) +
+        min;
+}
 
-    { type: "sphere", palette: 0, count: 1 },
-    { type: "sphere", palette: 1, count: 2 },
-    { type: "sphere", palette: 2, count: 1 },
-    { type: "sphere", palette: 3, count: 2 },
-    { type: "sphere", palette: 4, count: 1 },
+function randomInt(min, max) {
+    return Math.floor(
+        random(min, max + 1)
+    );
+}
 
-    { type: "ring", palette: 0, count: 1 },
-    { type: "ring", palette: 1, count: 2 },
-    { type: "ring", palette: 2, count: 1 },
-    { type: "ring", palette: 3, count: 2 },
-    { type: "ring", palette: 4, count: 1 },
+function pick(array) {
+    return array[
+        Math.floor(
+            Math.random() *
+            array.length
+        )
+    ];
+}
 
-    { type: "doubleRing", palette: 0, count: 1 },
-    { type: "doubleRing", palette: 1, count: 1 },
-    { type: "doubleRing", palette: 2, count: 1 },
-    { type: "doubleRing", palette: 3, count: 1 },
-    { type: "doubleRing", palette: 4, count: 1 },
-
-    { type: "willow", palette: 4, count: 1 },
-    { type: "willow", palette: 7, count: 2 },
-    { type: "willow", palette: 4, count: 2 },
-    { type: "willow", palette: 7, count: 1 },
-
-    { type: "crackle", palette: 0, count: 1 },
-    { type: "crackle", palette: 1, count: 1 },
-    { type: "crackle", palette: 2, count: 2 },
-    { type: "crackle", palette: 3, count: 1 },
-    { type: "crackle", palette: 5, count: 2 },
-
-    { type: "chrysanthemum", palette: 0, count: 1 },
-    { type: "chrysanthemum", palette: 1, count: 1 },
-    { type: "chrysanthemum", palette: 2, count: 1 },
-    { type: "chrysanthemum", palette: 3, count: 2 },
-    { type: "chrysanthemum", palette: 4, count: 1 },
-
-    { type: "peony", palette: 0, count: 1 },
-    { type: "peony", palette: 1, count: 2 },
-    { type: "peony", palette: 2, count: 1 },
-    { type: "peony", palette: 5, count: 2 },
-    { type: "peony", palette: 6, count: 1 },
-
-    { type: "fan", palette: 0, count: 1 },
-    { type: "fan", palette: 1, count: 1 },
-    { type: "fan", palette: 2, count: 1 },
-    { type: "fan", palette: 3, count: 1 },
-    { type: "fan", palette: 4, count: 1 },
-
-    { type: "heart", palette: 0, count: 1 },
-    { type: "heart", palette: 6, count: 1 },
-    { type: "heart", palette: 1, count: 1 },
-    { type: "heart", palette: 3, count: 1 },
-
-    { type: "spiral", palette: 0, count: 1 },
-    { type: "spiral", palette: 1, count: 1 },
-    { type: "spiral", palette: 2, count: 1 },
-    { type: "spiral", palette: 3, count: 1 },
-    { type: "spiral", palette: 5, count: 1 },
-
-    { type: "cross", palette: 0, count: 1 },
-    { type: "cross", palette: 1, count: 1 },
-    { type: "cross", palette: 2, count: 1 },
-    { type: "cross", palette: 3, count: 1 },
-
-    { type: "saturn", palette: 0, count: 1 },
-    { type: "saturn", palette: 1, count: 1 },
-    { type: "saturn", palette: 2, count: 1 },
-    { type: "saturn", palette: 3, count: 1 },
-    { type: "saturn", palette: 4, count: 1 },
-
-    { type: "rainbow", palette: 0, count: 1 },
-    { type: "rainbow", palette: 1, count: 1 },
-    { type: "rainbow", palette: 2, count: 1 },
-    { type: "rainbow", palette: 3, count: 1 },
-
-    { type: "golden", palette: 4, count: 1 },
-    { type: "golden", palette: 7, count: 1 },
-
-    { type: "sphere", palette: 5, count: 2 },
-    { type: "sphere", palette: 6, count: 1 },
-    { type: "sphere", palette: 7, count: 2 },
-    { type: "sphere", palette: 8, count: 1 },
-    { type: "sphere", palette: 9, count: 2 },
-
-    { type: "ring", palette: 5, count: 1 },
-    { type: "ring", palette: 6, count: 2 },
-    { type: "ring", palette: 7, count: 1 },
-    { type: "ring", palette: 8, count: 2 },
-    { type: "ring", palette: 9, count: 1 },
-
-    { type: "doubleRing", palette: 5, count: 1 },
-    { type: "doubleRing", palette: 6, count: 1 },
-    { type: "doubleRing", palette: 7, count: 1 },
-    { type: "doubleRing", palette: 8, count: 1 },
-
-    { type: "willow", palette: 8, count: 1 },
-    { type: "willow", palette: 9, count: 1 },
-    { type: "willow", palette: 10, count: 1 },
-
-    { type: "crackle", palette: 6, count: 1 },
-    { type: "crackle", palette: 7, count: 1 },
-    { type: "crackle", palette: 8, count: 2 },
-
-    { type: "chrysanthemum", palette: 5, count: 1 },
-    { type: "chrysanthemum", palette: 6, count: 1 },
-    { type: "chrysanthemum", palette: 7, count: 2 },
-    { type: "chrysanthemum", palette: 8, count: 1 },
-
-    { type: "peony", palette: 8, count: 1 },
-    { type: "peony", palette: 9, count: 1 },
-    { type: "peony", palette: 10, count: 2 },
-    { type: "peony", palette: 11, count: 1 },
-
-    { type: "fan", palette: 5, count: 1 },
-    { type: "fan", palette: 6, count: 1 },
-    { type: "fan", palette: 7, count: 2 },
-    { type: "fan", palette: 8, count: 1 },
-
-    { type: "spiral", palette: 6, count: 1 },
-    { type: "spiral", palette: 7, count: 1 },
-    { type: "spiral", palette: 8, count: 1 },
-    { type: "spiral", palette: 9, count: 1 },
-
-    { type: "cross", palette: 4, count: 1 },
-    { type: "cross", palette: 5, count: 1 },
-    { type: "cross", palette: 6, count: 1 },
-    { type: "cross", palette: 7, count: 1 },
-
-    { type: "saturn", palette: 5, count: 1 },
-    { type: "saturn", palette: 6, count: 1 },
-    { type: "saturn", palette: 7, count: 1 },
-    { type: "saturn", palette: 8, count: 1 },
-
-    { type: "rainbow", palette: 4, count: 1 },
-    { type: "rainbow", palette: 5, count: 1 },
-    { type: "rainbow", palette: 6, count: 1 },
-
-    { type: "golden", palette: 4, count: 2 },
-    { type: "golden", palette: 7, count: 2 },
-
-    { type: "sphere", palette: 10, count: 1 },
-    { type: "sphere", palette: 11, count: 2 },
-    { type: "ring", palette: 10, count: 1 },
-    { type: "ring", palette: 11, count: 2 },
-    { type: "doubleRing", palette: 9, count: 1 },
-    { type: "doubleRing", palette: 10, count: 1 },
-    { type: "doubleRing", palette: 11, count: 1 },
-
-    { type: "chrysanthemum", palette: 9, count: 1 },
-    { type: "chrysanthemum", palette: 10, count: 1 },
-    { type: "chrysanthemum", palette: 11, count: 1 },
-
-    { type: "fan", palette: 9, count: 1 },
-    { type: "fan", palette: 10, count: 1 },
-    { type: "fan", palette: 11, count: 1 },
-
-    { type: "heart", palette: 6, count: 2 },
-    { type: "heart", palette: 0, count: 2 },
-
-    { type: "spiral", palette: 10, count: 1 },
-    { type: "spiral", palette: 11, count: 1 },
-
-    { type: "cross", palette: 8, count: 1 },
-    { type: "cross", palette: 9, count: 1 },
-    { type: "cross", palette: 10, count: 1 },
-    { type: "cross", palette: 11, count: 1 },
-
-    { type: "saturn", palette: 9, count: 1 },
-    { type: "saturn", palette: 10, count: 1 },
-    { type: "saturn", palette: 11, count: 1 },
-
-    { type: "rainbow", palette: 7, count: 1 },
-    { type: "rainbow", palette: 8, count: 1 },
-    { type: "rainbow", palette: 9, count: 1 },
-
-    { type: "golden", palette: 4, count: 3 },
-    { type: "golden", palette: 7, count: 3 }
-];
+function clamp(value, min, max) {
+    return Math.max(
+        min,
+        Math.min(max, value)
+    );
+}
 
 
 /* =========================================================
@@ -471,911 +749,654 @@ const showItems = [
 
 const rockets = [];
 const particles = [];
-
-function random(min, max) {
-    return Math.random() * (max - min) + min;
-}
-
-function randomInt(min, max) {
-    return Math.floor(random(min, max + 1));
-}
-
-function randomChoice(array) {
-    return array[Math.floor(Math.random() * array.length)];
-}
-
-function hexToRgb(hex) {
-    const value = hex.replace("#", "");
-
-    return {
-        r: parseInt(value.substring(0, 2), 16),
-        g: parseInt(value.substring(2, 4), 16),
-        b: parseInt(value.substring(4, 6), 16)
-    };
-}
-
-function colorWithAlpha(color, alpha) {
-    const rgb = hexToRgb(color);
-
-    return `rgba(${rgb.r},${rgb.g},${rgb.b},${alpha})`;
-}
+const textParticles = [];
 
 
 /* =========================================================
-   ROCKET
+   FIREWORK PRESETS
+========================================================= */
+
+/*
+    Removed:
+    - Saturn
+    - Other oval-style effects
+
+    Kept:
+    - Sphere
+    - Ring
+    - Double Ring
+    - Willow
+    - Crackle
+    - Chrysanthemum
+    - Peony
+    - Fan
+    - Heart
+    - Spiral
+    - Cross
+    - Rainbow
+    - Golden
+*/
+
+const showItems = [
+
+    { type:"sphere", palette:0, count:2 },
+    { type:"sphere", palette:1, count:2 },
+    { type:"sphere", palette:2, count:2 },
+    { type:"sphere", palette:3, count:2 },
+    { type:"sphere", palette:4, count:2 },
+    { type:"sphere", palette:5, count:3 },
+    { type:"sphere", palette:6, count:2 },
+    { type:"sphere", palette:7, count:3 },
+    { type:"sphere", palette:8, count:2 },
+    { type:"sphere", palette:9, count:3 },
+
+    { type:"ring", palette:0, count:2 },
+    { type:"ring", palette:1, count:2 },
+    { type:"ring", palette:2, count:2 },
+    { type:"ring", palette:3, count:2 },
+    { type:"ring", palette:4, count:2 },
+    { type:"ring", palette:5, count:3 },
+    { type:"ring", palette:6, count:2 },
+    { type:"ring", palette:7, count:3 },
+    { type:"ring", palette:8, count:2 },
+    { type:"ring", palette:9, count:3 },
+
+    { type:"doubleRing", palette:0, count:1 },
+    { type:"doubleRing", palette:1, count:1 },
+    { type:"doubleRing", palette:2, count:1 },
+    { type:"doubleRing", palette:3, count:1 },
+    { type:"doubleRing", palette:4, count:1 },
+    { type:"doubleRing", palette:5, count:1 },
+    { type:"doubleRing", palette:6, count:1 },
+    { type:"doubleRing", palette:7, count:1 },
+    { type:"doubleRing", palette:8, count:1 },
+    { type:"doubleRing", palette:9, count:1 },
+
+    { type:"willow", palette:3, count:2 },
+    { type:"willow", palette:4, count:2 },
+    { type:"willow", palette:5, count:2 },
+    { type:"willow", palette:9, count:2 },
+    { type:"willow", palette:10, count:2 },
+    { type:"willow", palette:11, count:2 },
+    { type:"willow", palette:3, count:3 },
+    { type:"willow", palette:9, count:3 },
+
+    { type:"crackle", palette:0, count:2 },
+    { type:"crackle", palette:1, count:2 },
+    { type:"crackle", palette:2, count:2 },
+    { type:"crackle", palette:3, count:2 },
+    { type:"crackle", palette:4, count:2 },
+    { type:"crackle", palette:5, count:2 },
+    { type:"crackle", palette:6, count:2 },
+    { type:"crackle", palette:7, count:2 },
+    { type:"crackle", palette:8, count:2 },
+    { type:"crackle", palette:9, count:2 },
+
+    { type:"chrysanthemum", palette:0, count:2 },
+    { type:"chrysanthemum", palette:1, count:2 },
+    { type:"chrysanthemum", palette:2, count:2 },
+    { type:"chrysanthemum", palette:3, count:2 },
+    { type:"chrysanthemum", palette:4, count:2 },
+    { type:"chrysanthemum", palette:5, count:2 },
+    { type:"chrysanthemum", palette:6, count:2 },
+    { type:"chrysanthemum", palette:7, count:2 },
+    { type:"chrysanthemum", palette:8, count:2 },
+    { type:"chrysanthemum", palette:9, count:2 },
+
+    { type:"peony", palette:0, count:2 },
+    { type:"peony", palette:1, count:2 },
+    { type:"peony", palette:2, count:2 },
+    { type:"peony", palette:3, count:2 },
+    { type:"peony", palette:4, count:2 },
+    { type:"peony", palette:5, count:2 },
+    { type:"peony", palette:6, count:2 },
+    { type:"peony", palette:7, count:2 },
+    { type:"peony", palette:8, count:2 },
+    { type:"peony", palette:9, count:2 },
+
+    { type:"fan", palette:0, count:1 },
+    { type:"fan", palette:1, count:1 },
+    { type:"fan", palette:2, count:1 },
+    { type:"fan", palette:3, count:1 },
+    { type:"fan", palette:4, count:1 },
+    { type:"fan", palette:5, count:1 },
+    { type:"fan", palette:6, count:1 },
+    { type:"fan", palette:7, count:1 },
+    { type:"fan", palette:8, count:1 },
+    { type:"fan", palette:9, count:1 },
+
+    { type:"heart", palette:0, count:1 },
+    { type:"heart", palette:4, count:1 },
+    { type:"heart", palette:7, count:1 },
+    { type:"heart", palette:11, count:1 },
+    { type:"heart", palette:0, count:2 },
+    { type:"heart", palette:4, count:2 },
+
+    { type:"spiral", palette:0, count:2 },
+    { type:"spiral", palette:1, count:2 },
+    { type:"spiral", palette:2, count:2 },
+    { type:"spiral", palette:3, count:2 },
+    { type:"spiral", palette:4, count:2 },
+    { type:"spiral", palette:5, count:2 },
+    { type:"spiral", palette:6, count:2 },
+    { type:"spiral", palette:7, count:2 },
+    { type:"spiral", palette:8, count:2 },
+    { type:"spiral", palette:9, count:2 },
+
+    { type:"cross", palette:0, count:2 },
+    { type:"cross", palette:1, count:2 },
+    { type:"cross", palette:2, count:2 },
+    { type:"cross", palette:3, count:2 },
+    { type:"cross", palette:4, count:2 },
+    { type:"cross", palette:5, count:2 },
+    { type:"cross", palette:6, count:2 },
+    { type:"cross", palette:7, count:2 },
+    { type:"cross", palette:8, count:2 },
+    { type:"cross", palette:9, count:2 },
+
+    { type:"rainbow", palette:0, count:1 },
+    { type:"rainbow", palette:1, count:1 },
+    { type:"rainbow", palette:2, count:1 },
+    { type:"rainbow", palette:3, count:1 },
+    { type:"rainbow", palette:4, count:1 },
+    { type:"rainbow", palette:5, count:1 },
+
+    { type:"golden", palette:3, count:2 },
+    { type:"golden", palette:9, count:2 },
+    { type:"golden", palette:3, count:3 },
+    { type:"golden", palette:9, count:3 },
+    { type:"golden", palette:10, count:2 }
+];
+
+
+/* =========================================================
+   ROCKET CREATION
 ========================================================= */
 
 function createRocket(
     targetX,
     targetY,
     palette,
-    type = "sphere",
-    power = 1
+    type,
+    power = 1,
+    text = null,
+    delay = 0
 ) {
-    if (rockets.length >= MAX_ROCKETS) {
-        return;
-    }
 
-    const startX = random(width * 0.08, width * 0.92);
-    const startY = height + 12;
+    const startX =
+        random(
+            width * 0.08,
+            width * 0.92
+        );
 
-    const dx = targetX - startX;
-    const dy = targetY - startY;
+    const startY =
+        height +
+        random(15, 80);
 
-    const distance = Math.sqrt(dx * dx + dy * dy);
+    const dx =
+        targetX - startX;
 
-    const speed = random(7.5, 10.5) * power;
+    const dy =
+        targetY - startY;
 
-    rockets.push({
+    const distance =
+        Math.sqrt(
+            dx * dx +
+            dy * dy
+        );
+
+    const speed =
+        random(8.5, 11.5) *
+        power;
+
+    const rocket = {
+
         x: startX,
         y: startY,
-        vx: dx / distance * speed,
-        vy: dy / distance * speed,
+
+        vx:
+            (dx / distance) *
+            speed,
+
+        vy:
+            (dy / distance) *
+            speed,
+
+        targetX,
         targetY,
+
         palette,
         type,
+
+        age: -delay,
+
         trail: [],
-        age: 0,
-        maxAge: random(55, 85)
-    });
+
+        text,
+        exploded: false
+    };
+
+    rockets.push(
+        rocket
+    );
+
+    playRocketSound(
+        Math.min(power, 1.5)
+    );
 }
 
 
 /* =========================================================
-   EXPLOSIONS
+   EXPLOSION
 ========================================================= */
 
 function createExplosion(
-    x,
-    y,
-    palette,
-    type,
-    power = 1
+    rocket
 ) {
-    if (particles.length >= MAX_PARTICLES) {
-        return;
-    }
 
-    const baseCount = Math.floor(
-        random(75, 125) * power
-    );
-
-    const colors = palette;
-
-    if (type === "sphere" || type === "peony") {
-
-        for (let i = 0; i < baseCount; i++) {
-
-            const angle = Math.random() * Math.PI * 2;
-            const speed = random(2.2, 6.5) * power;
-
-            particles.push({
-                x,
-                y,
-                vx: Math.cos(angle) * speed,
-                vy: Math.sin(angle) * speed,
-                gravity: 0.035,
-                friction: 0.985,
-                life: random(55, 105),
-                maxLife: 105,
-                size: random(1.2, 2.7),
-                color: randomChoice(colors),
-                type: "normal"
-            });
-        }
-
-    } else if (type === "ring") {
-
-        const count = Math.floor(110 * power);
-
-        for (let i = 0; i < count; i++) {
-
-            const angle = (Math.PI * 2 * i) / count;
-            const speed = random(4.0, 5.7) * power;
-
-            particles.push({
-                x,
-                y,
-                vx: Math.cos(angle) * speed,
-                vy: Math.sin(angle) * speed,
-                gravity: 0.025,
-                friction: 0.988,
-                life: random(65, 95),
-                maxLife: 95,
-                size: random(1.3, 2.5),
-                color: randomChoice(colors),
-                type: "normal"
-            });
-        }
-
-    } else if (type === "doubleRing") {
-
-        const count = Math.floor(85 * power);
-
-        for (let ring = 0; ring < 2; ring++) {
-
-            const radiusSpeed =
-                ring === 0
-                    ? random(3.2, 4.0)
-                    : random(5.0, 6.0);
-
-            for (let i = 0; i < count; i++) {
-
-                const angle = (Math.PI * 2 * i) / count;
-
-                particles.push({
-                    x,
-                    y,
-                    vx: Math.cos(angle) * radiusSpeed,
-                    vy: Math.sin(angle) * radiusSpeed,
-                    gravity: 0.028,
-                    friction: 0.988,
-                    life: random(65, 105),
-                    maxLife: 105,
-                    size: random(1.2, 2.5),
-                    color: colors[ring % colors.length],
-                    type: "normal"
-                });
-            }
-        }
-
-    } else if (type === "willow") {
-
-        for (let i = 0; i < baseCount; i++) {
-
-            const angle = random(0, Math.PI * 2);
-            const speed = random(2.5, 5.8) * power;
-
-            particles.push({
-                x,
-                y,
-                vx: Math.cos(angle) * speed,
-                vy: Math.sin(angle) * speed - 1,
-                gravity: 0.075,
-                friction: 0.994,
-                life: random(90, 145),
-                maxLife: 145,
-                size: random(1.3, 2.8),
-                color: randomChoice(colors),
-                type: "normal"
-            });
-        }
-
-    } else if (type === "crackle") {
-
-        for (let i = 0; i < baseCount; i++) {
-
-            const angle = Math.random() * Math.PI * 2;
-            const speed = random(2, 7) * power;
-
-            particles.push({
-                x,
-                y,
-                vx: Math.cos(angle) * speed,
-                vy: Math.sin(angle) * speed,
-                gravity: 0.04,
-                friction: 0.982,
-                life: random(40, 90),
-                maxLife: 90,
-                size: random(1.5, 3),
-                color: randomChoice(colors),
-                type: "crackle",
-                crackleTimer: random(4, 15)
-            });
-        }
-
-    } else if (type === "chrysanthemum") {
-
-        for (let i = 0; i < baseCount * 1.15; i++) {
-
-            const angle = Math.random() * Math.PI * 2;
-            const speed = random(3, 7) * power;
-
-            particles.push({
-                x,
-                y,
-                vx: Math.cos(angle) * speed,
-                vy: Math.sin(angle) * speed,
-                gravity: 0.032,
-                friction: 0.986,
-                life: random(75, 115),
-                maxLife: 115,
-                size: random(1.2, 2.5),
-                color: colors[i % colors.length],
-                type: "normal"
-            });
-        }
-
-    } else if (type === "fan") {
-
-        const direction = random(-0.35, 0.35);
-
-        for (let i = 0; i < baseCount; i++) {
-
-            const angle =
-                -Math.PI / 2 +
-                direction +
-                random(-0.75, 0.75);
-
-            const speed = random(3.5, 7) * power;
-
-            particles.push({
-                x,
-                y,
-                vx: Math.cos(angle) * speed,
-                vy: Math.sin(angle) * speed,
-                gravity: 0.04,
-                friction: 0.987,
-                life: random(65, 105),
-                maxLife: 105,
-                size: random(1.2, 2.5),
-                color: randomChoice(colors),
-                type: "normal"
-            });
-        }
-
-    } else if (type === "heart") {
-
-        const count = Math.floor(125 * power);
-
-        for (let i = 0; i < count; i++) {
-
-            const t =
-                (Math.PI * 2 * i) / count;
-
-            const hx = 16 * Math.pow(Math.sin(t), 3);
-            const hy =
-                13 * Math.cos(t)
-                - 5 * Math.cos(2 * t)
-                - 2 * Math.cos(3 * t)
-                - Math.cos(4 * t);
-
-            const scale = random(0.25, 0.38) * power;
-
-            particles.push({
-                x,
-                y,
-                vx: hx * scale,
-                vy: -hy * scale,
-                gravity: 0.028,
-                friction: 0.988,
-                life: random(70, 110),
-                maxLife: 110,
-                size: random(1.4, 2.5),
-                color: randomChoice(colors),
-                type: "normal"
-            });
-        }
-
-    } else if (type === "spiral") {
-
-        const count = Math.floor(125 * power);
-
-        for (let i = 0; i < count; i++) {
-
-            const t =
-                (i / count) * Math.PI * 10;
-
-            const radius =
-                (i / count) * random(2.5, 6);
-
-            particles.push({
-                x,
-                y,
-                vx: Math.cos(t) * radius,
-                vy: Math.sin(t) * radius,
-                gravity: 0.035,
-                friction: 0.986,
-                life: random(70, 110),
-                maxLife: 110,
-                size: random(1.2, 2.5),
-                color: colors[i % colors.length],
-                type: "normal"
-            });
-        }
-
-    } else if (type === "cross") {
-
-        const count = Math.floor(70 * power);
-
-        for (let arm = 0; arm < 4; arm++) {
-
-            const angle =
-                arm * Math.PI / 2;
-
-            for (let i = 0; i < count; i++) {
-
-                const spread =
-                    random(-0.045, 0.045);
-
-                const speed =
-                    random(2.5, 7) * power;
-
-                particles.push({
-                    x,
-                    y,
-                    vx:
-                        Math.cos(angle + spread) *
-                        speed,
-                    vy:
-                        Math.sin(angle + spread) *
-                        speed,
-                    gravity: 0.03,
-                    friction: 0.987,
-                    life: random(65, 105),
-                    maxLife: 105,
-                    size: random(1.2, 2.5),
-                    color: randomChoice(colors),
-                    type: "normal"
-                });
-            }
-        }
-
-    } else if (type === "saturn") {
-
-        for (let i = 0; i < baseCount; i++) {
-
-            const angle =
-                Math.random() * Math.PI * 2;
-
-            const speed =
-                random(2.5, 6) * power;
-
-            particles.push({
-                x,
-                y,
-                vx: Math.cos(angle) * speed,
-                vy: Math.sin(angle) * speed,
-                gravity: 0.03,
-                friction: 0.987,
-                life: random(65, 105),
-                maxLife: 105,
-                size: random(1.2, 2.4),
-                color: randomChoice(colors),
-                type: "normal"
-            });
-        }
-
-        const ringCount = Math.floor(100 * power);
-
-        for (let i = 0; i < ringCount; i++) {
-
-            const angle =
-                (Math.PI * 2 * i) / ringCount;
-
-            const speed = 5.2 * power;
-
-            particles.push({
-                x,
-                y,
-                vx: Math.cos(angle) * speed,
-                vy: Math.sin(angle) * speed * 0.32,
-                gravity: 0.02,
-                friction: 0.988,
-                life: random(60, 95),
-                maxLife: 95,
-                size: random(1.2, 2.3),
-                color: colors[1 % colors.length],
-                type: "normal"
-            });
-        }
-
-    } else if (type === "rainbow") {
-
-        for (let i = 0; i < baseCount * 1.1; i++) {
-
-            const angle =
-                Math.random() * Math.PI * 2;
-
-            const speed =
-                random(2.5, 6.5) * power;
-
-            particles.push({
-                x,
-                y,
-                vx: Math.cos(angle) * speed,
-                vy: Math.sin(angle) * speed,
-                gravity: 0.035,
-                friction: 0.986,
-                life: random(65, 105),
-                maxLife: 105,
-                size: random(1.2, 2.5),
-                color:
-                    palettes[
-                        i % palettes.length
-                    ][0],
-                type: "normal"
-            });
-        }
-
-    } else if (type === "golden") {
-
-        for (let i = 0; i < baseCount * 1.2; i++) {
-
-            const angle =
-                Math.random() * Math.PI * 2;
-
-            const speed =
-                random(2.2, 6.3) * power;
-
-            particles.push({
-                x,
-                y,
-                vx: Math.cos(angle) * speed,
-                vy: Math.sin(angle) * speed,
-                gravity: 0.055,
-                friction: 0.992,
-                life: random(90, 145),
-                maxLife: 145,
-                size: random(1.3, 2.8),
-                color: randomChoice(colors),
-                type: "normal"
-            });
-        }
-    }
-}
-
-
-/* =========================================================
-   SHOW ITEM LAUNCHER
-========================================================= */
-
-let showItemIndex = 0;
-
-function launchShowItem(intensity = 1) {
-
-    /*
-        Keep the large preset variety, but prevent the launcher
-        from adding excessive work when the particle system is full.
-    */
-
-    if (
-        rockets.length >= MAX_ROCKETS ||
-        particles.length >= MAX_PARTICLES * 0.88
-    ) {
-        return;
-    }
-
-    /*
-        The preset list cycles through all 100+ varieties.
-        Individual positions, colors, power and timing remain
-        randomized.
-    */
-    const item =
-        showItems[
-            showItemIndex % showItems.length
-        ];
-
-    showItemIndex++;
-
-    const palette =
-        palettes[
-            item.palette % palettes.length
-        ];
-
-    const power =
-        random(0.88, 1.12) *
-        intensity;
+    const {
+        x,
+        y,
+        palette,
+        type
+    } = rocket;
+
+    const baseCount = {
+
+        sphere: 110,
+        ring: 120,
+        doubleRing: 105,
+        willow: 130,
+        crackle: 125,
+        chrysanthemum: 145,
+        peony: 125,
+        fan: 100,
+        heart: 105,
+        spiral: 120,
+        cross: 115,
+        rainbow: 150,
+        golden: 135
+
+    }[type] || 110;
+
+    const count =
+        Math.floor(
+            baseCount *
+            random(0.82, 1.12)
+        );
 
     for (
         let i = 0;
-        i < item.count;
+        i < count;
         i++
     ) {
 
-        const targetX =
-            random(
-                width * 0.10,
-                width * 0.90
-            );
+        let angle;
+        let speed;
 
-        const targetY =
-            random(
-                height * 0.13,
-                height * 0.53
-            );
+        if (type === "ring") {
 
-        createRocket(
-            targetX,
-            targetY,
-            palette,
-            item.type,
-            power
-        );
-    }
-}
+            angle =
+                (
+                    Math.PI * 2 * i /
+                    count
+                ) +
+                random(-0.025, 0.025);
 
+            speed =
+                random(3.2, 5.8);
 
-/* =========================================================
-   SPECIAL RANDOM SEQUENCES
-========================================================= */
-
-function specialSequence() {
-
-    if (!showActive || finaleRunning) {
-        return;
-    }
-
-    const sequence =
-        randomInt(0, 9);
-
-    const centerX = width / 2;
-
-    if (sequence === 0) {
-
-        for (let i = 0; i < 3; i++) {
-
-            createRocket(
-                centerX + random(-220, 220),
-                random(height * 0.18, height * 0.45),
-                randomChoice(palettes),
-                randomChoice([
-                    "ring",
-                    "sphere",
-                    "peony"
-                ]),
-                1
-            );
-        }
-
-    } else if (sequence === 1) {
-
-        for (let i = 0; i < 4; i++) {
-
-            createRocket(
-                width * (0.18 + i * 0.21),
-                random(height * 0.2, height * 0.48),
-                randomChoice(palettes),
-                "sphere",
-                0.9
-            );
-        }
-
-    } else if (sequence === 2) {
-
-        createRocket(
-            centerX,
-            height * 0.25,
-            randomChoice(palettes),
-            "heart",
-            1
-        );
-
-    } else if (sequence === 3) {
-
-        for (let i = 0; i < 3; i++) {
-
-            createRocket(
-                random(width * 0.15, width * 0.85),
-                random(height * 0.2, height * 0.45),
-                randomChoice(palettes),
-                "doubleRing",
-                0.9
-            );
-        }
-
-    } else if (sequence === 4) {
-
-        for (let i = 0; i < 5; i++) {
-
-            createRocket(
-                width * random(0.12, 0.88),
-                random(height * 0.2, height * 0.5),
-                palettes[
-                    i % palettes.length
-                ],
-                "fan",
-                0.85
-            );
-        }
-
-    } else if (sequence === 5) {
-
-        createRocket(
-            centerX,
-            height * 0.25,
-            palettes[4],
-            "golden",
-            1.15
-        );
-
-    } else if (sequence === 6) {
-
-        for (let i = 0; i < 2; i++) {
-
-            createRocket(
-                random(width * 0.2, width * 0.8),
-                random(height * 0.18, height * 0.4),
-                randomChoice(palettes),
-                "spiral",
-                1
-            );
-        }
-
-    } else if (sequence === 7) {
-
-        createRocket(
-            width * 0.25,
-            height * 0.3,
-            randomChoice(palettes),
-            "saturn",
-            1
-        );
-
-        createRocket(
-            width * 0.75,
-            height * 0.3,
-            randomChoice(palettes),
-            "saturn",
-            1
-        );
-
-    } else if (sequence === 8) {
-
-        createRocket(
-            centerX,
-            height * 0.28,
-            randomChoice(palettes),
-            "rainbow",
-            1.1
-        );
-
-    } else {
-
-        for (let i = 0; i < 3; i++) {
-
-            createRocket(
-                random(width * 0.12, width * 0.88),
-                random(height * 0.18, height * 0.5),
-                randomChoice(palettes),
-                randomChoice([
-                    "chrysanthemum",
-                    "peony",
-                    "crackle"
-                ]),
-                1
-            );
-        }
-    }
-}
-
-
-/* =========================================================
-   UPDATE ROCKETS
-========================================================= */
-
-function updateRockets() {
-
-    for (let i = rockets.length - 1; i >= 0; i--) {
-
-        const rocket = rockets[i];
-
-        rocket.age++;
-
-        rocket.trail.push({
-            x: rocket.x,
-            y: rocket.y
-        });
-
-        if (rocket.trail.length > 8) {
-            rocket.trail.shift();
-        }
-
-        rocket.x += rocket.vx;
-        rocket.y += rocket.vy;
-
-        rocket.vy += 0.055;
-
-        const reachedTarget =
-            rocket.y <= rocket.targetY;
-
-        const slowed =
-            rocket.vy >= -0.4;
-
-        const oldAge =
-            rocket.age >= rocket.maxAge;
-
-        if (
-            reachedTarget ||
-            slowed ||
-            oldAge
+        } else if (
+            type === "doubleRing"
         ) {
 
-            createExplosion(
-                rocket.x,
-                rocket.y,
-                rocket.palette,
-                rocket.type,
-                1
-            );
+            const ring =
+                i % 2 === 0
+                    ? 0
+                    : 1;
 
-            rockets.splice(i, 1);
-        }
-    }
-}
+            angle =
+                (
+                    Math.PI * 2 *
+                    Math.floor(i / 2) /
+                    Math.ceil(count / 2)
+                ) +
+                random(-0.025, 0.025);
 
+            speed =
+                ring === 0
+                    ? random(3.0, 4.4)
+                    : random(5.2, 6.8);
 
-/* =========================================================
-   UPDATE PARTICLES
-========================================================= */
-
-function updateParticles() {
-
-    for (
-        let i = particles.length - 1;
-        i >= 0;
-        i--
-    ) {
-
-        const p = particles[i];
-
-        p.x += p.vx;
-        p.y += p.vy;
-
-        p.vx *= p.friction;
-        p.vy *= p.friction;
-
-        p.vy += p.gravity;
-
-        p.life--;
-
-        if (
-            p.type === "crackle" &&
-            p.crackleTimer > 0
-        ) {
-            p.crackleTimer--;
-        }
-
-        if (p.life <= 0) {
-            particles.splice(i, 1);
-        }
-    }
-}
-
-
-/* =========================================================
-   DRAW
-========================================================= */
-
-function draw() {
-
-    /*
-        Slight persistence creates trails without retaining
-        enough history to become expensive.
-    */
-    ctx.globalCompositeOperation = "source-over";
-
-    ctx.fillStyle =
-        "rgba(0, 0, 8, 0.22)";
-
-    ctx.fillRect(
-        0,
-        0,
-        width,
-        height
-    );
-
-    ctx.globalCompositeOperation = "lighter";
-
-
-    /* ROCKET TRAILS */
-
-    for (const rocket of rockets) {
-
-        for (
-            let i = 0;
-            i < rocket.trail.length;
-            i++
+        } else if (
+            type === "fan"
         ) {
 
-            const point =
-                rocket.trail[i];
+            angle =
+                Math.PI *
+                random(1.08, 1.92);
 
-            const alpha =
-                i /
-                rocket.trail.length *
-                0.65;
+            speed =
+                random(3.5, 7);
 
-            ctx.fillStyle =
-                colorWithAlpha(
-                    rocket.palette[0],
-                    alpha
+        } else if (
+            type === "heart"
+        ) {
+
+            const t =
+                (
+                    Math.PI * 2 * i
+                ) / count;
+
+            const hx =
+                16 *
+                Math.pow(
+                    Math.sin(t),
+                    3
                 );
 
-            const size =
-                1 +
-                i /
-                rocket.trail.length *
-                1.5;
+            const hy =
+                -(
+                    13 *
+                    Math.cos(t)
+                    -
+                    5 *
+                    Math.cos(2 * t)
+                    -
+                    2 *
+                    Math.cos(3 * t)
+                    -
+                    Math.cos(4 * t)
+                );
 
-            ctx.fillRect(
-                point.x - size / 2,
-                point.y - size / 2,
-                size,
-                size
-            );
+            const scale =
+                random(0.20, 0.34);
+
+            particles.push({
+
+                x,
+                y,
+
+                vx:
+                    hx * scale,
+
+                vy:
+                    hy * scale,
+
+                gravity: 0.012,
+                drag: 0.985,
+
+                life:
+                    random(100, 150),
+
+                maxLife: 150,
+
+                size:
+                    random(1.1, 2.5),
+
+                color:
+                    pick(palette),
+
+                twinkle:
+                    Math.random() *
+                    Math.PI * 2
+            });
+
+            continue;
+        } else if (
+            type === "spiral"
+        ) {
+
+            angle =
+                i * 0.21 +
+                random(-0.03, 0.03);
+
+            speed =
+                2.4 +
+                (i / count) * 4.2;
+
+        } else if (
+            type === "cross"
+        ) {
+
+            const arm =
+                i % 4;
+
+            angle =
+                arm *
+                Math.PI / 2 +
+                random(-0.055, 0.055);
+
+            speed =
+                random(3.0, 6.5);
+
+        } else if (
+            type === "rainbow"
+        ) {
+
+            angle =
+                (
+                    Math.PI * 2 * i /
+                    count
+                ) +
+                random(-0.025, 0.025);
+
+            speed =
+                random(3.0, 6.2);
+
+        } else if (
+            type === "golden"
+        ) {
+
+            angle =
+                random(0, Math.PI * 2);
+
+            speed =
+                random(2.4, 6.4);
+
+        } else if (
+            type === "willow"
+        ) {
+
+            angle =
+                random(0, Math.PI * 2);
+
+            speed =
+                random(2.2, 5.4);
+
+        } else if (
+            type === "crackle"
+        ) {
+
+            angle =
+                random(0, Math.PI * 2);
+
+            speed =
+                random(2.7, 6.4);
+
+        } else {
+
+            angle =
+                random(0, Math.PI * 2);
+
+            speed =
+                random(2.8, 6.5);
         }
 
-        ctx.fillStyle =
-            rocket.palette[2];
+        const vx =
+            Math.cos(angle) *
+            speed;
 
-        ctx.beginPath();
+        const vy =
+            Math.sin(angle) *
+            speed;
 
-        ctx.arc(
-            rocket.x,
-            rocket.y,
-            2.2,
-            0,
-            Math.PI * 2
-        );
+        let gravity =
+            0.025;
 
-        ctx.fill();
+        let drag =
+            0.982;
+
+        let life =
+            random(72, 125);
+
+        if (type === "willow") {
+
+            gravity =
+                random(
+                    0.035,
+                    0.055
+                );
+
+            drag =
+                random(
+                    0.975,
+                    0.988
+                );
+
+            life =
+                random(
+                    125,
+                    190
+                );
+        }
+
+        if (type === "crackle") {
+
+            gravity =
+                0.032;
+
+            drag =
+                0.979;
+
+            life =
+                random(
+                    75,
+                    120
+                );
+        }
+
+        if (type === "golden") {
+
+            gravity =
+                random(
+                    0.025,
+                    0.045
+                );
+
+            drag =
+                0.983;
+
+            life =
+                random(
+                    110,
+                    175
+                );
+        }
+
+        particles.push({
+
+            x,
+            y,
+
+            vx,
+            vy,
+
+            gravity,
+            drag,
+
+            life,
+            maxLife: life,
+
+            size:
+                type === "crackle"
+                    ? random(1.0, 2.3)
+                    : random(1.2, 2.7),
+
+            color:
+                type === "rainbow"
+                    ? `hsl(${
+                        Math.floor(
+                            (
+                                i /
+                                count
+                            ) *
+                            360
+                        )
+                    },100%,70%)`
+                    : pick(palette),
+
+            twinkle:
+                Math.random() *
+                Math.PI * 2,
+
+            crackle:
+                type === "crackle"
+        });
     }
 
+    /*
+        Bright central flash.
+    */
 
-    /* PARTICLES */
+    for (let i = 0; i < 20; i++) {
 
-    for (const p of particles) {
-
-        const alpha =
-            Math.max(
+        const angle =
+            random(
                 0,
-                Math.min(
-                    1,
-                    p.life / p.maxLife
-                )
+                Math.PI * 2
             );
 
-        ctx.fillStyle =
-            colorWithAlpha(
-                p.color,
-                alpha
+        const speed =
+            random(
+                0.5,
+                3.2
             );
 
-        ctx.beginPath();
+        particles.push({
 
-        ctx.arc(
-            p.x,
-            p.y,
-            p.size,
-            0,
-            Math.PI * 2
-        );
+            x,
+            y,
 
-        ctx.fill();
+            vx:
+                Math.cos(angle) *
+                speed,
+
+            vy:
+                Math.sin(angle) *
+                speed,
+
+            gravity: 0.01,
+            drag: 0.94,
+
+            life:
+                random(15, 28),
+
+            maxLife: 28,
+
+            size:
+                random(1.5, 3.5),
+
+            color: "#ffffff",
+
+            twinkle:
+                Math.random() *
+                Math.PI * 2
+        });
     }
 
-    ctx.globalCompositeOperation =
-        "source-over";
+    playFireworkSound(
+        type,
+        1
+    );
 }
 
 
 /* =========================================================
-   FINALE FONT
-   5x7 DIGITAL FIREWORK LETTERS
+   TEXT FIREWORK FONT
 ========================================================= */
 
-const letterFont = {
+const FONT = {
 
     A: [
         "01110",
@@ -1472,7 +1493,7 @@ const letterFont = {
         "00010",
         "00010",
         "00010",
-        "00010",
+        "10010",
         "10010",
         "01100"
     ],
@@ -1650,7 +1671,7 @@ const letterFont = {
 
 
 /* =========================================================
-   CREATE TEXT TARGETS
+   TEXT TARGETS
 ========================================================= */
 
 function createLetterTargets(text) {
@@ -1658,91 +1679,109 @@ function createLetterTargets(text) {
     text =
         text
             .toUpperCase()
-            .replace(/[^A-Z ]/g, "");
-
-    if (!text) {
-        return [];
-    }
-
-    const patterns =
-        text
-            .split("")
-            .map(char =>
-                letterFont[char] ||
-                letterFont[" "]
+            .replace(
+                /[^A-Z ]/g,
+                ""
             );
 
-    const letterWidth = 5;
-    const letterGap = 1;
+    if (!text) {
+        text = "ZAYDEN";
+    }
 
-    const totalColumns =
-        patterns.length * letterWidth +
-        Math.max(0, patterns.length - 1) * letterGap;
-
-    const maxWidth =
-        Math.min(
-            width * 0.88,
-            1100
+    const cell =
+        clamp(
+            Math.min(
+                22,
+                width /
+                    Math.max(
+                        text.length *
+                        6.2,
+                        1
+                    ),
+                height / 10
+            ),
+            7,
+            22
         );
 
-    const cellSize =
-        Math.min(
-            22,
-            maxWidth / totalColumns
-        );
+    const letterWidth =
+        5 * cell;
+
+    const spacing =
+        cell * 1.35;
 
     const totalWidth =
-        totalColumns * cellSize;
-
-    const totalHeight =
-        7 * cellSize;
+        text.length *
+        letterWidth +
+        Math.max(
+            0,
+            text.length - 1
+        ) *
+        spacing;
 
     const startX =
-        (width - totalWidth) / 2;
+        (width - totalWidth) /
+        2;
 
     const startY =
-        (height - totalHeight) / 2;
+        height * 0.38;
 
     const targets = [];
 
-    let cursorColumn = 0;
+    for (
+        let letterIndex = 0;
+        letterIndex < text.length;
+        letterIndex++
+    ) {
 
-    for (const pattern of patterns) {
+        const letter =
+            FONT[
+                text[
+                    letterIndex
+                ]
+            ] ||
+            FONT[" "];
+
+        const offsetX =
+            startX +
+            letterIndex *
+            (
+                letterWidth +
+                spacing
+            );
 
         for (
             let row = 0;
-            row < pattern.length;
+            row < 7;
             row++
         ) {
 
             for (
                 let col = 0;
-                col < pattern[row].length;
+                col < 5;
                 col++
             ) {
 
-                if (pattern[row][col] === "1") {
+                if (
+                    letter[row][col] ===
+                    "1"
+                ) {
 
                     targets.push({
+
                         x:
-                            startX +
-                            (cursorColumn + col) *
-                            cellSize +
-                            cellSize / 2,
+                            offsetX +
+                            col * cell +
+                            cell / 2,
 
                         y:
                             startY +
-                            row *
-                            cellSize +
-                            cellSize / 2
+                            row * cell +
+                            cell / 2
                     });
                 }
             }
         }
-
-        cursorColumn +=
-            letterWidth +
-            letterGap;
     }
 
     return targets;
@@ -1750,252 +1789,1064 @@ function createLetterTargets(text) {
 
 
 /* =========================================================
-   FIREWORK TEXT
+   TEXT ROCKET
 ========================================================= */
 
-function launchLetterFireworks(
-    text,
-    palette
+function createTextRocket(
+    targetX,
+    targetY,
+    palette,
+    textTargets,
+    delay = 0
 ) {
 
+    const startX =
+        random(
+            width * 0.15,
+            width * 0.85
+        );
+
+    const startY =
+        height + 50;
+
+    const dx =
+        targetX - startX;
+
+    const dy =
+        targetY - startY;
+
+    const distance =
+        Math.sqrt(
+            dx * dx +
+            dy * dy
+        );
+
+    const speed =
+        9.5;
+
+    rockets.push({
+
+        x: startX,
+        y: startY,
+
+        vx:
+            (dx / distance) *
+            speed,
+
+        vy:
+            (dy / distance) *
+            speed,
+
+        targetX,
+        targetY,
+
+        palette,
+
+        type: "text",
+
+        age: -delay,
+
+        trail: [],
+
+        textTargets,
+
+        exploded: false
+    });
+
+    playRocketSound(
+        1.15
+    );
+}
+
+
+/* =========================================================
+   TEXT EXPLOSION
+========================================================= */
+
+function createTextExplosion(
+    rocket
+) {
+
+    textParticles.length = 0;
+
     const targets =
-        createLetterTargets(text);
+        rocket.textTargets ||
+        [];
+
+    const palette =
+        rocket.palette;
 
     if (!targets.length) {
         return;
     }
 
-    /*
-        Spread the rockets over time rather than launching
-        every letter particle simultaneously.
-    */
-    targets.forEach((target, index) => {
+    const centerX =
+        rocket.x;
 
-        setTimeout(() => {
+    const centerY =
+        rocket.y;
 
-            if (!finaleRunning) {
-                return;
-            }
-
-            if (
-                rockets.length >=
-                MAX_ROCKETS
-            ) {
-                return;
-            }
-
-            createRocket(
-                target.x,
-                target.y,
-                palette,
-                "sphere",
-                0.78
-            );
-
-        }, index * 24);
-    });
-}
-
-
-/* =========================================================
-   FINALE BURST
-========================================================= */
-
-function finaleBurst(
-    amount = 5
-) {
-
-    for (let i = 0; i < amount; i++) {
-
-        setTimeout(() => {
-
-            if (!finaleRunning) {
-                return;
-            }
-
-            createRocket(
-                random(
-                    width * 0.08,
-                    width * 0.92
-                ),
-                random(
-                    height * 0.16,
-                    height * 0.48
-                ),
-                randomChoice(palettes),
-                randomChoice([
-                    "sphere",
-                    "ring",
-                    "doubleRing",
-                    "chrysanthemum",
-                    "peony",
-                    "golden",
-                    "rainbow"
-                ]),
-                random(0.9, 1.25)
-            );
-
-        }, i * 260);
-    }
-}
-
-
-/* =========================================================
-   FINALE
-========================================================= */
-
-function runFinale() {
-
-    if (finaleStarted) {
-        return;
-    }
-
-    finaleStarted = true;
-    finaleRunning = true;
-
-    const finaleText =
-        document.getElementById("finaleText");
-
-    /*
-        Clear old show effects gradually by stopping new
-        main-show launches while allowing existing fireworks
-        to finish.
-    */
-
-    setTimeout(() => {
-
-        if (!finaleRunning) {
-            return;
-        }
-
-        finaleText.textContent = "HAPPY";
-        finaleText.classList.add("visible");
-
-        launchLetterFireworks(
-            "HAPPY",
-            randomChoice(palettes)
-        );
-
-        finaleBurst(6);
-
-    }, 500);
-
-
-    setTimeout(() => {
-
-        if (!finaleRunning) {
-            return;
-        }
-
-        finaleText.textContent = "BIRTHDAY";
-
-        launchLetterFireworks(
-            "BIRTHDAY",
-            randomChoice(palettes)
-        );
-
-        finaleBurst(8);
-
-    }, 4700);
-
-
-    setTimeout(() => {
-
-        if (!finaleRunning) {
-            return;
-        }
-
-        finaleText.textContent =
-            birthdayName;
-
-        launchLetterFireworks(
-            birthdayName,
-            randomChoice(palettes)
-        );
-
-        finaleBurst(10);
-
-    }, 9000);
-
-
-    setTimeout(() => {
-
-        if (!finaleRunning) {
-            return;
-        }
-
-        finaleText.textContent =
-            birthdayName;
-
-        launchLetterFireworks(
-            birthdayName,
-            randomChoice(palettes)
-        );
-
-        finaleBurst(14);
-
-    }, 12400);
-
-
-    setTimeout(() => {
-
-        finaleRunning = false;
-
-        finaleText.classList.remove("visible");
-
-        /*
-            Leave the final particles on screen for a moment,
-            then finish cleanly.
-        */
-
-        setTimeout(() => {
-
-            showFinished = true;
-
-        }, 1800);
-
-    }, 16500);
-}
-
-
-/* =========================================================
-   SHOW SCHEDULER
-========================================================= */
-
-function updateShow(time) {
-
-    if (!showActive || showFinished) {
-        return;
-    }
-
-    showElapsed =
-        time -
-        showStartTime;
-
-
-    /*
-        Main show ends here.
-        The finale then takes over.
-    */
-    if (
-        showElapsed >= SHOW_DURATION
+    for (
+        let i = 0;
+        i < targets.length &&
+        textParticles.length <
+            MAX_TEXT_PARTICLES;
+        i++
     ) {
 
-        showActive = false;
+        const target =
+            targets[i];
 
-        runFinale();
+        const angle =
+            random(
+                0,
+                Math.PI * 2
+            );
 
+        const distance =
+            random(
+                40,
+                150
+            );
+
+        textParticles.push({
+
+            x:
+                centerX +
+                Math.cos(angle) *
+                distance,
+
+            y:
+                centerY +
+                Math.sin(angle) *
+                distance,
+
+            vx:
+                random(-1.5, 1.5),
+
+            vy:
+                random(-1.5, 1.5),
+
+            targetX:
+                target.x,
+
+            targetY:
+                target.y,
+
+            life: 0,
+
+            maxLife: 300,
+
+            size:
+                random(1.5, 3.0),
+
+            color:
+                pick(palette),
+
+            phase:
+                random(
+                    0,
+                    Math.PI * 2
+                )
+        });
+    }
+
+    for (let i = 0; i < 80; i++) {
+
+        if (
+            textParticles.length >=
+            MAX_TEXT_PARTICLES
+        ) {
+            break;
+        }
+
+        const angle =
+            random(
+                0,
+                Math.PI * 2
+            );
+
+        const speed =
+            random(
+                1.5,
+                5.5
+            );
+
+        textParticles.push({
+
+            x: centerX,
+            y: centerY,
+
+            vx:
+                Math.cos(angle) *
+                speed,
+
+            vy:
+                Math.sin(angle) *
+                speed,
+
+            targetX: centerX,
+            targetY: centerY,
+
+            life: 0,
+
+            maxLife:
+                random(35, 70),
+
+            size:
+                random(1, 2),
+
+            color:
+                pick(palette),
+
+            phase:
+                random(
+                    0,
+                    Math.PI * 2
+                ),
+
+            spark: true
+        });
+    }
+
+    playFireworkSound(
+        "text",
+        1.25
+    );
+}
+
+
+/* =========================================================
+   TEXT PARTICLES UPDATE
+========================================================= */
+
+function updateTextParticles() {
+
+    for (
+        let i =
+            textParticles.length - 1;
+        i >= 0;
+        i--
+    ) {
+
+        const p =
+            textParticles[i];
+
+        p.life++;
+
+        if (p.spark) {
+
+            p.x += p.vx;
+            p.y += p.vy;
+
+            p.vx *= 0.97;
+            p.vy *= 0.97;
+
+        } else {
+
+            const dx =
+                p.targetX -
+                p.x;
+
+            const dy =
+                p.targetY -
+                p.y;
+
+            if (p.life < 38) {
+
+                p.vx +=
+                    dx * 0.035;
+
+                p.vy +=
+                    dy * 0.035;
+
+                p.vx *= 0.82;
+                p.vy *= 0.82;
+
+                p.x += p.vx;
+                p.y += p.vy;
+
+            } else {
+
+                p.x =
+                    p.targetX +
+                    Math.sin(
+                        p.life * 0.09 +
+                        p.phase
+                    ) *
+                    0.45;
+
+                p.y =
+                    p.targetY +
+                    Math.cos(
+                        p.life * 0.08 +
+                        p.phase
+                    ) *
+                    0.45;
+            }
+        }
+
+        if (
+            p.life >
+            p.maxLife
+        ) {
+
+            textParticles.splice(
+                i,
+                1
+            );
+        }
+    }
+}
+
+
+/* =========================================================
+   NORMAL PARTICLES UPDATE
+========================================================= */
+
+function updateParticles() {
+
+    for (
+        let i =
+            particles.length - 1;
+        i >= 0;
+        i--
+    ) {
+
+        const p =
+            particles[i];
+
+        p.vx *= p.drag;
+        p.vy *= p.drag;
+
+        p.vy +=
+            p.gravity;
+
+        p.x += p.vx;
+        p.y += p.vy;
+
+        p.life--;
+
+        if (
+            p.crackle &&
+            Math.random() < 0.025
+        ) {
+
+            for (
+                let j = 0;
+                j < 3;
+                j++
+            ) {
+
+                const angle =
+                    random(
+                        0,
+                        Math.PI * 2
+                    );
+
+                const speed =
+                    random(
+                        1,
+                        3
+                    );
+
+                particles.push({
+
+                    x: p.x,
+                    y: p.y,
+
+                    vx:
+                        Math.cos(angle) *
+                        speed,
+
+                    vy:
+                        Math.sin(angle) *
+                        speed,
+
+                    gravity: 0.035,
+                    drag: 0.96,
+
+                    life:
+                        random(20, 40),
+
+                    maxLife: 40,
+
+                    size:
+                        random(0.8, 1.8),
+
+                    color: "#ffffff",
+
+                    twinkle:
+                        Math.random() *
+                        Math.PI * 2
+                });
+            }
+        }
+
+        if (
+            p.life <= 0
+        ) {
+
+            particles.splice(
+                i,
+                1
+            );
+        }
+    }
+}
+
+
+/* =========================================================
+   ROCKET UPDATE
+========================================================= */
+
+function updateRockets() {
+
+    for (
+        let i =
+            rockets.length - 1;
+        i >= 0;
+        i--
+    ) {
+
+        const r =
+            rockets[i];
+
+        r.age++;
+
+        if (r.age < 0) {
+            continue;
+        }
+
+        r.trail.push({
+            x: r.x,
+            y: r.y
+        });
+
+        if (
+            r.trail.length > 9
+        ) {
+            r.trail.shift();
+        }
+
+        r.x += r.vx;
+        r.y += r.vy;
+
+        r.vy += 0.018;
+
+        const dx =
+            r.targetX -
+            r.x;
+
+        const dy =
+            r.targetY -
+            r.y;
+
+        const distance =
+            Math.sqrt(
+                dx * dx +
+                dy * dy
+            );
+
+        if (
+            distance < 18 ||
+            r.y <= r.targetY
+        ) {
+
+            if (!r.exploded) {
+
+                r.exploded = true;
+
+                if (
+                    r.type === "text"
+                ) {
+
+                    createTextExplosion(
+                        r
+                    );
+
+                } else {
+
+                    createExplosion(
+                        r
+                    );
+                }
+            }
+
+            rockets.splice(
+                i,
+                1
+            );
+        }
+    }
+}
+
+
+/* =========================================================
+   DRAW ROCKETS
+========================================================= */
+
+function drawRockets() {
+
+    for (const r of rockets) {
+
+        if (r.age < 0) {
+            continue;
+        }
+
+        for (
+            let i = 0;
+            i < r.trail.length;
+            i++
+        ) {
+
+            const point =
+                r.trail[i];
+
+            const alpha =
+                i /
+                r.trail.length;
+
+            ctx.globalAlpha =
+                alpha * 0.55;
+
+            ctx.fillStyle =
+                "#ffffff";
+
+            ctx.beginPath();
+
+            ctx.arc(
+                point.x,
+                point.y,
+                1.5,
+                0,
+                Math.PI * 2
+            );
+
+            ctx.fill();
+        }
+
+        ctx.globalAlpha = 1;
+
+        ctx.fillStyle =
+            "#ffffff";
+
+        ctx.beginPath();
+
+        ctx.arc(
+            r.x,
+            r.y,
+            2.2,
+            0,
+            Math.PI * 2
+        );
+
+        ctx.fill();
+    }
+}
+
+
+/* =========================================================
+   DRAW PARTICLES
+========================================================= */
+
+function drawParticles() {
+
+    for (const p of particles) {
+
+        const alpha =
+            clamp(
+                p.life /
+                p.maxLife,
+                0,
+                1
+            );
+
+        const twinkle =
+            0.72 +
+            Math.sin(
+                p.life * 0.35 +
+                p.twinkle
+            ) *
+            0.28;
+
+        ctx.globalAlpha =
+            alpha *
+            twinkle;
+
+        ctx.fillStyle =
+            p.color;
+
+        ctx.beginPath();
+
+        ctx.arc(
+            p.x,
+            p.y,
+            p.size,
+            0,
+            Math.PI * 2
+        );
+
+        ctx.fill();
+    }
+
+    ctx.globalAlpha = 1;
+}
+
+
+/* =========================================================
+   DRAW TEXT
+========================================================= */
+
+function drawTextParticles() {
+
+    for (
+        const p of textParticles
+    ) {
+
+        const alpha =
+            p.spark
+                ? clamp(
+                    1 -
+                    p.life /
+                    p.maxLife,
+                    0,
+                    1
+                )
+                : 0.82 +
+                  Math.sin(
+                      p.life * 0.12 +
+                      p.phase
+                  ) *
+                  0.18;
+
+        ctx.globalAlpha =
+            alpha;
+
+        ctx.fillStyle =
+            p.color;
+
+        ctx.beginPath();
+
+        ctx.arc(
+            p.x,
+            p.y,
+            p.size,
+            0,
+            Math.PI * 2
+        );
+
+        ctx.fill();
+
+        if (!p.spark) {
+
+            ctx.globalAlpha =
+                alpha * 0.25;
+
+            ctx.beginPath();
+
+            ctx.arc(
+                p.x,
+                p.y,
+                p.size * 3.5,
+                0,
+                Math.PI * 2
+            );
+
+            ctx.fill();
+        }
+    }
+
+    ctx.globalAlpha = 1;
+}
+
+
+/* =========================================================
+   SHOW STATE
+========================================================= */
+
+let showRunning = false;
+let finaleRunning = false;
+let showFinished = false;
+
+let showStartTime = 0;
+
+let nextLaunchTime = 0;
+let nextSpecialTime = 0;
+
+let showItemIndex = 0;
+
+let birthdayName =
+    "ZAYDEN";
+
+
+/* =========================================================
+   LAUNCH SHOW ITEM
+========================================================= */
+
+function launchShowItem(
+    intensity = 1
+) {
+
+    if (
+        rockets.length >=
+            MAX_ROCKETS ||
+        particles.length >=
+            MAX_PARTICLES * 0.88
+    ) {
         return;
     }
 
+    const item =
+        showItems[
+            showItemIndex %
+            showItems.length
+        ];
 
-    /*
-        Increasing intensity over the course
-        of the show.
-    */
+    showItemIndex++;
+
+    const palette =
+        palettes[
+            item.palette %
+            palettes.length
+        ];
+
+    const power =
+        random(
+            0.88,
+            1.12
+        ) *
+        intensity;
+
+    for (
+        let i = 0;
+        i < item.count;
+        i++
+    ) {
+
+        const targetX =
+            random(
+                width * 0.10,
+                width * 0.90
+            );
+
+        const targetY =
+            random(
+                height * 0.13,
+                height * 0.53
+            );
+
+        createRocket(
+            targetX,
+            targetY,
+            palette,
+            item.type,
+            power
+        );
+    }
+}
+
+
+/* =========================================================
+   SPECIAL SEQUENCES
+========================================================= */
+
+function specialSequence(
+    intensity
+) {
+
+    const sequence =
+        randomInt(0, 5);
+
+    if (
+        sequence === 0
+    ) {
+
+        for (
+            let i = 0;
+            i < 4;
+            i++
+        ) {
+
+            setTimeout(
+                () => {
+
+                    if (!showRunning) {
+                        return;
+                    }
+
+                    launchShowItem(
+                        intensity *
+                        random(
+                            0.9,
+                            1.15
+                        )
+                    );
+
+                },
+                i * 180
+            );
+        }
+
+    } else if (
+        sequence === 1
+    ) {
+
+        for (
+            let i = 0;
+            i < 6;
+            i++
+        ) {
+
+            setTimeout(
+                () => {
+
+                    if (!showRunning) {
+                        return;
+                    }
+
+                    const palette =
+                        palettes[
+                            randomInt(
+                                0,
+                                palettes.length - 1
+                            )
+                        ];
+
+                    createRocket(
+
+                        width *
+                        random(
+                            0.12,
+                            0.88
+                        ),
+
+                        height *
+                        random(
+                            0.18,
+                            0.50
+                        ),
+
+                        palette,
+
+                        pick([
+                            "ring",
+                            "sphere",
+                            "doubleRing"
+                        ]),
+
+                        intensity
+                    );
+
+                },
+                i * 145
+            );
+        }
+
+    } else if (
+        sequence === 2
+    ) {
+
+        for (
+            let i = 0;
+            i < 5;
+            i++
+        ) {
+
+            setTimeout(
+                () => {
+
+                    if (!showRunning) {
+                        return;
+                    }
+
+                    const palette =
+                        palettes[
+                            randomInt(
+                                0,
+                                palettes.length - 1
+                            )
+                        ];
+
+                    createRocket(
+
+                        width *
+                        (
+                            0.20 +
+                            i * 0.15
+                        ),
+
+                        height *
+                        random(
+                            0.20,
+                            0.46
+                        ),
+
+                        palette,
+
+                        pick([
+                            "fan",
+                            "cross",
+                            "spiral"
+                        ]),
+
+                        intensity
+                    );
+
+                },
+                i * 170
+            );
+        }
+
+    } else if (
+        sequence === 3
+    ) {
+
+        for (
+            let i = 0;
+            i < 3;
+            i++
+        ) {
+
+            setTimeout(
+                () => {
+
+                    if (!showRunning) {
+                        return;
+                    }
+
+                    launchShowItem(
+                        intensity *
+                        1.25
+                    );
+
+                },
+                i * 230
+            );
+        }
+
+    } else if (
+        sequence === 4
+    ) {
+
+        for (
+            let i = 0;
+            i < 7;
+            i++
+        ) {
+
+            setTimeout(
+                () => {
+
+                    if (!showRunning) {
+                        return;
+                    }
+
+                    const palette =
+                        palettes[
+                            randomInt(
+                                0,
+                                palettes.length - 1
+                            )
+                        ];
+
+                    createRocket(
+
+                        width *
+                        random(
+                            0.08,
+                            0.92
+                        ),
+
+                        height *
+                        random(
+                            0.15,
+                            0.48
+                        ),
+
+                        palette,
+
+                        pick([
+                            "willow",
+                            "golden",
+                            "crackle"
+                        ]),
+
+                        intensity
+                    );
+
+                },
+                i * 130
+            );
+        }
+
+    } else {
+
+        for (
+            let i = 0;
+            i < 8;
+            i++
+        ) {
+
+            setTimeout(
+                () => {
+
+                    if (!showRunning) {
+                        return;
+                    }
+
+                    launchShowItem(
+                        intensity *
+                        random(
+                            0.95,
+                            1.3
+                        )
+                    );
+
+                },
+                i * 115
+            );
+        }
+    }
+}
+
+
+/* =========================================================
+   MAIN SHOW
+========================================================= */
+
+function scheduleMainShow(
+    now
+) {
+
+    if (
+        !showRunning ||
+        finaleRunning
+    ) {
+        return;
+    }
+
+    const elapsed =
+        now -
+        showStartTime;
+
     const progress =
-        showElapsed /
-        SHOW_DURATION;
+        clamp(
+            elapsed /
+            SHOW_DURATION,
+            0,
+            1
+        );
+
+    if (
+        elapsed >=
+        SHOW_DURATION
+    ) {
+
+        beginFinale();
+
+        return;
+    }
 
     let intensity = 1;
 
@@ -2015,267 +2866,363 @@ function updateShow(time) {
         intensity += 0.8;
     }
 
-
-    /*
-        CONTINUOUS FIREWORK SCHEDULER
-
-        The important part:
-
-        Instead of firing many fireworks during one frame,
-        the scheduler uses a 400ms preparation buffer.
-
-        This does NOT add a 400ms visible gap.
-        Existing fireworks remain active while new ones
-        are introduced.
-    */
-
     if (
-        time >= nextContinuousLaunch -
-        FIREWORK_BUFFER
-    ) {
-
-        /*
-            Only perform the expensive creation once
-            the scheduler reaches the launch window.
-        */
-        if (
-            time >= nextContinuousLaunch
-        ) {
-
-            launchShowItem(intensity);
-
-            /*
-                Random interval keeps the show natural.
-            */
-            const interval =
-                random(
-                    MIN_LAUNCH_INTERVAL,
-                    MAX_LAUNCH_INTERVAL
-                );
-
-            /*
-                Schedule the next launch relative to
-                the previous launch rather than current
-                frame time. This prevents drift.
-            */
-            nextContinuousLaunch +=
-                interval;
-
-            /*
-                If the browser was temporarily busy,
-                don't queue dozens of missed launches.
-            */
-            if (
-                nextContinuousLaunch <
-                time - FIREWORK_BUFFER
-            ) {
-
-                nextContinuousLaunch =
-                    time +
-                    random(
-                        MIN_LAUNCH_INTERVAL,
-                        MAX_LAUNCH_INTERVAL
-                    );
-            }
-        }
-    }
-
-
-    /*
-        SPECIAL RANDOM EVENTS
-    */
-
-    if (
-        time >=
-        nextSpecialLaunch -
-        FIREWORK_BUFFER
-    ) {
-
-        if (
-            time >=
-            nextSpecialLaunch
-        ) {
-
-            specialSequence();
-
-            nextSpecialLaunch =
-                time +
-                random(
-                    2600,
-                    5200
-                );
-        }
-    }
-
-
-    /*
-        Extra activity during the final
-        portion of the main show.
-    */
-
-    if (
-        progress > 0.93 &&
-        time >= nextContinuousLaunch
+        now +
+        FIREWORK_BUFFER >=
+        nextLaunchTime
     ) {
 
         launchShowItem(
-            intensity * 1.12
+            intensity
+        );
+
+        nextLaunchTime =
+            now +
+            random(
+                MIN_LAUNCH_INTERVAL,
+                MAX_LAUNCH_INTERVAL
+            );
+    }
+
+    if (
+        now +
+        FIREWORK_BUFFER >=
+        nextSpecialTime
+    ) {
+
+        specialSequence(
+            intensity
+        );
+
+        nextSpecialTime =
+            now +
+            random(
+                2600,
+                5200
+            );
+    }
+
+    if (
+        progress > 0.92 &&
+        Math.random() < 0.018
+    ) {
+
+        specialSequence(
+            intensity * 1.35
         );
     }
 }
 
 
 /* =========================================================
-   MAIN UPDATE
+   FINALE
 ========================================================= */
 
-function update() {
-
-    updateRockets();
-    updateParticles();
-
-    /*
-        Hard protection against runaway particle counts.
-    */
-    if (
-        particles.length >
-        MAX_PARTICLES
-    ) {
-
-        particles.splice(
-            0,
-            particles.length -
-            MAX_PARTICLES
-        );
-    }
+function beginFinale() {
 
     if (
-        rockets.length >
-        MAX_ROCKETS
+        finaleRunning ||
+        showFinished
     ) {
-
-        rockets.splice(
-            0,
-            rockets.length -
-            MAX_ROCKETS
-        );
-    }
-}
-
-
-/* =========================================================
-   ANIMATION LOOP
-========================================================= */
-
-let lastFrameTime = 0;
-
-function loop(time) {
-
-    /*
-        Ignore tiny duplicate timestamps and keep the
-        animation loop lightweight.
-    */
-    if (
-        time === lastFrameTime
-    ) {
-        requestAnimationFrame(loop);
         return;
     }
 
-    lastFrameTime = time;
+    showRunning = false;
+    finaleRunning = true;
 
-    updateShow(time);
-    update();
-    draw();
+    rockets.length = 0;
+    particles.length = 0;
+    textParticles.length = 0;
 
-    requestAnimationFrame(loop);
+    const palette = [
+        "#ffffff",
+        "#ffe066",
+        "#74c0fc",
+        "#ff6b6b"
+    ];
+
+    const happyTargets =
+        createLetterTargets(
+            "HAPPY"
+        );
+
+    const birthdayTargets =
+        createLetterTargets(
+            "BIRTHDAY"
+        );
+
+    const nameTargets =
+        createLetterTargets(
+            birthdayName
+        );
+
+
+    /* HAPPY */
+
+    setTimeout(
+        () => {
+
+            createTextRocket(
+                width * 0.50,
+                height * 0.34,
+                palette,
+                happyTargets
+            );
+
+        },
+        400
+    );
+
+
+    /* BIRTHDAY */
+
+    setTimeout(
+        () => {
+
+            createTextRocket(
+                width * 0.50,
+                height * 0.34,
+                palette,
+                birthdayTargets
+            );
+
+        },
+        5000
+    );
+
+
+    /* NAME */
+
+    setTimeout(
+        () => {
+
+            createTextRocket(
+                width * 0.50,
+                height * 0.34,
+                palette,
+                nameTargets
+            );
+
+        },
+        9700
+    );
+
+
+    /* FINAL NAME */
+
+    setTimeout(
+        () => {
+
+            createTextRocket(
+                width * 0.50,
+                height * 0.34,
+                palette,
+                nameTargets
+            );
+
+        },
+        13500
+    );
+
+
+    /* END */
+
+    setTimeout(
+        () => {
+
+            finaleRunning = false;
+
+            setTimeout(
+                () => {
+                    showFinished = true;
+                },
+                1600
+            );
+
+        },
+        18100
+    );
 }
-
-requestAnimationFrame(loop);
 
 
 /* =========================================================
-   START SHOW
+   BACKGROUND
+========================================================= */
+
+function drawBackground() {
+
+    ctx.globalCompositeOperation =
+        "source-over";
+
+    ctx.fillStyle =
+        "rgba(0, 0, 8, 0.22)";
+
+    ctx.fillRect(
+        0,
+        0,
+        width,
+        height
+    );
+}
+
+
+/* =========================================================
+   RENDER
+========================================================= */
+
+function draw() {
+
+    drawBackground();
+
+    ctx.globalCompositeOperation =
+        "lighter";
+
+    drawRockets();
+    drawParticles();
+    drawTextParticles();
+
+    ctx.globalCompositeOperation =
+        "source-over";
+
+    ctx.globalAlpha = 1;
+}
+
+
+/* =========================================================
+   MAIN LOOP
+========================================================= */
+
+function loop(now) {
+
+    if (showRunning) {
+        scheduleMainShow(
+            now
+        );
+    }
+
+    updateRockets();
+    updateParticles();
+    updateTextParticles();
+
+    draw();
+
+    requestAnimationFrame(
+        loop
+    );
+}
+
+requestAnimationFrame(
+    loop
+);
+
+
+/* =========================================================
+   START
 ========================================================= */
 
 const startScreen =
-    document.getElementById("startScreen");
+    document.getElementById(
+        "startScreen"
+    );
 
 const nameInput =
-    document.getElementById("nameInput");
+    document.getElementById(
+        "nameInput"
+    );
 
 const startButton =
-    document.getElementById("startButton");
+    document.getElementById(
+        "startButton"
+    );
 
 
-function cleanName(value) {
+function startShow() {
 
-    return value
-        .toUpperCase()
-        .replace(/[^A-Z ]/g, "")
-        .replace(/\s+/g, " ")
-        .trim()
-        .slice(0, 20);
+    if (
+        showRunning ||
+        finaleRunning
+    ) {
+        return;
+    }
+
+    /*
+        Starting audio here is important:
+        mobile browsers require a user gesture
+        before Web Audio can play.
+    */
+
+    initAudio();
+
+    let enteredName =
+        nameInput.value
+            .toUpperCase()
+            .replace(
+                /[^A-Z ]/g,
+                ""
+            )
+            .replace(
+                /\s+/g,
+                " "
+            )
+            .trim()
+            .slice(
+                0,
+                20
+            );
+
+    if (!enteredName) {
+        enteredName =
+            "ZAYDEN";
+    }
+
+    birthdayName =
+        enteredName;
+
+    startScreen.classList.add(
+        "hidden"
+    );
+
+    rockets.length = 0;
+    particles.length = 0;
+    textParticles.length = 0;
+
+    showItemIndex = 0;
+
+    showRunning = true;
+    finaleRunning = false;
+    showFinished = false;
+
+    showStartTime =
+        performance.now();
+
+    const now =
+        showStartTime;
+
+    nextLaunchTime =
+        now + 100;
+
+    nextSpecialTime =
+        now + 1200;
 }
 
 
 startButton.addEventListener(
     "click",
-    () => {
-
-        birthdayName =
-            cleanName(
-                nameInput.value
-            );
-
-        if (!birthdayName) {
-            birthdayName = "ZAYDEN";
-        }
-
-        startScreen.style.display =
-            "none";
-
-        showActive = true;
-        showFinished = false;
-
-        finaleRunning = false;
-        finaleStarted = false;
-
-        showElapsed = 0;
-
-        showStartTime =
-            performance.now();
-
-        showItemIndex = 0;
-
-        rockets.length = 0;
-        particles.length = 0;
-
-        const now =
-            performance.now();
-
-        /*
-            First launch starts immediately.
-            There is no initial 5-second dead period.
-        */
-        nextContinuousLaunch =
-            now + 150;
-
-        nextSpecialLaunch =
-            now + 2800;
-    }
+    startShow
 );
 
 
 /* =========================================================
-   KEYBOARD SUPPORT
+   ENTER TO START
 ========================================================= */
 
 nameInput.addEventListener(
     "keydown",
     event => {
 
-        if (event.key === "Enter") {
+        if (
+            event.key === "Enter"
+        ) {
             startButton.click();
         }
     }
@@ -2283,7 +3230,7 @@ nameInput.addEventListener(
 
 
 /* =========================================================
-   PREVENT ACCIDENTAL PAGE GESTURES
+   TOUCH / GESTURE PREVENTION
 ========================================================= */
 
 document.addEventListener(
@@ -2310,15 +3257,6 @@ document.addEventListener(
     }
 );
 
-
-/* =========================================================
-   NO USER FIREWORK PLACEMENT
-========================================================= */
-
-/*
-    The canvas intentionally has no click/touch firework
-    launcher. The entire show is automated.
-*/
 </script>
 
 </body>
