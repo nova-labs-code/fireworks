@@ -124,6 +124,7 @@ canvas {
 
 <div id="ui">
     <div id="startScreen">
+
         <h1>Birthday Fireworks</h1>
 
         <p>
@@ -143,58 +144,101 @@ canvas {
         <button id="startButton">
             Start Show
         </button>
+
     </div>
 </div>
 
 <script>
 "use strict";
 
+
 /* =========================================================
    CANVAS
 ========================================================= */
 
-const canvas = document.getElementById("canvas");
-const ctx = canvas.getContext("2d");
+const canvas =
+    document.getElementById("canvas");
+
+const ctx =
+    canvas.getContext("2d");
 
 let width = 0;
 let height = 0;
 let dpr = 1;
 
 function resize() {
-    dpr = Math.min(window.devicePixelRatio || 1, 2);
 
-    width = window.innerWidth;
-    height = window.innerHeight;
+    dpr =
+        Math.min(
+            window.devicePixelRatio || 1,
+            2
+        );
 
-    canvas.width = Math.floor(width * dpr);
-    canvas.height = Math.floor(height * dpr);
+    width =
+        window.innerWidth;
 
-    canvas.style.width = width + "px";
-    canvas.style.height = height + "px";
+    height =
+        window.innerHeight;
 
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    canvas.width =
+        Math.floor(
+            width * dpr
+        );
+
+    canvas.height =
+        Math.floor(
+            height * dpr
+        );
+
+    canvas.style.width =
+        width + "px";
+
+    canvas.style.height =
+        height + "px";
+
+    ctx.setTransform(
+        dpr,
+        0,
+        0,
+        dpr,
+        0,
+        0
+    );
 }
 
-window.addEventListener("resize", resize);
+window.addEventListener(
+    "resize",
+    resize
+);
+
 resize();
 
 
 /* =========================================================
-   AUDIO
+   AUDIO ENGINE
 ========================================================= */
 
 let audioContext = null;
 let masterGain = null;
+let compressor = null;
+let noiseBuffer = null;
 let audioReady = false;
 
-const FIREWORK_AUDIO_BUFFER = 0.4;
+
+/*
+    Audio is initialized from the Start button because
+    iOS and other browsers require a user interaction
+    before Web Audio can play.
+*/
 
 function initAudio() {
 
     if (audioReady) {
+
         if (
             audioContext &&
-            audioContext.state === "suspended"
+            audioContext.state ===
+                "suspended"
         ) {
             audioContext.resume();
         }
@@ -210,56 +254,81 @@ function initAudio() {
         return;
     }
 
-    audioContext = new AudioContext();
+    audioContext =
+        new AudioContext();
+
+    compressor =
+        audioContext.createDynamicsCompressor();
+
+    compressor.threshold.value =
+        -18;
+
+    compressor.knee.value =
+        18;
+
+    compressor.ratio.value =
+        7;
+
+    compressor.attack.value =
+        0.003;
+
+    compressor.release.value =
+        0.18;
 
     masterGain =
         audioContext.createGain();
 
-    masterGain.gain.value = 0.24;
+    /*
+        Keeps the fireworks audible without
+        making the synthesized booms painfully loud.
+    */
+
+    masterGain.gain.value =
+        0.30;
 
     masterGain.connect(
+        compressor
+    );
+
+    compressor.connect(
         audioContext.destination
     );
 
+    createGlobalNoiseBuffer();
+
     audioReady = true;
 
-    if (audioContext.state === "suspended") {
+    if (
+        audioContext.state ===
+        "suspended"
+    ) {
         audioContext.resume();
     }
 }
 
 
 /* =========================================================
-   AUDIO HELPERS
+   GLOBAL NOISE BUFFER
 ========================================================= */
 
-function audioTime() {
+function createGlobalNoiseBuffer() {
 
     if (!audioContext) {
-        return 0;
+        return;
     }
-
-    return (
-        audioContext.currentTime +
-        FIREWORK_AUDIO_BUFFER / 1000
-    );
-}
-
-
-function createNoiseBuffer(duration) {
 
     const sampleRate =
         audioContext.sampleRate;
 
+    const duration = 2;
+
     const length =
-        Math.max(
-            1,
-            Math.floor(
-                sampleRate * duration
-            )
+        Math.floor(
+            sampleRate *
+            duration
         );
 
-    const buffer =
+    noiseBuffer =
         audioContext.createBuffer(
             1,
             length,
@@ -267,29 +336,66 @@ function createNoiseBuffer(duration) {
         );
 
     const data =
-        buffer.getChannelData(0);
+        noiseBuffer.getChannelData(0);
 
-    for (let i = 0; i < length; i++) {
+    for (
+        let i = 0;
+        i < length;
+        i++
+    ) {
+
+        /*
+            Slightly shaped noise rather than
+            completely harsh white noise.
+        */
+
         data[i] =
-            Math.random() * 2 - 1;
+            (
+                Math.random() * 2 -
+                1
+            ) *
+            0.85;
     }
-
-    return buffer;
 }
 
 
 /* =========================================================
-   ROCKET WHISTLE
+   AUDIO TIME
 ========================================================= */
 
-function playRocketSound(intensity = 1) {
+function getAudioTime() {
+
+    if (!audioContext) {
+        return 0;
+    }
+
+    return (
+        audioContext.currentTime +
+        0.015
+    );
+}
+
+
+/* =========================================================
+   OSCILLATOR
+========================================================= */
+
+function createTone(
+    startFrequency,
+    endFrequency,
+    duration,
+    volume,
+    waveform = "sine",
+    delay = 0
+) {
 
     if (!audioReady) {
         return;
     }
 
     const now =
-        audioTime();
+        getAudioTime() +
+        delay;
 
     const oscillator =
         audioContext.createOscillator();
@@ -297,27 +403,30 @@ function playRocketSound(intensity = 1) {
     const gain =
         audioContext.createGain();
 
-    const filter =
-        audioContext.createBiquadFilter();
-
-    oscillator.type = "sine";
+    oscillator.type =
+        waveform;
 
     oscillator.frequency.setValueAtTime(
-        random(420, 650),
+        Math.max(
+            20,
+            startFrequency
+        ),
         now
     );
 
-    oscillator.frequency.exponentialRampToValueAtTime(
-        random(1250, 1900),
-        now + random(0.34, 0.62)
-    );
+    if (
+        endFrequency !==
+        startFrequency
+    ) {
 
-    filter.type = "lowpass";
-
-    filter.frequency.setValueAtTime(
-        2800,
-        now
-    );
+        oscillator.frequency.exponentialRampToValueAtTime(
+            Math.max(
+                20,
+                endFrequency
+            ),
+            now + duration
+        );
+    }
 
     gain.gain.setValueAtTime(
         0.0001,
@@ -325,21 +434,162 @@ function playRocketSound(intensity = 1) {
     );
 
     gain.gain.exponentialRampToValueAtTime(
-        0.045 * intensity,
-        now + 0.035
+        Math.max(
+            0.0002,
+            volume
+        ),
+        now + 0.006
     );
 
     gain.gain.exponentialRampToValueAtTime(
         0.0001,
-        now + 0.58
+        now + duration
     );
 
-    oscillator.connect(filter);
-    filter.connect(gain);
+    oscillator.connect(gain);
     gain.connect(masterGain);
 
     oscillator.start(now);
-    oscillator.stop(now + 0.62);
+
+    oscillator.stop(
+        now +
+        duration +
+        0.03
+    );
+}
+
+
+/* =========================================================
+   FILTERED NOISE
+========================================================= */
+
+function createNoiseBurst(
+    duration,
+    volume,
+    filterType,
+    frequency,
+    delay = 0,
+    resonance = 0.7
+) {
+
+    if (
+        !audioReady ||
+        !noiseBuffer
+    ) {
+        return;
+    }
+
+    const now =
+        getAudioTime() +
+        delay;
+
+    const source =
+        audioContext.createBufferSource();
+
+    const filter =
+        audioContext.createBiquadFilter();
+
+    const gain =
+        audioContext.createGain();
+
+    source.buffer =
+        noiseBuffer;
+
+    filter.type =
+        filterType;
+
+    filter.frequency.value =
+        frequency;
+
+    filter.Q.value =
+        resonance;
+
+    gain.gain.setValueAtTime(
+        0.0001,
+        now
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+        Math.max(
+            0.0002,
+            volume
+        ),
+        now + 0.004
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+        0.0001,
+        now + duration
+    );
+
+    source.connect(filter);
+    filter.connect(gain);
+    gain.connect(masterGain);
+
+    source.start(now);
+
+    source.stop(
+        now +
+        duration +
+        0.03
+    );
+}
+
+
+/* =========================================================
+   ROCKET WHISTLE
+========================================================= */
+
+function playRocketSound(
+    power = 1
+) {
+
+    if (!audioReady) {
+        return;
+    }
+
+    const duration =
+        random(
+            0.34,
+            0.62
+        );
+
+    /*
+        Main whistle.
+    */
+
+    createTone(
+        random(260, 390),
+        random(1200, 1900),
+        duration,
+        0.055 * power,
+        "sine"
+    );
+
+    /*
+        Harmonic gives the whistle more
+        of a real rocket character.
+    */
+
+    createTone(
+        random(520, 720),
+        random(1900, 2700),
+        duration * 0.82,
+        0.017 * power,
+        "triangle",
+        0.015
+    );
+
+    /*
+        Very quiet air rushing underneath.
+    */
+
+    createNoiseBurst(
+        duration * 0.72,
+        0.018 * power,
+        "bandpass",
+        1800
+    );
 }
 
 
@@ -348,398 +598,665 @@ function playRocketSound(intensity = 1) {
 ========================================================= */
 
 function playBoom(
-    type = "normal",
-    intensity = 1
+    intensity = 1,
+    size = "normal",
+    delay = 0
 ) {
 
     if (!audioReady) {
         return;
     }
 
-    const now =
-        audioTime();
+    let duration =
+        0.32;
 
-    let duration = 0.65;
-    let startFrequency = 75;
-    let endFrequency = 34;
-    let volume = 0.19;
+    let volume =
+        0.24;
 
-    if (type === "doubleRing") {
-        duration = 0.78;
-        startFrequency = 82;
-        endFrequency = 30;
-        volume = 0.22;
+    if (size === "large") {
+
+        duration =
+            0.48;
+
+        volume =
+            0.30;
     }
 
-    if (type === "willow") {
-        duration = 0.85;
-        startFrequency = 65;
-        endFrequency = 27;
-        volume = 0.15;
+    if (size === "soft") {
+
+        duration =
+            0.52;
+
+        volume =
+            0.16;
     }
 
-    if (type === "crackle") {
-        duration = 0.48;
-        startFrequency = 90;
-        endFrequency = 38;
-        volume = 0.16;
-    }
+    /*
+        Deep low-frequency pressure wave.
+    */
 
-    if (type === "golden") {
-        duration = 0.82;
-        startFrequency = 70;
-        endFrequency = 28;
-        volume = 0.19;
-    }
-
-    if (type === "text") {
-        duration = 0.95;
-        startFrequency = 70;
-        endFrequency = 24;
-        volume = 0.24;
-    }
-
-    const oscillator =
-        audioContext.createOscillator();
-
-    const gain =
-        audioContext.createGain();
-
-    const filter =
-        audioContext.createBiquadFilter();
-
-    oscillator.type = "sine";
-
-    oscillator.frequency.setValueAtTime(
-        startFrequency,
-        now
-    );
-
-    oscillator.frequency.exponentialRampToValueAtTime(
-        endFrequency,
-        now + duration
-    );
-
-    filter.type = "lowpass";
-
-    filter.frequency.setValueAtTime(
-        420,
-        now
-    );
-
-    filter.frequency.exponentialRampToValueAtTime(
-        85,
-        now + duration
-    );
-
-    gain.gain.setValueAtTime(
-        0.0001,
-        now
-    );
-
-    gain.gain.exponentialRampToValueAtTime(
+    createTone(
+        random(70, 95),
+        random(27, 40),
+        duration,
         volume * intensity,
-        now + 0.012
+        "sine",
+        delay
     );
 
-    gain.gain.exponentialRampToValueAtTime(
-        0.0001,
-        now + duration
+    /*
+        Slightly higher body of the explosion.
+    */
+
+    createTone(
+        random(115, 155),
+        random(45, 65),
+        duration * 0.72,
+        volume * 0.55 * intensity,
+        "triangle",
+        delay
     );
 
-    oscillator.connect(filter);
-    filter.connect(gain);
-    gain.connect(masterGain);
+    /*
+        The actual explosive "air" component.
+    */
 
-    oscillator.start(now);
-    oscillator.stop(now + duration + 0.03);
+    createNoiseBurst(
+        duration * 0.95,
+        0.17 * intensity,
+        "lowpass",
+        random(700, 1100),
+        delay,
+        0.5
+    );
+
+    /*
+        Very short high-energy transient.
+    */
+
+    createNoiseBurst(
+        0.075,
+        0.10 * intensity,
+        "highpass",
+        random(2800, 4600),
+        delay
+    );
 }
 
 
 /* =========================================================
-   CRACKLE SOUND
+   SHARP FIREWORK SNAP
 ========================================================= */
 
-function playCrackle(
+function playSnap(
+    intensity = 1,
+    delay = 0
+) {
+
+    if (!audioReady) {
+        return;
+    }
+
+    createNoiseBurst(
+        0.055,
+        0.10 * intensity,
+        "highpass",
+        random(3500, 6500),
+        delay
+    );
+
+    createTone(
+        random(700, 1000),
+        random(180, 300),
+        0.12,
+        0.025 * intensity,
+        "triangle",
+        delay
+    );
+}
+
+
+/* =========================================================
+   RANDOM CRACKLES
+========================================================= */
+
+function playCrackleSounds(
     amount = 12,
-    intensity = 1
+    intensity = 1,
+    spread = 0.65
 ) {
 
     if (!audioReady) {
         return;
     }
 
-    const now =
-        audioTime();
+    /*
+        Keep the number of Web Audio nodes reasonable
+        even when many fireworks are on screen.
+    */
 
-    const buffer =
-        createNoiseBuffer(0.035);
-
-    for (let i = 0; i < amount; i++) {
-
-        const source =
-            audioContext.createBufferSource();
-
-        const filter =
-            audioContext.createBiquadFilter();
-
-        const gain =
-            audioContext.createGain();
-
-        const start =
-            now +
-            random(0.04, 0.55);
-
-        source.buffer =
-            buffer;
-
-        filter.type =
-            "bandpass";
-
-        filter.frequency.value =
-            random(1500, 5000);
-
-        filter.Q.value =
-            random(0.5, 2.5);
-
-        gain.gain.setValueAtTime(
-            0.0001,
-            start
+    amount =
+        Math.min(
+            amount,
+            18
         );
 
-        gain.gain.exponentialRampToValueAtTime(
-            random(0.012, 0.035) *
+    for (
+        let i = 0;
+        i < amount;
+        i++
+    ) {
+
+        const delay =
+            random(
+                0.025,
+                spread
+            );
+
+        createNoiseBurst(
+            random(
+                0.018,
+                0.045
+            ),
+            random(
+                0.018,
+                0.045
+            ) *
             intensity,
-            start + 0.003
+            "highpass",
+            random(
+                2500,
+                7000
+            ),
+            delay
         );
 
-        gain.gain.exponentialRampToValueAtTime(
-            0.0001,
-            start + 0.035
-        );
+        /*
+            Some pops get a tiny pitched body.
+        */
 
-        source.connect(filter);
-        filter.connect(gain);
-        gain.connect(masterGain);
+        if (
+            Math.random() <
+            0.42
+        ) {
 
-        source.start(start);
-        source.stop(start + 0.04);
-    }
-}
-
-
-/* =========================================================
-   RING TONE
-========================================================= */
-
-function playRingTone(
-    doubleRing = false,
-    intensity = 1
-) {
-
-    if (!audioReady) {
-        return;
-    }
-
-    const now =
-        audioTime();
-
-    const frequencies =
-        doubleRing
-            ? [420, 590, 780]
-            : [500, 690];
-
-    frequencies.forEach(
-        (frequency, index) => {
-
-            const oscillator =
-                audioContext.createOscillator();
-
-            const gain =
-                audioContext.createGain();
-
-            oscillator.type =
-                "sine";
-
-            oscillator.frequency.value =
-                frequency;
-
-            const start =
-                now +
-                index * 0.015;
-
-            const duration =
-                doubleRing
-                    ? 0.65
-                    : 0.48;
-
-            gain.gain.setValueAtTime(
-                0.0001,
-                start
-            );
-
-            gain.gain.exponentialRampToValueAtTime(
-                0.028 * intensity,
-                start + 0.008
-            );
-
-            gain.gain.exponentialRampToValueAtTime(
-                0.0001,
-                start + duration
-            );
-
-            oscillator.connect(gain);
-            gain.connect(masterGain);
-
-            oscillator.start(start);
-            oscillator.stop(
-                start + duration + 0.02
+            createTone(
+                random(
+                    500,
+                    1100
+                ),
+                random(
+                    100,
+                    260
+                ),
+                random(
+                    0.045,
+                    0.11
+                ),
+                random(
+                    0.008,
+                    0.018
+                ) *
+                intensity,
+                "triangle",
+                delay
             );
         }
-    );
+    }
 }
 
 
 /* =========================================================
-   SPECIAL FIREWORK SOUND
+   STANDARD FIREWORK SOUND
 ========================================================= */
 
-function playFireworkSound(
+function playStandardFireworkSound(
     type,
     intensity = 1
 ) {
 
-    playBoom(
-        type,
-        intensity
-    );
-
-    if (
-        type === "ring" ||
-        type === "doubleRing"
-    ) {
-
-        playRingTone(
-            type === "doubleRing",
-            intensity
-        );
+    if (!audioReady) {
+        return;
     }
 
-    if (
-        type === "crackle" ||
-        type === "chrysanthemum"
-    ) {
+    if (type === "ring") {
 
-        playCrackle(
-            type === "crackle"
-                ? 18
-                : 8,
-            intensity
+        playBoom(
+            intensity,
+            "normal"
         );
+
+        playSnap(
+            intensity * 0.7,
+            0.035
+        );
+
+        createTone(
+            650,
+            1800,
+            0.38,
+            0.025 * intensity,
+            "sine",
+            0.035
+        );
+
+        createNoiseBurst(
+            0.38,
+            0.028 * intensity,
+            "bandpass",
+            3200,
+            0.04
+        );
+
+        return;
     }
+
+
+    if (type === "doubleRing") {
+
+        /*
+            Two audible explosions corresponding
+            to the two expanding rings.
+        */
+
+        playBoom(
+            intensity,
+            "normal",
+            0
+        );
+
+        playSnap(
+            intensity * 0.75,
+            0.035
+        );
+
+        createTone(
+            580,
+            1600,
+            0.32,
+            0.022 * intensity,
+            "sine",
+            0.04
+        );
+
+        playBoom(
+            intensity * 0.88,
+            "normal",
+            0.13
+        );
+
+        playSnap(
+            intensity * 0.75,
+            0.16
+        );
+
+        createTone(
+            720,
+            2200,
+            0.34,
+            0.020 * intensity,
+            "sine",
+            0.17
+        );
+
+        return;
+    }
+
 
     if (type === "willow") {
 
-        playCrackle(
+        playBoom(
+            intensity * 0.82,
+            "soft"
+        );
+
+        createNoiseBurst(
+            0.95,
+            0.055 * intensity,
+            "lowpass",
+            1500,
+            0.08
+        );
+
+        playCrackleSounds(
             7,
-            intensity * 0.65
+            intensity * 0.7,
+            0.95
         );
+
+        return;
     }
 
-    if (type === "golden") {
 
-        playCrackle(
-            10,
-            intensity * 0.75
+    if (type === "crackle") {
+
+        playBoom(
+            intensity,
+            "normal"
         );
+
+        playSnap(
+            intensity,
+            0.035
+        );
+
+        playCrackleSounds(
+            17,
+            intensity,
+            0.72
+        );
+
+        return;
     }
+
+
+    if (type === "chrysanthemum") {
+
+        playBoom(
+            intensity * 1.05,
+            "large"
+        );
+
+        playSnap(
+            intensity,
+            0.035
+        );
+
+        createNoiseBurst(
+            0.48,
+            0.055 * intensity,
+            "bandpass",
+            2300,
+            0.045
+        );
+
+        playCrackleSounds(
+            8,
+            intensity * 0.7,
+            0.60
+        );
+
+        return;
+    }
+
+
+    if (type === "peony") {
+
+        playBoom(
+            intensity,
+            "large"
+        );
+
+        playSnap(
+            intensity * 0.85,
+            0.035
+        );
+
+        return;
+    }
+
+
+    if (type === "fan") {
+
+        playBoom(
+            intensity * 0.75,
+            "normal"
+        );
+
+        playSnap(
+            intensity * 0.75,
+            0.05
+        );
+
+        playSnap(
+            intensity * 0.68,
+            0.17
+        );
+
+        playSnap(
+            intensity * 0.60,
+            0.29
+        );
+
+        return;
+    }
+
+
+    if (type === "heart") {
+
+        playBoom(
+            intensity * 0.82,
+            "soft"
+        );
+
+        createTone(
+            680,
+            440,
+            0.30,
+            0.025 * intensity,
+            "sine",
+            0.05
+        );
+
+        createTone(
+            880,
+            540,
+            0.30,
+            0.021 * intensity,
+            "sine",
+            0.16
+        );
+
+        return;
+    }
+
+
+    if (type === "spiral") {
+
+        playBoom(
+            intensity,
+            "normal"
+        );
+
+        createTone(
+            350,
+            1250,
+            0.55,
+            0.025 * intensity,
+            "triangle",
+            0.04
+        );
+
+        createTone(
+            1250,
+            380,
+            0.48,
+            0.018 * intensity,
+            "sine",
+            0.19
+        );
+
+        return;
+    }
+
+
+    if (type === "cross") {
+
+        playBoom(
+            intensity,
+            "normal"
+        );
+
+        playSnap(
+            intensity,
+            0.06
+        );
+
+        playSnap(
+            intensity * 0.85,
+            0.19
+        );
+
+        return;
+    }
+
 
     if (type === "rainbow") {
 
-        playRingTone(
-            false,
-            intensity * 0.9
+        playBoom(
+            intensity,
+            "large"
+        );
+
+        createTone(
+            520,
+            1050,
+            0.42,
+            0.024 * intensity,
+            "sine",
+            0.04
+        );
+
+        createTone(
+            660,
+            1320,
+            0.42,
+            0.020 * intensity,
+            "sine",
+            0.07
+        );
+
+        createTone(
+            780,
+            1560,
+            0.42,
+            0.017 * intensity,
+            "sine",
+            0.10
+        );
+
+        return;
+    }
+
+
+    if (type === "golden") {
+
+        playBoom(
+            intensity,
+            "large"
+        );
+
+        createNoiseBurst(
+            0.80,
+            0.048 * intensity,
+            "bandpass",
+            4200,
+            0.06
+        );
+
+        playCrackleSounds(
+            10,
+            intensity * 0.72,
+            0.90
+        );
+
+        return;
+    }
+
+
+    /*
+        Sphere and other standard fireworks.
+    */
+
+    playBoom(
+        intensity,
+        "normal"
+    );
+
+    playSnap(
+        intensity * 0.82,
+        0.035
+    );
+}
+
+
+/* =========================================================
+   TEXT FIREWORK SOUND
+========================================================= */
+
+function playTextFireworkSound(
+    intensity = 1.25
+) {
+
+    if (!audioReady) {
+        return;
+    }
+
+    /*
+        Large launch.
+    */
+
+    createTone(
+        180,
+        1050,
+        0.65,
+        0.065 * intensity,
+        "sine"
+    );
+
+    createTone(
+        360,
+        2100,
+        0.55,
+        0.018 * intensity,
+        "triangle",
+        0.02
+    );
+
+    createNoiseBurst(
+        0.50,
+        0.025 * intensity,
+        "bandpass",
+        1900
+    );
+
+    /*
+        Big explosion when the letters form.
+    */
+
+    playBoom(
+        intensity,
+        "large",
+        0.58
+    );
+
+    playSnap(
+        intensity,
+        0.61
+    );
+
+    /*
+        Sparkling formation sound.
+    */
+
+    for (
+        let i = 0;
+        i < 8;
+        i++
+    ) {
+
+        const delay =
+            0.70 +
+            i * 0.075;
+
+        createNoiseBurst(
+            0.035,
+            0.016 * intensity,
+            "highpass",
+            random(3500, 7000),
+            delay
         );
     }
-}
-
-
-/* =========================================================
-   SETTINGS
-========================================================= */
-
-const SHOW_DURATION =
-    5 * 60 * 1000;
-
-const FIREWORK_BUFFER =
-    400;
-
-const MIN_LAUNCH_INTERVAL =
-    550;
-
-const MAX_LAUNCH_INTERVAL =
-    800;
-
-const MAX_ROCKETS =
-    28;
-
-const MAX_PARTICLES =
-    3400;
-
-const MAX_TEXT_PARTICLES =
-    700;
-
-
-/* =========================================================
-   COLORS
-========================================================= */
-
-const palettes = [
-    ["#ff4d6d", "#ff758f", "#ffffff"],
-    ["#4dabf7", "#74c0fc", "#ffffff"],
-    ["#51cf66", "#8ce99a", "#ffffff"],
-    ["#ffd43b", "#ffe066", "#ffffff"],
-    ["#da77f2", "#e599f7", "#ffffff"],
-    ["#ff922b", "#ffa94d", "#ffffff"],
-    ["#22b8cf", "#66d9e8", "#ffffff"],
-    ["#f06595", "#faa2c1", "#ffffff"],
-    ["#845ef7", "#b197fc", "#ffffff"],
-    ["#fcc419", "#fff3bf", "#ffffff"],
-    ["#20c997", "#63e6be", "#ffffff"],
-    ["#ff6b6b", "#ff8787", "#ffffff"]
-];
-
-
-/* =========================================================
-   HELPERS
-========================================================= */
-
-function random(min, max) {
-    return Math.random() *
-        (max - min) +
-        min;
-}
-
-function randomInt(min, max) {
-    return Math.floor(
-        random(min, max + 1)
-    );
-}
-
-function pick(array) {
-    return array[
-        Math.floor(
-            Math.random() *
-            array.length
-        )
-    ];
-}
-
-function clamp(value, min, max) {
-    return Math.max(
-        min,
-        Math.min(max, value)
-    );
 }
 
 
@@ -753,29 +1270,85 @@ const textParticles = [];
 
 
 /* =========================================================
-   FIREWORK PRESETS
+   PALETTES
 ========================================================= */
 
-/*
-    Removed:
-    - Saturn
-    - Other oval-style effects
+const palettes = [
 
-    Kept:
-    - Sphere
-    - Ring
-    - Double Ring
-    - Willow
-    - Crackle
-    - Chrysanthemum
-    - Peony
-    - Fan
-    - Heart
-    - Spiral
-    - Cross
-    - Rainbow
-    - Golden
-*/
+    ["#ff4d6d", "#ff758f", "#ffffff"],
+    ["#4dabf7", "#74c0fc", "#ffffff"],
+    ["#51cf66", "#8ce99a", "#ffffff"],
+    ["#ffd43b", "#ffe066", "#ffffff"],
+    ["#da77f2", "#e599f7", "#ffffff"],
+    ["#ff922b", "#ffa94d", "#ffffff"],
+    ["#22b8cf", "#66d9e8", "#ffffff"],
+    ["#f06595", "#faa2c1", "#ffffff"],
+    ["#845ef7", "#b197fc", "#ffffff"],
+    ["#fcc419", "#fff3bf", "#ffffff"],
+    ["#20c997", "#63e6be", "#ffffff"],
+    ["#ff6b6b", "#ff8787", "#ffffff"]
+
+];
+
+
+/* =========================================================
+   HELPERS
+========================================================= */
+
+function random(
+    min,
+    max
+) {
+
+    return Math.random() *
+        (max - min) +
+        min;
+}
+
+function randomInt(
+    min,
+    max
+) {
+
+    return Math.floor(
+        random(
+            min,
+            max + 1
+        )
+    );
+}
+
+function pick(
+    array
+) {
+
+    return array[
+        Math.floor(
+            Math.random() *
+            array.length
+        )
+    ];
+}
+
+function clamp(
+    value,
+    min,
+    max
+) {
+
+    return Math.max(
+        min,
+        Math.min(
+            max,
+            value
+        )
+    );
+}
+
+
+/* =========================================================
+   FIREWORK SHOW ITEMS
+========================================================= */
 
 const showItems = [
 
@@ -906,11 +1479,12 @@ const showItems = [
     { type:"golden", palette:3, count:3 },
     { type:"golden", palette:9, count:3 },
     { type:"golden", palette:10, count:2 }
+
 ];
 
 
 /* =========================================================
-   ROCKET CREATION
+   CREATE ROCKET
 ========================================================= */
 
 function createRocket(
@@ -931,13 +1505,18 @@ function createRocket(
 
     const startY =
         height +
-        random(15, 80);
+        random(
+            15,
+            80
+        );
 
     const dx =
-        targetX - startX;
+        targetX -
+        startX;
 
     const dy =
-        targetY - startY;
+        targetY -
+        startY;
 
     const distance =
         Math.sqrt(
@@ -946,20 +1525,25 @@ function createRocket(
         );
 
     const speed =
-        random(8.5, 11.5) *
+        random(
+            8.5,
+            11.5
+        ) *
         power;
 
-    const rocket = {
+    rockets.push({
 
         x: startX,
         y: startY,
 
         vx:
-            (dx / distance) *
+            dx /
+            distance *
             speed,
 
         vy:
-            (dy / distance) *
+            dy /
+            distance *
             speed,
 
         targetX,
@@ -968,26 +1552,29 @@ function createRocket(
         palette,
         type,
 
-        age: -delay,
+        age:
+            -delay,
 
         trail: [],
 
         text,
         exploded: false
-    };
+    });
 
-    rockets.push(
-        rocket
-    );
+    if (delay === 0) {
 
-    playRocketSound(
-        Math.min(power, 1.5)
-    );
+        playRocketSound(
+            Math.min(
+                power,
+                1.5
+            )
+        );
+    }
 }
 
 
 /* =========================================================
-   EXPLOSION
+   CREATE EXPLOSION
 ========================================================= */
 
 function createExplosion(
@@ -1022,8 +1609,12 @@ function createExplosion(
     const count =
         Math.floor(
             baseCount *
-            random(0.82, 1.12)
+            random(
+                0.82,
+                1.12
+            )
         );
+
 
     for (
         let i = 0;
@@ -1034,17 +1625,23 @@ function createExplosion(
         let angle;
         let speed;
 
-        if (type === "ring") {
+        if (
+            type === "ring"
+        ) {
 
             angle =
-                (
-                    Math.PI * 2 * i /
-                    count
-                ) +
-                random(-0.025, 0.025);
+                Math.PI * 2 * i /
+                count +
+                random(
+                    -0.025,
+                    0.025
+                );
 
             speed =
-                random(3.2, 5.8);
+                random(
+                    3.2,
+                    5.8
+                );
 
         } else if (
             type === "doubleRing"
@@ -1056,17 +1653,24 @@ function createExplosion(
                     : 1;
 
             angle =
-                (
-                    Math.PI * 2 *
-                    Math.floor(i / 2) /
-                    Math.ceil(count / 2)
-                ) +
-                random(-0.025, 0.025);
+                Math.PI * 2 *
+                Math.floor(i / 2) /
+                Math.ceil(count / 2) +
+                random(
+                    -0.025,
+                    0.025
+                );
 
             speed =
                 ring === 0
-                    ? random(3.0, 4.4)
-                    : random(5.2, 6.8);
+                    ? random(
+                        3.0,
+                        4.4
+                    )
+                    : random(
+                        5.2,
+                        6.8
+                    );
 
         } else if (
             type === "fan"
@@ -1074,19 +1678,25 @@ function createExplosion(
 
             angle =
                 Math.PI *
-                random(1.08, 1.92);
+                random(
+                    1.08,
+                    1.92
+                );
 
             speed =
-                random(3.5, 7);
+                random(
+                    3.5,
+                    7
+                );
 
         } else if (
             type === "heart"
         ) {
 
             const t =
-                (
-                    Math.PI * 2 * i
-                ) / count;
+                Math.PI * 2 *
+                i /
+                count;
 
             const hx =
                 16 *
@@ -1098,19 +1708,25 @@ function createExplosion(
             const hy =
                 -(
                     13 *
-                    Math.cos(t)
-                    -
+                    Math.cos(t) -
                     5 *
-                    Math.cos(2 * t)
-                    -
+                    Math.cos(
+                        2 * t
+                    ) -
                     2 *
-                    Math.cos(3 * t)
-                    -
-                    Math.cos(4 * t)
+                    Math.cos(
+                        3 * t
+                    ) -
+                    Math.cos(
+                        4 * t
+                    )
                 );
 
             const scale =
-                random(0.20, 0.34);
+                random(
+                    0.20,
+                    0.34
+                );
 
             particles.push({
 
@@ -1118,42 +1734,62 @@ function createExplosion(
                 y,
 
                 vx:
-                    hx * scale,
+                    hx *
+                    scale,
 
                 vy:
-                    hy * scale,
+                    hy *
+                    scale,
 
-                gravity: 0.012,
-                drag: 0.985,
+                gravity:
+                    0.012,
+
+                drag:
+                    0.985,
 
                 life:
-                    random(100, 150),
+                    random(
+                        100,
+                        150
+                    ),
 
-                maxLife: 150,
+                maxLife:
+                    150,
 
                 size:
-                    random(1.1, 2.5),
+                    random(
+                        1.1,
+                        2.5
+                    ),
 
                 color:
                     pick(palette),
 
                 twinkle:
                     Math.random() *
-                    Math.PI * 2
+                    Math.PI *
+                    2
             });
 
             continue;
+
         } else if (
             type === "spiral"
         ) {
 
             angle =
-                i * 0.21 +
-                random(-0.03, 0.03);
+                i *
+                0.21 +
+                random(
+                    -0.03,
+                    0.03
+                );
 
             speed =
                 2.4 +
-                (i / count) * 4.2;
+                i /
+                count *
+                4.2;
 
         } else if (
             type === "cross"
@@ -1164,64 +1800,53 @@ function createExplosion(
 
             angle =
                 arm *
-                Math.PI / 2 +
-                random(-0.055, 0.055);
+                Math.PI /
+                2 +
+                random(
+                    -0.055,
+                    0.055
+                );
 
             speed =
-                random(3.0, 6.5);
+                random(
+                    3.0,
+                    6.5
+                );
 
         } else if (
             type === "rainbow"
         ) {
 
             angle =
-                (
-                    Math.PI * 2 * i /
-                    count
-                ) +
-                random(-0.025, 0.025);
+                Math.PI * 2 *
+                i /
+                count +
+                random(
+                    -0.025,
+                    0.025
+                );
 
             speed =
-                random(3.0, 6.2);
-
-        } else if (
-            type === "golden"
-        ) {
-
-            angle =
-                random(0, Math.PI * 2);
-
-            speed =
-                random(2.4, 6.4);
-
-        } else if (
-            type === "willow"
-        ) {
-
-            angle =
-                random(0, Math.PI * 2);
-
-            speed =
-                random(2.2, 5.4);
-
-        } else if (
-            type === "crackle"
-        ) {
-
-            angle =
-                random(0, Math.PI * 2);
-
-            speed =
-                random(2.7, 6.4);
+                random(
+                    3.0,
+                    6.2
+                );
 
         } else {
 
             angle =
-                random(0, Math.PI * 2);
+                random(
+                    0,
+                    Math.PI * 2
+                );
 
             speed =
-                random(2.8, 6.5);
+                random(
+                    2.8,
+                    6.5
+                );
         }
+
 
         const vx =
             Math.cos(angle) *
@@ -1231,6 +1856,7 @@ function createExplosion(
             Math.sin(angle) *
             speed;
 
+
         let gravity =
             0.025;
 
@@ -1238,9 +1864,15 @@ function createExplosion(
             0.982;
 
         let life =
-            random(72, 125);
+            random(
+                72,
+                125
+            );
 
-        if (type === "willow") {
+
+        if (
+            type === "willow"
+        ) {
 
             gravity =
                 random(
@@ -1261,7 +1893,10 @@ function createExplosion(
                 );
         }
 
-        if (type === "crackle") {
+
+        if (
+            type === "crackle"
+        ) {
 
             gravity =
                 0.032;
@@ -1276,7 +1911,10 @@ function createExplosion(
                 );
         }
 
-        if (type === "golden") {
+
+        if (
+            type === "golden"
+        ) {
 
             gravity =
                 random(
@@ -1294,6 +1932,7 @@ function createExplosion(
                 );
         }
 
+
         particles.push({
 
             x,
@@ -1306,21 +1945,26 @@ function createExplosion(
             drag,
 
             life,
-            maxLife: life,
+            maxLife:
+                life,
 
             size:
                 type === "crackle"
-                    ? random(1.0, 2.3)
-                    : random(1.2, 2.7),
+                    ? random(
+                        1.0,
+                        2.3
+                    )
+                    : random(
+                        1.2,
+                        2.7
+                    ),
 
             color:
                 type === "rainbow"
                     ? `hsl(${
                         Math.floor(
-                            (
-                                i /
-                                count
-                            ) *
+                            i /
+                            count *
                             360
                         )
                     },100%,70%)`
@@ -1328,18 +1972,24 @@ function createExplosion(
 
             twinkle:
                 Math.random() *
-                Math.PI * 2,
+                Math.PI *
+                2,
 
             crackle:
                 type === "crackle"
         });
     }
 
+
     /*
-        Bright central flash.
+        Central flash.
     */
 
-    for (let i = 0; i < 20; i++) {
+    for (
+        let i = 0;
+        i < 20;
+        i++
+    ) {
 
         const angle =
             random(
@@ -1366,26 +2016,39 @@ function createExplosion(
                 Math.sin(angle) *
                 speed,
 
-            gravity: 0.01,
-            drag: 0.94,
+            gravity:
+                0.01,
+
+            drag:
+                0.94,
 
             life:
-                random(15, 28),
+                random(
+                    15,
+                    28
+                ),
 
-            maxLife: 28,
+            maxLife:
+                28,
 
             size:
-                random(1.5, 3.5),
+                random(
+                    1.5,
+                    3.5
+                ),
 
-            color: "#ffffff",
+            color:
+                "#ffffff",
 
             twinkle:
                 Math.random() *
-                Math.PI * 2
+                Math.PI *
+                2
         });
     }
 
-    playFireworkSound(
+
+    playStandardFireworkSound(
         type,
         1
     );
@@ -1393,7 +2056,7 @@ function createExplosion(
 
 
 /* =========================================================
-   TEXT FIREWORK FONT
+   TEXT FONT
 ========================================================= */
 
 const FONT = {
@@ -1674,7 +2337,9 @@ const FONT = {
    TEXT TARGETS
 ========================================================= */
 
-function createLetterTargets(text) {
+function createLetterTargets(
+    text
+) {
 
     text =
         text
@@ -1720,8 +2385,10 @@ function createLetterTargets(text) {
         spacing;
 
     const startX =
-        (width - totalWidth) /
-        2;
+        (
+            width -
+            totalWidth
+        ) / 2;
 
     const startY =
         height * 0.38;
@@ -1730,7 +2397,8 @@ function createLetterTargets(text) {
 
     for (
         let letterIndex = 0;
-        letterIndex < text.length;
+        letterIndex <
+            text.length;
         letterIndex++
     ) {
 
@@ -1742,6 +2410,7 @@ function createLetterTargets(text) {
             ] ||
             FONT[" "];
 
+
         const offsetX =
             startX +
             letterIndex *
@@ -1749,6 +2418,7 @@ function createLetterTargets(text) {
                 letterWidth +
                 spacing
             );
+
 
         for (
             let row = 0;
@@ -1810,10 +2480,12 @@ function createTextRocket(
         height + 50;
 
     const dx =
-        targetX - startX;
+        targetX -
+        startX;
 
     const dy =
-        targetY - startY;
+        targetY -
+        startY;
 
     const distance =
         Math.sqrt(
@@ -1830,11 +2502,13 @@ function createTextRocket(
         y: startY,
 
         vx:
-            (dx / distance) *
+            dx /
+            distance *
             speed,
 
         vy:
-            (dy / distance) *
+            dy /
+            distance *
             speed,
 
         targetX,
@@ -1844,7 +2518,8 @@ function createTextRocket(
 
         type: "text",
 
-        age: -delay,
+        age:
+            -delay,
 
         trail: [],
 
@@ -1853,9 +2528,12 @@ function createTextRocket(
         exploded: false
     });
 
-    playRocketSound(
-        1.15
-    );
+    if (delay === 0) {
+
+        playRocketSound(
+            1.15
+        );
+    }
 }
 
 
@@ -1885,6 +2563,7 @@ function createTextExplosion(
 
     const centerY =
         rocket.y;
+
 
     for (
         let i = 0;
@@ -1922,10 +2601,16 @@ function createTextExplosion(
                 distance,
 
             vx:
-                random(-1.5, 1.5),
+                random(
+                    -1.5,
+                    1.5
+                ),
 
             vy:
-                random(-1.5, 1.5),
+                random(
+                    -1.5,
+                    1.5
+                ),
 
             targetX:
                 target.x,
@@ -1935,10 +2620,14 @@ function createTextExplosion(
 
             life: 0,
 
-            maxLife: 300,
+            maxLife:
+                300,
 
             size:
-                random(1.5, 3.0),
+                random(
+                    1.5,
+                    3
+                ),
 
             color:
                 pick(palette),
@@ -1951,7 +2640,12 @@ function createTextExplosion(
         });
     }
 
-    for (let i = 0; i < 80; i++) {
+
+    for (
+        let i = 0;
+        i < 80;
+        i++
+    ) {
 
         if (
             textParticles.length >=
@@ -1985,16 +2679,25 @@ function createTextExplosion(
                 Math.sin(angle) *
                 speed,
 
-            targetX: centerX,
-            targetY: centerY,
+            targetX:
+                centerX,
+
+            targetY:
+                centerY,
 
             life: 0,
 
             maxLife:
-                random(35, 70),
+                random(
+                    35,
+                    70
+                ),
 
             size:
-                random(1, 2),
+                random(
+                    1,
+                    2
+                ),
 
             color:
                 pick(palette),
@@ -2009,15 +2712,15 @@ function createTextExplosion(
         });
     }
 
-    playFireworkSound(
-        "text",
+
+    playTextFireworkSound(
         1.25
     );
 }
 
 
 /* =========================================================
-   TEXT PARTICLES UPDATE
+   UPDATE TEXT PARTICLES
 ========================================================= */
 
 function updateTextParticles() {
@@ -2033,6 +2736,7 @@ function updateTextParticles() {
             textParticles[i];
 
         p.life++;
+
 
         if (p.spark) {
 
@@ -2052,13 +2756,18 @@ function updateTextParticles() {
                 p.targetY -
                 p.y;
 
-            if (p.life < 38) {
+
+            if (
+                p.life < 38
+            ) {
 
                 p.vx +=
-                    dx * 0.035;
+                    dx *
+                    0.035;
 
                 p.vy +=
-                    dy * 0.035;
+                    dy *
+                    0.035;
 
                 p.vx *= 0.82;
                 p.vy *= 0.82;
@@ -2071,7 +2780,8 @@ function updateTextParticles() {
                 p.x =
                     p.targetX +
                     Math.sin(
-                        p.life * 0.09 +
+                        p.life *
+                        0.09 +
                         p.phase
                     ) *
                     0.45;
@@ -2079,12 +2789,14 @@ function updateTextParticles() {
                 p.y =
                     p.targetY +
                     Math.cos(
-                        p.life * 0.08 +
+                        p.life *
+                        0.08 +
                         p.phase
                     ) *
                     0.45;
             }
         }
+
 
         if (
             p.life >
@@ -2101,7 +2813,7 @@ function updateTextParticles() {
 
 
 /* =========================================================
-   NORMAL PARTICLES UPDATE
+   UPDATE PARTICLES
 ========================================================= */
 
 function updateParticles() {
@@ -2127,9 +2839,11 @@ function updateParticles() {
 
         p.life--;
 
+
         if (
             p.crackle &&
-            Math.random() < 0.025
+            Math.random() <
+                0.025
         ) {
 
             for (
@@ -2163,25 +2877,38 @@ function updateParticles() {
                         Math.sin(angle) *
                         speed,
 
-                    gravity: 0.035,
-                    drag: 0.96,
+                    gravity:
+                        0.035,
+
+                    drag:
+                        0.96,
 
                     life:
-                        random(20, 40),
+                        random(
+                            20,
+                            40
+                        ),
 
-                    maxLife: 40,
+                    maxLife:
+                        40,
 
                     size:
-                        random(0.8, 1.8),
+                        random(
+                            0.8,
+                            1.8
+                        ),
 
-                    color: "#ffffff",
+                    color:
+                        "#ffffff",
 
                     twinkle:
                         Math.random() *
-                        Math.PI * 2
+                        Math.PI *
+                        2
                 });
             }
         }
+
 
         if (
             p.life <= 0
@@ -2197,7 +2924,7 @@ function updateParticles() {
 
 
 /* =========================================================
-   ROCKET UPDATE
+   UPDATE ROCKETS
 ========================================================= */
 
 function updateRockets() {
@@ -2214,25 +2941,36 @@ function updateRockets() {
 
         r.age++;
 
-        if (r.age < 0) {
+        if (
+            r.age < 0
+        ) {
             continue;
         }
 
+
         r.trail.push({
+
             x: r.x,
             y: r.y
+
         });
 
+
         if (
-            r.trail.length > 9
+            r.trail.length >
+            9
         ) {
+
             r.trail.shift();
         }
+
 
         r.x += r.vx;
         r.y += r.vy;
 
-        r.vy += 0.018;
+        r.vy +=
+            0.018;
+
 
         const dx =
             r.targetX -
@@ -2248,14 +2986,19 @@ function updateRockets() {
                 dy * dy
             );
 
+
         if (
             distance < 18 ||
             r.y <= r.targetY
         ) {
 
-            if (!r.exploded) {
+            if (
+                !r.exploded
+            ) {
 
-                r.exploded = true;
+                r.exploded =
+                    true;
+
 
                 if (
                     r.type === "text"
@@ -2273,6 +3016,7 @@ function updateRockets() {
                 }
             }
 
+
             rockets.splice(
                 i,
                 1
@@ -2288,11 +3032,16 @@ function updateRockets() {
 
 function drawRockets() {
 
-    for (const r of rockets) {
+    for (
+        const r of rockets
+    ) {
 
-        if (r.age < 0) {
+        if (
+            r.age < 0
+        ) {
             continue;
         }
+
 
         for (
             let i = 0;
@@ -2308,7 +3057,8 @@ function drawRockets() {
                 r.trail.length;
 
             ctx.globalAlpha =
-                alpha * 0.55;
+                alpha *
+                0.55;
 
             ctx.fillStyle =
                 "#ffffff";
@@ -2326,7 +3076,9 @@ function drawRockets() {
             ctx.fill();
         }
 
-        ctx.globalAlpha = 1;
+
+        ctx.globalAlpha =
+            1;
 
         ctx.fillStyle =
             "#ffffff";
@@ -2352,7 +3104,9 @@ function drawRockets() {
 
 function drawParticles() {
 
-    for (const p of particles) {
+    for (
+        const p of particles
+    ) {
 
         const alpha =
             clamp(
@@ -2365,7 +3119,8 @@ function drawParticles() {
         const twinkle =
             0.72 +
             Math.sin(
-                p.life * 0.35 +
+                p.life *
+                0.35 +
                 p.twinkle
             ) *
             0.28;
@@ -2390,12 +3145,13 @@ function drawParticles() {
         ctx.fill();
     }
 
-    ctx.globalAlpha = 1;
+    ctx.globalAlpha =
+        1;
 }
 
 
 /* =========================================================
-   DRAW TEXT
+   DRAW TEXT PARTICLES
 ========================================================= */
 
 function drawTextParticles() {
@@ -2415,7 +3171,8 @@ function drawTextParticles() {
                 )
                 : 0.82 +
                   Math.sin(
-                      p.life * 0.12 +
+                      p.life *
+                      0.12 +
                       p.phase
                   ) *
                   0.18;
@@ -2438,17 +3195,20 @@ function drawTextParticles() {
 
         ctx.fill();
 
+
         if (!p.spark) {
 
             ctx.globalAlpha =
-                alpha * 0.25;
+                alpha *
+                0.25;
 
             ctx.beginPath();
 
             ctx.arc(
                 p.x,
                 p.y,
-                p.size * 3.5,
+                p.size *
+                3.5,
                 0,
                 Math.PI * 2
             );
@@ -2457,24 +3217,61 @@ function drawTextParticles() {
         }
     }
 
-    ctx.globalAlpha = 1;
+    ctx.globalAlpha =
+        1;
 }
+
+
+/* =========================================================
+   SHOW SETTINGS
+========================================================= */
+
+const SHOW_DURATION =
+    5 * 60 * 1000;
+
+const FIREWORK_BUFFER =
+    400;
+
+const MIN_LAUNCH_INTERVAL =
+    550;
+
+const MAX_LAUNCH_INTERVAL =
+    800;
+
+const MAX_ROCKETS =
+    28;
+
+const MAX_PARTICLES =
+    3400;
+
+const MAX_TEXT_PARTICLES =
+    700;
 
 
 /* =========================================================
    SHOW STATE
 ========================================================= */
 
-let showRunning = false;
-let finaleRunning = false;
-let showFinished = false;
+let showRunning =
+    false;
 
-let showStartTime = 0;
+let finaleRunning =
+    false;
 
-let nextLaunchTime = 0;
-let nextSpecialTime = 0;
+let showFinished =
+    false;
 
-let showItemIndex = 0;
+let showStartTime =
+    0;
+
+let nextLaunchTime =
+    0;
+
+let nextSpecialTime =
+    0;
+
+let showItemIndex =
+    0;
 
 let birthdayName =
     "ZAYDEN";
@@ -2492,10 +3289,12 @@ function launchShowItem(
         rockets.length >=
             MAX_ROCKETS ||
         particles.length >=
-            MAX_PARTICLES * 0.88
+            MAX_PARTICLES *
+            0.88
     ) {
         return;
     }
+
 
     const item =
         showItems[
@@ -2505,11 +3304,13 @@ function launchShowItem(
 
     showItemIndex++;
 
+
     const palette =
         palettes[
             item.palette %
             palettes.length
         ];
+
 
     const power =
         random(
@@ -2517,6 +3318,7 @@ function launchShowItem(
             1.12
         ) *
         intensity;
+
 
     for (
         let i = 0;
@@ -2536,11 +3338,16 @@ function launchShowItem(
                 height * 0.53
             );
 
+
         createRocket(
+
             targetX,
             targetY,
+
             palette,
+
             item.type,
+
             power
         );
     }
@@ -2548,7 +3355,7 @@ function launchShowItem(
 
 
 /* =========================================================
-   SPECIAL SEQUENCES
+   SPECIAL SEQUENCE
 ========================================================= */
 
 function specialSequence(
@@ -2556,7 +3363,11 @@ function specialSequence(
 ) {
 
     const sequence =
-        randomInt(0, 5);
+        randomInt(
+            0,
+            5
+        );
+
 
     if (
         sequence === 0
@@ -2571,7 +3382,9 @@ function specialSequence(
             setTimeout(
                 () => {
 
-                    if (!showRunning) {
+                    if (
+                        !showRunning
+                    ) {
                         return;
                     }
 
@@ -2588,6 +3401,7 @@ function specialSequence(
             );
         }
 
+
     } else if (
         sequence === 1
     ) {
@@ -2601,7 +3415,9 @@ function specialSequence(
             setTimeout(
                 () => {
 
-                    if (!showRunning) {
+                    if (
+                        !showRunning
+                    ) {
                         return;
                     }
 
@@ -2612,6 +3428,7 @@ function specialSequence(
                                 palettes.length - 1
                             )
                         ];
+
 
                     createRocket(
 
@@ -2643,6 +3460,7 @@ function specialSequence(
             );
         }
 
+
     } else if (
         sequence === 2
     ) {
@@ -2656,7 +3474,9 @@ function specialSequence(
             setTimeout(
                 () => {
 
-                    if (!showRunning) {
+                    if (
+                        !showRunning
+                    ) {
                         return;
                     }
 
@@ -2668,12 +3488,14 @@ function specialSequence(
                             )
                         ];
 
+
                     createRocket(
 
                         width *
                         (
                             0.20 +
-                            i * 0.15
+                            i *
+                            0.15
                         ),
 
                         height *
@@ -2698,6 +3520,7 @@ function specialSequence(
             );
         }
 
+
     } else if (
         sequence === 3
     ) {
@@ -2711,7 +3534,9 @@ function specialSequence(
             setTimeout(
                 () => {
 
-                    if (!showRunning) {
+                    if (
+                        !showRunning
+                    ) {
                         return;
                     }
 
@@ -2724,6 +3549,7 @@ function specialSequence(
                 i * 230
             );
         }
+
 
     } else if (
         sequence === 4
@@ -2738,7 +3564,9 @@ function specialSequence(
             setTimeout(
                 () => {
 
-                    if (!showRunning) {
+                    if (
+                        !showRunning
+                    ) {
                         return;
                     }
 
@@ -2749,6 +3577,7 @@ function specialSequence(
                                 palettes.length - 1
                             )
                         ];
+
 
                     createRocket(
 
@@ -2780,6 +3609,7 @@ function specialSequence(
             );
         }
 
+
     } else {
 
         for (
@@ -2791,7 +3621,9 @@ function specialSequence(
             setTimeout(
                 () => {
 
-                    if (!showRunning) {
+                    if (
+                        !showRunning
+                    ) {
                         return;
                     }
 
@@ -2812,7 +3644,7 @@ function specialSequence(
 
 
 /* =========================================================
-   MAIN SHOW
+   MAIN SHOW SCHEDULER
 ========================================================= */
 
 function scheduleMainShow(
@@ -2826,9 +3658,11 @@ function scheduleMainShow(
         return;
     }
 
+
     const elapsed =
         now -
         showStartTime;
+
 
     const progress =
         clamp(
@@ -2837,6 +3671,7 @@ function scheduleMainShow(
             0,
             1
         );
+
 
     if (
         elapsed >=
@@ -2848,23 +3683,42 @@ function scheduleMainShow(
         return;
     }
 
-    let intensity = 1;
 
-    if (progress > 0.55) {
-        intensity += 0.18;
+    let intensity =
+        1;
+
+
+    if (
+        progress > 0.55
+    ) {
+        intensity +=
+            0.18;
     }
 
-    if (progress > 0.70) {
-        intensity += 0.25;
+
+    if (
+        progress > 0.70
+    ) {
+        intensity +=
+            0.25;
     }
 
-    if (progress > 0.80) {
-        intensity += 0.65;
+
+    if (
+        progress > 0.80
+    ) {
+        intensity +=
+            0.65;
     }
 
-    if (progress > 0.93) {
-        intensity += 0.8;
+
+    if (
+        progress > 0.93
+    ) {
+        intensity +=
+            0.8;
     }
+
 
     if (
         now +
@@ -2884,6 +3738,7 @@ function scheduleMainShow(
             );
     }
 
+
     if (
         now +
         FIREWORK_BUFFER >=
@@ -2902,13 +3757,16 @@ function scheduleMainShow(
             );
     }
 
+
     if (
         progress > 0.92 &&
-        Math.random() < 0.018
+        Math.random() <
+            0.018
     ) {
 
         specialSequence(
-            intensity * 1.35
+            intensity *
+            1.35
         );
     }
 }
@@ -2927,19 +3785,28 @@ function beginFinale() {
         return;
     }
 
-    showRunning = false;
-    finaleRunning = true;
+
+    showRunning =
+        false;
+
+    finaleRunning =
+        true;
+
 
     rockets.length = 0;
     particles.length = 0;
     textParticles.length = 0;
 
+
     const palette = [
+
         "#ffffff",
         "#ffe066",
         "#74c0fc",
         "#ff6b6b"
+
     ];
+
 
     const happyTargets =
         createLetterTargets(
@@ -2957,16 +3824,23 @@ function beginFinale() {
         );
 
 
-    /* HAPPY */
+    /*
+        HAPPY
+    */
 
     setTimeout(
         () => {
 
             createTextRocket(
+
                 width * 0.50,
+
                 height * 0.34,
+
                 palette,
+
                 happyTargets
+
             );
 
         },
@@ -2974,16 +3848,23 @@ function beginFinale() {
     );
 
 
-    /* BIRTHDAY */
+    /*
+        BIRTHDAY
+    */
 
     setTimeout(
         () => {
 
             createTextRocket(
+
                 width * 0.50,
+
                 height * 0.34,
+
                 palette,
+
                 birthdayTargets
+
             );
 
         },
@@ -2991,16 +3872,23 @@ function beginFinale() {
     );
 
 
-    /* NAME */
+    /*
+        NAME
+    */
 
     setTimeout(
         () => {
 
             createTextRocket(
+
                 width * 0.50,
+
                 height * 0.34,
+
                 palette,
+
                 nameTargets
+
             );
 
         },
@@ -3008,16 +3896,23 @@ function beginFinale() {
     );
 
 
-    /* FINAL NAME */
+    /*
+        FINAL NAME
+    */
 
     setTimeout(
         () => {
 
             createTextRocket(
+
                 width * 0.50,
+
                 height * 0.34,
+
                 palette,
+
                 nameTargets
+
             );
 
         },
@@ -3025,16 +3920,22 @@ function beginFinale() {
     );
 
 
-    /* END */
+    /*
+        Finish.
+    */
 
     setTimeout(
         () => {
 
-            finaleRunning = false;
+            finaleRunning =
+                false;
 
             setTimeout(
                 () => {
-                    showFinished = true;
+
+                    showFinished =
+                        true;
+
                 },
                 1600
             );
@@ -3067,7 +3968,7 @@ function drawBackground() {
 
 
 /* =========================================================
-   RENDER
+   DRAW
 ========================================================= */
 
 function draw() {
@@ -3078,13 +3979,16 @@ function draw() {
         "lighter";
 
     drawRockets();
+
     drawParticles();
+
     drawTextParticles();
 
     ctx.globalCompositeOperation =
         "source-over";
 
-    ctx.globalAlpha = 1;
+    ctx.globalAlpha =
+        1;
 }
 
 
@@ -3092,24 +3996,34 @@ function draw() {
    MAIN LOOP
 ========================================================= */
 
-function loop(now) {
+function loop(
+    now
+) {
 
-    if (showRunning) {
+    if (
+        showRunning
+    ) {
+
         scheduleMainShow(
             now
         );
     }
 
+
     updateRockets();
+
     updateParticles();
+
     updateTextParticles();
 
     draw();
+
 
     requestAnimationFrame(
         loop
     );
 }
+
 
 requestAnimationFrame(
     loop
@@ -3145,13 +4059,14 @@ function startShow() {
         return;
     }
 
+
     /*
-        Starting audio here is important:
-        mobile browsers require a user gesture
-        before Web Audio can play.
+        Must happen from the button tap/click
+        for mobile audio permissions.
     */
 
     initAudio();
+
 
     let enteredName =
         nameInput.value
@@ -3170,33 +4085,53 @@ function startShow() {
                 20
             );
 
-    if (!enteredName) {
+
+    if (
+        !enteredName
+    ) {
+
         enteredName =
             "ZAYDEN";
     }
 
+
     birthdayName =
         enteredName;
+
 
     startScreen.classList.add(
         "hidden"
     );
 
+
     rockets.length = 0;
+
     particles.length = 0;
+
     textParticles.length = 0;
 
-    showItemIndex = 0;
 
-    showRunning = true;
-    finaleRunning = false;
-    showFinished = false;
+    showItemIndex =
+        0;
+
+
+    showRunning =
+        true;
+
+    finaleRunning =
+        false;
+
+    showFinished =
+        false;
+
 
     showStartTime =
         performance.now();
 
+
     const now =
         showStartTime;
+
 
     nextLaunchTime =
         now + 100;
@@ -3221,8 +4156,10 @@ nameInput.addEventListener(
     event => {
 
         if (
-            event.key === "Enter"
+            event.key ===
+            "Enter"
         ) {
+
             startButton.click();
         }
     }
@@ -3236,24 +4173,32 @@ nameInput.addEventListener(
 document.addEventListener(
     "touchmove",
     event => {
+
         event.preventDefault();
+
     },
     {
         passive: false
     }
 );
 
+
 document.addEventListener(
     "gesturestart",
     event => {
+
         event.preventDefault();
+
     }
 );
+
 
 document.addEventListener(
     "dblclick",
     event => {
+
         event.preventDefault();
+
     }
 );
 
