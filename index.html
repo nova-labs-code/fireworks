@@ -151,11 +151,6 @@ canvas {
 <script>
 "use strict";
 
-
-/* =========================================================
-   CANVAS
-========================================================= */
-
 const canvas =
     document.getElementById("canvas");
 
@@ -181,10 +176,14 @@ function resize() {
         window.innerHeight;
 
     canvas.width =
-        Math.floor(width * dpr);
+        Math.floor(
+            width * dpr
+        );
 
     canvas.height =
-        Math.floor(height * dpr);
+        Math.floor(
+            height * dpr
+        );
 
     canvas.style.width =
         width + "px";
@@ -209,12 +208,8 @@ window.addEventListener(
 
 resize();
 
-
 /* =========================================================
    AUDIO
-   IMPORTANT:
-   Rockets make NO sound.
-   Only explosions make sound.
 ========================================================= */
 
 let audioContext = null;
@@ -223,14 +218,14 @@ let compressor = null;
 let noiseBuffer = null;
 let audioReady = false;
 
-
 function initAudio() {
 
     if (audioReady) {
 
         if (
             audioContext &&
-            audioContext.state === "suspended"
+            audioContext.state ===
+                "suspended"
         ) {
 
             audioContext.resume();
@@ -239,46 +234,30 @@ function initAudio() {
         return;
     }
 
-
     const AudioContext =
         window.AudioContext ||
         window.webkitAudioContext;
-
 
     if (!AudioContext) {
         return;
     }
 
-
     audioContext =
         new AudioContext();
-
 
     compressor =
         audioContext.createDynamicsCompressor();
 
-    compressor.threshold.value =
-        -18;
-
-    compressor.knee.value =
-        18;
-
-    compressor.ratio.value =
-        7;
-
-    compressor.attack.value =
-        0.003;
-
-    compressor.release.value =
-        0.18;
-
+    compressor.threshold.value = -18;
+    compressor.knee.value = 18;
+    compressor.ratio.value = 7;
+    compressor.attack.value = 0.003;
+    compressor.release.value = 0.18;
 
     masterGain =
         audioContext.createGain();
 
-    masterGain.gain.value =
-        0.30;
-
+    masterGain.gain.value = 0.30;
 
     masterGain.connect(
         compressor
@@ -288,21 +267,18 @@ function initAudio() {
         audioContext.destination
     );
 
-
     createNoiseBuffer();
-
 
     audioReady = true;
 
-
     if (
-        audioContext.state === "suspended"
+        audioContext.state ===
+        "suspended"
     ) {
 
         audioContext.resume();
     }
 }
-
 
 function createNoiseBuffer() {
 
@@ -314,7 +290,6 @@ function createNoiseBuffer() {
             sampleRate * 2
         );
 
-
     noiseBuffer =
         audioContext.createBuffer(
             1,
@@ -322,10 +297,8 @@ function createNoiseBuffer() {
             sampleRate
         );
 
-
     const data =
         noiseBuffer.getChannelData(0);
-
 
     for (
         let i = 0;
@@ -341,7 +314,6 @@ function createNoiseBuffer() {
     }
 }
 
-
 function getAudioTime() {
 
     if (!audioContext) {
@@ -353,7 +325,6 @@ function getAudioTime() {
         0.015
     );
 }
-
 
 function createTone(
     startFrequency,
@@ -368,11 +339,9 @@ function createTone(
         return;
     }
 
-
     const now =
         getAudioTime() +
         delay;
-
 
     const oscillator =
         audioContext.createOscillator();
@@ -380,10 +349,8 @@ function createTone(
     const gain =
         audioContext.createGain();
 
-
     oscillator.type =
         waveform;
-
 
     oscillator.frequency.setValueAtTime(
         Math.max(
@@ -393,7 +360,6 @@ function createTone(
         now
     );
 
-
     oscillator.frequency.exponentialRampToValueAtTime(
         Math.max(
             20,
@@ -402,12 +368,10 @@ function createTone(
         now + duration
     );
 
-
     gain.gain.setValueAtTime(
         0.0001,
         now
     );
-
 
     gain.gain.exponentialRampToValueAtTime(
         Math.max(
@@ -417,16 +381,13 @@ function createTone(
         now + 0.006
     );
 
-
     gain.gain.exponentialRampToValueAtTime(
         0.0001,
         now + duration
     );
 
-
     oscillator.connect(gain);
     gain.connect(masterGain);
-
 
     oscillator.start(now);
 
@@ -436,7 +397,6 @@ function createTone(
         0.03
     );
 }
-
 
 function createNoiseBurst(
     duration,
@@ -455,11 +415,9 @@ function createNoiseBurst(
         return;
     }
 
-
     const now =
         getAudioTime() +
         delay;
-
 
     const source =
         audioContext.createBufferSource();
@@ -470,10 +428,8 @@ function createNoiseBurst(
     const gain =
         audioContext.createGain();
 
-
     source.buffer =
         noiseBuffer;
-
 
     filter.type =
         filterType;
@@ -484,12 +440,10 @@ function createNoiseBurst(
     filter.Q.value =
         resonance;
 
-
     gain.gain.setValueAtTime(
         0.0001,
         now
     );
-
 
     gain.gain.exponentialRampToValueAtTime(
         Math.max(
@@ -499,17 +453,14 @@ function createNoiseBurst(
         now + 0.004
     );
 
-
     gain.gain.exponentialRampToValueAtTime(
         0.0001,
         now + duration
     );
 
-
     source.connect(filter);
     filter.connect(gain);
     gain.connect(masterGain);
-
 
     source.start(now);
 
@@ -519,12 +470,6 @@ function createNoiseBurst(
         0.03
     );
 }
-
-
-/* =========================================================
-   EXPLOSION SOUND
-   THERE IS NO ROCKET SOUND FUNCTION/CALL.
-========================================================= */
 
 function playBoom(
     intensity = 1,
@@ -536,10 +481,8 @@ function playBoom(
         return;
     }
 
-
     let duration = 0.32;
     let volume = 0.24;
-
 
     if (
         size === "large"
@@ -549,7 +492,6 @@ function playBoom(
         volume = 0.30;
     }
 
-
     if (
         size === "soft"
     ) {
@@ -557,7 +499,6 @@ function playBoom(
         duration = 0.52;
         volume = 0.16;
     }
-
 
     createTone(
         random(70, 95),
@@ -568,18 +509,16 @@ function playBoom(
         delay
     );
 
-
     createTone(
         random(115, 155),
         random(45, 65),
         duration * 0.72,
         volume *
-        0.55 *
-        intensity,
+            0.55 *
+            intensity,
         "sine",
         delay
     );
-
 
     createNoiseBurst(
         duration * 0.95,
@@ -590,7 +529,6 @@ function playBoom(
         0.5
     );
 
-
     createNoiseBurst(
         0.075,
         0.10 * intensity,
@@ -599,7 +537,6 @@ function playBoom(
         delay
     );
 }
-
 
 function playSnap(
     intensity = 1,
@@ -610,7 +547,6 @@ function playSnap(
         return;
     }
 
-
     createNoiseBurst(
         0.055,
         0.10 * intensity,
@@ -619,7 +555,6 @@ function playSnap(
         delay
     );
 }
-
 
 function playCrackleSounds(
     amount = 12,
@@ -631,13 +566,11 @@ function playCrackleSounds(
         return;
     }
 
-
     amount =
         Math.min(
             amount,
             18
         );
-
 
     for (
         let i = 0;
@@ -651,7 +584,6 @@ function playCrackleSounds(
                 spread
             );
 
-
         createNoiseBurst(
             random(
                 0.018,
@@ -660,8 +592,7 @@ function playCrackleSounds(
             random(
                 0.018,
                 0.045
-            ) *
-            intensity,
+            ) * intensity,
             "highpass",
             random(
                 2500,
@@ -672,7 +603,6 @@ function playCrackleSounds(
     }
 }
 
-
 function playStandardFireworkSound(
     type,
     intensity = 1
@@ -682,9 +612,9 @@ function playStandardFireworkSound(
         return;
     }
 
-
     if (
-        type === "doubleRing"
+        type ===
+        "doubleRing"
     ) {
 
         playBoom(
@@ -711,9 +641,9 @@ function playStandardFireworkSound(
         return;
     }
 
-
     if (
-        type === "willow"
+        type ===
+        "willow"
     ) {
 
         playBoom(
@@ -730,9 +660,9 @@ function playStandardFireworkSound(
         return;
     }
 
-
     if (
-        type === "crackle"
+        type ===
+        "crackle"
     ) {
 
         playBoom(
@@ -754,9 +684,9 @@ function playStandardFireworkSound(
         return;
     }
 
-
     if (
-        type === "chrysanthemum"
+        type ===
+        "chrysanthemum"
     ) {
 
         playBoom(
@@ -778,9 +708,9 @@ function playStandardFireworkSound(
         return;
     }
 
-
     if (
-        type === "golden"
+        type ===
+        "golden"
     ) {
 
         playBoom(
@@ -797,9 +727,9 @@ function playStandardFireworkSound(
         return;
     }
 
-
     if (
-        type === "fan"
+        type ===
+        "fan"
     ) {
 
         playBoom(
@@ -825,9 +755,9 @@ function playStandardFireworkSound(
         return;
     }
 
-
     if (
-        type === "heart"
+        type ===
+        "heart"
     ) {
 
         playBoom(
@@ -838,9 +768,9 @@ function playStandardFireworkSound(
         return;
     }
 
-
     if (
-        type === "rainbow"
+        type ===
+        "rainbow"
     ) {
 
         playBoom(
@@ -850,7 +780,6 @@ function playStandardFireworkSound(
 
         return;
     }
-
 
     playBoom(
         intensity,
@@ -863,6 +792,12 @@ function playStandardFireworkSound(
     );
 }
 
+/*
+    IMPORTANT:
+    There is deliberately NO launch/rocket sound.
+
+    The text firework also only makes explosion sounds.
+*/
 
 function playTextFireworkSound(
     intensity = 1.25
@@ -872,18 +807,15 @@ function playTextFireworkSound(
         return;
     }
 
-
     playBoom(
         intensity,
         "large"
     );
 
-
     playSnap(
         intensity,
         0.035
     );
-
 
     for (
         let i = 0;
@@ -900,45 +832,13 @@ function playTextFireworkSound(
                 7000
             ),
             0.08 +
-            i * 0.055
+                i * 0.055
         );
     }
 }
 
-
 /* =========================================================
-   ARRAYS
-========================================================= */
-
-const rockets = [];
-const particles = [];
-const textParticles = [];
-
-
-/* =========================================================
-   PALETTES
-========================================================= */
-
-const palettes = [
-
-    ["#ff4d6d", "#ff758f", "#ffffff"],
-    ["#4dabf7", "#74c0fc", "#ffffff"],
-    ["#51cf66", "#8ce99a", "#ffffff"],
-    ["#ffd43b", "#ffe066", "#ffffff"],
-    ["#da77f2", "#e599f7", "#ffffff"],
-    ["#ff922b", "#ffa94d", "#ffffff"],
-    ["#22b8cf", "#66d9e8", "#ffffff"],
-    ["#f06595", "#faa2c1", "#ffffff"],
-    ["#845ef7", "#b197fc", "#ffffff"],
-    ["#fcc419", "#fff3bf", "#ffffff"],
-    ["#20c997", "#63e6be", "#ffffff"],
-    ["#ff6b6b", "#ff8787", "#ffffff"]
-
-];
-
-
-/* =========================================================
-   HELPERS
+   UTILITIES
 ========================================================= */
 
 function random(
@@ -946,11 +846,12 @@ function random(
     max
 ) {
 
-    return Math.random() *
+    return (
+        Math.random() *
         (max - min) +
-        min;
+        min
+    );
 }
-
 
 function randomInt(
     min,
@@ -965,7 +866,6 @@ function randomInt(
     );
 }
 
-
 function pick(
     array
 ) {
@@ -977,7 +877,6 @@ function pick(
         )
     ];
 }
-
 
 function clamp(
     value,
@@ -994,10 +893,46 @@ function clamp(
     );
 }
 
-
 /* =========================================================
-   FIREWORK VARIETY
+   FIREWORK DATA
 ========================================================= */
+
+const rockets = [];
+const particles = [];
+const textParticles = [];
+
+const palettes = [
+
+    ["#ff4d6d", "#ff758f", "#ffffff"],
+
+    ["#4dabf7", "#74c0fc", "#ffffff"],
+
+    ["#51cf66", "#8ce99a", "#ffffff"],
+
+    ["#ffd43b", "#ffe066", "#ffffff"],
+
+    ["#da77f2", "#e599f7", "#ffffff"],
+
+    ["#ff922b", "#ffa94d", "#ffffff"],
+
+    ["#22b8cf", "#66d9e8", "#ffffff"],
+
+    ["#f06595", "#faa2c1", "#ffffff"],
+
+    ["#845ef7", "#b197fc", "#ffffff"],
+
+    ["#fcc419", "#fff3bf", "#ffffff"],
+
+    ["#20c997", "#63e6be", "#ffffff"],
+
+    ["#ff6b6b", "#ff8787", "#ffffff"]
+];
+
+/*
+    More than 100 show presets.
+    Saturn remains removed.
+    doubleRing remains.
+*/
 
 const showItems = [
 
@@ -1128,12 +1063,10 @@ const showItems = [
     { type:"golden", palette:3, count:3 },
     { type:"golden", palette:9, count:3 },
     { type:"golden", palette:10, count:2 }
-
 ];
 
-
 /* =========================================================
-   ROCKET
+   NORMAL FIREWORKS
 ========================================================= */
 
 function createRocket(
@@ -1151,7 +1084,6 @@ function createRocket(
             width * 0.92
         );
 
-
     const startY =
         height +
         random(
@@ -1159,16 +1091,13 @@ function createRocket(
             80
         );
 
-
     const dx =
         targetX -
         startX;
 
-
     const dy =
         targetY -
         startY;
-
 
     const distance =
         Math.sqrt(
@@ -1176,14 +1105,12 @@ function createRocket(
             dy * dy
         );
 
-
     const speed =
         random(
             8.5,
             11.5
         ) *
         power;
-
 
     rockets.push({
 
@@ -1206,20 +1133,13 @@ function createRocket(
         palette,
         type,
 
-        age:
-            -delay,
+        age: -delay,
 
         trail: [],
 
         exploded: false
-
     });
 }
-
-
-/* =========================================================
-   NORMAL EXPLOSION
-========================================================= */
 
 function createExplosion(
     rocket
@@ -1232,25 +1152,35 @@ function createExplosion(
         type
     } = rocket;
 
-
     const baseCount = {
 
         sphere: 110,
+
         ring: 120,
+
         doubleRing: 105,
+
         willow: 130,
+
         crackle: 125,
+
         chrysanthemum: 145,
+
         peony: 125,
+
         fan: 100,
+
         heart: 105,
+
         spiral: 120,
+
         cross: 115,
+
         rainbow: 150,
+
         golden: 135
 
     }[type] || 110;
-
 
     const count =
         Math.floor(
@@ -1261,7 +1191,6 @@ function createExplosion(
             )
         );
 
-
     for (
         let i = 0;
         i < count;
@@ -1270,7 +1199,6 @@ function createExplosion(
 
         let angle;
         let speed;
-
 
         if (
             type === "ring"
@@ -1291,9 +1219,9 @@ function createExplosion(
                     5.8
                 );
 
-
         } else if (
-            type === "doubleRing"
+            type ===
+            "doubleRing"
         ) {
 
             const ring =
@@ -1301,16 +1229,16 @@ function createExplosion(
                     ? 0
                     : 1;
 
-
             angle =
                 Math.PI * 2 *
                 Math.floor(i / 2) /
-                Math.ceil(count / 2) +
+                Math.ceil(
+                    count / 2
+                ) +
                 random(
                     -0.025,
                     0.025
                 );
-
 
             speed =
                 ring === 0
@@ -1322,7 +1250,6 @@ function createExplosion(
                         5.2,
                         6.8
                     );
-
 
         } else if (
             type === "fan"
@@ -1341,7 +1268,6 @@ function createExplosion(
                     7
                 );
 
-
         } else if (
             type === "heart"
         ) {
@@ -1351,14 +1277,12 @@ function createExplosion(
                 i /
                 count;
 
-
             const hx =
                 16 *
                 Math.pow(
                     Math.sin(t),
                     3
                 );
-
 
             const hy =
                 -(
@@ -1371,13 +1295,11 @@ function createExplosion(
                     Math.cos(4 * t)
                 );
 
-
             const scale =
                 random(
                     0.20,
                     0.34
                 );
-
 
             particles.push({
 
@@ -1392,11 +1314,8 @@ function createExplosion(
                     hy *
                     scale,
 
-                gravity:
-                    0.012,
-
-                drag:
-                    0.985,
+                gravity: 0.012,
+                drag: 0.985,
 
                 life:
                     random(
@@ -1404,8 +1323,7 @@ function createExplosion(
                         150
                     ),
 
-                maxLife:
-                    150,
+                maxLife: 150,
 
                 size:
                     random(
@@ -1418,16 +1336,12 @@ function createExplosion(
 
                 twinkle:
                     Math.random() *
-                    Math.PI *
-                    2,
+                    Math.PI * 2,
 
-                crackle:
-                    false
+                crackle: false
             });
 
-
             continue;
-
 
         } else if (
             type === "spiral"
@@ -1444,9 +1358,8 @@ function createExplosion(
             speed =
                 2.4 +
                 i /
-                count *
-                4.2;
-
+                    count *
+                    4.2;
 
         } else if (
             type === "cross"
@@ -1455,23 +1368,20 @@ function createExplosion(
             const arm =
                 i % 4;
 
-
             angle =
                 arm *
-                Math.PI /
-                2 +
+                    Math.PI /
+                    2 +
                 random(
                     -0.055,
                     0.055
                 );
-
 
             speed =
                 random(
                     3.0,
                     6.5
                 );
-
 
         } else {
 
@@ -1481,14 +1391,12 @@ function createExplosion(
                     Math.PI * 2
                 );
 
-
             speed =
                 random(
                     2.8,
                     6.5
                 );
         }
-
 
         let gravity =
             0.025;
@@ -1501,7 +1409,6 @@ function createExplosion(
                 72,
                 125
             );
-
 
         if (
             type === "willow"
@@ -1526,16 +1433,12 @@ function createExplosion(
                 );
         }
 
-
         if (
             type === "crackle"
         ) {
 
-            gravity =
-                0.032;
-
-            drag =
-                0.979;
+            gravity = 0.032;
+            drag = 0.979;
 
             life =
                 random(
@@ -1543,7 +1446,6 @@ function createExplosion(
                     120
                 );
         }
-
 
         if (
             type === "golden"
@@ -1555,8 +1457,7 @@ function createExplosion(
                     0.045
                 );
 
-            drag =
-                0.983;
+            drag = 0.983;
 
             life =
                 random(
@@ -1564,7 +1465,6 @@ function createExplosion(
                     175
                 );
         }
-
 
         if (
             type === "rainbow"
@@ -1576,7 +1476,6 @@ function createExplosion(
                     count *
                     360
                 );
-
 
             particles.push({
 
@@ -1595,8 +1494,7 @@ function createExplosion(
                 drag,
 
                 life,
-                maxLife:
-                    life,
+                maxLife: life,
 
                 size:
                     random(
@@ -1611,14 +1509,11 @@ function createExplosion(
                     Math.random() *
                     Math.PI * 2,
 
-                crackle:
-                    false
+                crackle: false
             });
-
 
             continue;
         }
-
 
         particles.push({
 
@@ -1637,8 +1532,7 @@ function createExplosion(
             drag,
 
             life,
-            maxLife:
-                life,
+            maxLife: life,
 
             size:
                 type === "crackle"
@@ -1663,7 +1557,6 @@ function createExplosion(
         });
     }
 
-
     for (
         let i = 0;
         i < 20;
@@ -1676,13 +1569,11 @@ function createExplosion(
                 Math.PI * 2
             );
 
-
         const speed =
             random(
                 0.5,
                 3.2
             );
-
 
         particles.push({
 
@@ -1697,11 +1588,8 @@ function createExplosion(
                 Math.sin(angle) *
                 speed,
 
-            gravity:
-                0.01,
-
-            drag:
-                0.94,
+            gravity: 0.01,
+            drag: 0.94,
 
             life:
                 random(
@@ -1709,8 +1597,7 @@ function createExplosion(
                     28
                 ),
 
-            maxLife:
-                28,
+            maxLife: 28,
 
             size:
                 random(
@@ -1727,300 +1614,51 @@ function createExplosion(
         });
     }
 
-
-    /*
-        Sound happens HERE:
-        exactly when the explosion happens.
-    */
-
     playStandardFireworkSound(
         type,
         1
     );
 }
 
-
 /* =========================================================
-   BITMAP FONT
+   HIGH-DETAIL TEXT SYSTEM
 ========================================================= */
 
-const FONT = {
+/*
+    This is the major upgrade.
 
-    A: [
-        "01110",
-        "10001",
-        "10001",
-        "11111",
-        "10001",
-        "10001",
-        "10001"
-    ],
+    Instead of the old 5×7 bitmap, the text is first
+    rasterized onto an invisible offscreen canvas.
 
-    B: [
-        "11110",
-        "10001",
-        "10001",
-        "11110",
-        "10001",
-        "10001",
-        "11110"
-    ],
+    The canvas is NEVER shown.
 
-    C: [
-        "01111",
-        "10000",
-        "10000",
-        "10000",
-        "10000",
-        "10000",
-        "01111"
-    ],
+    We only use its pixels as target positions for
+    thousands of tiny firework particles.
+*/
 
-    D: [
-        "11110",
-        "10001",
-        "10001",
-        "10001",
-        "10001",
-        "10001",
-        "11110"
-    ],
+const textRasterCanvas =
+    document.createElement(
+        "canvas"
+    );
 
-    E: [
-        "11111",
-        "10000",
-        "10000",
-        "11110",
-        "10000",
-        "10000",
-        "11111"
-    ],
+const textRasterCtx =
+    textRasterCanvas.getContext(
+        "2d"
+    );
 
-    F: [
-        "11111",
-        "10000",
-        "10000",
-        "11110",
-        "10000",
-        "10000",
-        "10000"
-    ],
+const PARTICLES_PER_TEXT_PIXEL = 10;
 
-    G: [
-        "01111",
-        "10000",
-        "10000",
-        "10111",
-        "10001",
-        "10001",
-        "01111"
-    ],
+/*
+    Hard maximum requested by you.
+*/
+const MAX_TEXT_PARTICLES = 4000;
 
-    H: [
-        "10001",
-        "10001",
-        "10001",
-        "11111",
-        "10001",
-        "10001",
-        "10001"
-    ],
-
-    I: [
-        "11111",
-        "00100",
-        "00100",
-        "00100",
-        "00100",
-        "00100",
-        "11111"
-    ],
-
-    J: [
-        "00111",
-        "00010",
-        "00010",
-        "00010",
-        "10010",
-        "10010",
-        "01100"
-    ],
-
-    K: [
-        "10001",
-        "10010",
-        "10100",
-        "11000",
-        "10100",
-        "10010",
-        "10001"
-    ],
-
-    L: [
-        "10000",
-        "10000",
-        "10000",
-        "10000",
-        "10000",
-        "10000",
-        "11111"
-    ],
-
-    M: [
-        "10001",
-        "11011",
-        "10101",
-        "10101",
-        "10001",
-        "10001",
-        "10001"
-    ],
-
-    N: [
-        "10001",
-        "11001",
-        "10101",
-        "10011",
-        "10001",
-        "10001",
-        "10001"
-    ],
-
-    O: [
-        "01110",
-        "10001",
-        "10001",
-        "10001",
-        "10001",
-        "10001",
-        "01110"
-    ],
-
-    P: [
-        "11110",
-        "10001",
-        "10001",
-        "11110",
-        "10000",
-        "10000",
-        "10000"
-    ],
-
-    Q: [
-        "01110",
-        "10001",
-        "10001",
-        "10001",
-        "10101",
-        "10010",
-        "01101"
-    ],
-
-    R: [
-        "11110",
-        "10001",
-        "10001",
-        "11110",
-        "10100",
-        "10010",
-        "10001"
-    ],
-
-    S: [
-        "01111",
-        "10000",
-        "10000",
-        "01110",
-        "00001",
-        "00001",
-        "11110"
-    ],
-
-    T: [
-        "11111",
-        "00100",
-        "00100",
-        "00100",
-        "00100",
-        "00100",
-        "00100"
-    ],
-
-    U: [
-        "10001",
-        "10001",
-        "10001",
-        "10001",
-        "10001",
-        "10001",
-        "01110"
-    ],
-
-    V: [
-        "10001",
-        "10001",
-        "10001",
-        "10001",
-        "10001",
-        "01010",
-        "00100"
-    ],
-
-    W: [
-        "10001",
-        "10001",
-        "10001",
-        "10101",
-        "10101",
-        "11011",
-        "10001"
-    ],
-
-    X: [
-        "10001",
-        "10001",
-        "01010",
-        "00100",
-        "01010",
-        "10001",
-        "10001"
-    ],
-
-    Y: [
-        "10001",
-        "10001",
-        "01010",
-        "00100",
-        "00100",
-        "00100",
-        "00100"
-    ],
-
-    Z: [
-        "11111",
-        "00001",
-        "00010",
-        "00100",
-        "01000",
-        "10000",
-        "11111"
-    ],
-
-    " ": [
-        "00000",
-        "00000",
-        "00000",
-        "00000",
-        "00000",
-        "00000",
-        "00000"
-    ]
-};
-
-
-/* =========================================================
-   CREATE TEXT TARGETS
-========================================================= */
+/*
+    More targets = finer letter detail.
+    A value of 2 means we inspect approximately every
+    second physical pixel of the raster.
+*/
+const TEXT_SAMPLE_STEP = 2;
 
 function createLetterTargets(
     text
@@ -2034,132 +1672,271 @@ function createLetterTargets(
                 ""
             );
 
-
     if (!text) {
         text = "ZAYDEN";
     }
 
-
     /*
-        Responsive sizing.
-        Longer names use smaller particles
-        so the whole word fits.
+        Make the invisible raster large enough to create
+        smooth, detailed letter shapes.
     */
 
-    const cell =
+    const rasterWidth =
         Math.max(
-            3.5,
-            Math.min(
-                22,
-                width /
-                    Math.max(
-                        text.length * 6.2,
-                        1
-                    ),
-                height / 10
+            900,
+            Math.floor(
+                width * 1.8
             )
         );
 
-
-    const letterWidth =
-        5 * cell;
-
-
-    const spacing =
-        cell * 1.35;
-
-
-    const totalWidth =
-        text.length *
-        letterWidth +
+    const rasterHeight =
         Math.max(
+            260,
+            Math.floor(
+                height * 0.55
+            )
+        );
+
+    textRasterCanvas.width =
+        rasterWidth;
+
+    textRasterCanvas.height =
+        rasterHeight;
+
+    textRasterCtx.clearRect(
+        0,
+        0,
+        rasterWidth,
+        rasterHeight
+    );
+
+    /*
+        Responsive font sizing.
+
+        Longer names automatically get smaller so they
+        remain inside the screen.
+    */
+
+    let fontSize =
+        Math.min(
+            rasterHeight * 0.52,
+            rasterWidth /
+                Math.max(
+                    text.length * 0.72,
+                    1
+                )
+        );
+
+    fontSize =
+        Math.max(
+            38,
+            fontSize
+        );
+
+    textRasterCtx.font =
+        `900 ${fontSize}px Arial Black, Arial, Helvetica, sans-serif`;
+
+    textRasterCtx.textAlign =
+        "center";
+
+    textRasterCtx.textBaseline =
+        "middle";
+
+    textRasterCtx.fillStyle =
+        "#ffffff";
+
+    textRasterCtx.fillText(
+        text,
+        rasterWidth / 2,
+        rasterHeight / 2
+    );
+
+    const imageData =
+        textRasterCtx.getImageData(
             0,
-            text.length - 1
-        ) *
-        spacing;
+            0,
+            rasterWidth,
+            rasterHeight
+        );
 
+    const data =
+        imageData.data;
 
-    const startX =
-        (
-            width -
-            totalWidth
-        ) / 2;
+    /*
+        Determine the bounding box of the actual text.
+    */
 
-
-    const startY =
-        height * 0.38;
-
-
-    const targets = [];
-
+    let minX = rasterWidth;
+    let maxX = 0;
+    let minY = rasterHeight;
+    let maxY = 0;
 
     for (
-        let letterIndex = 0;
-        letterIndex <
-            text.length;
-        letterIndex++
+        let y = 0;
+        y < rasterHeight;
+        y += TEXT_SAMPLE_STEP
     ) {
 
-        const letter =
-            FONT[
-                text[
-                    letterIndex
-                ]
-            ] ||
-            FONT[" "];
-
-
-        const offsetX =
-            startX +
-            letterIndex *
-            (
-                letterWidth +
-                spacing
-            );
-
-
         for (
-            let row = 0;
-            row < 7;
-            row++
+            let x = 0;
+            x < rasterWidth;
+            x += TEXT_SAMPLE_STEP
         ) {
 
-            for (
-                let col = 0;
-                col < 5;
-                col++
+            const index =
+                (
+                    y *
+                    rasterWidth +
+                    x
+                ) * 4;
+
+            const alpha =
+                data[index + 3];
+
+            if (
+                alpha > 100
             ) {
 
-                if (
-                    letter[row][col] ===
-                    "1"
-                ) {
+                if (x < minX) {
+                    minX = x;
+                }
 
-                    targets.push({
+                if (x > maxX) {
+                    maxX = x;
+                }
 
-                        x:
-                            offsetX +
-                            col * cell +
-                            cell / 2,
+                if (y < minY) {
+                    minY = y;
+                }
 
-                        y:
-                            startY +
-                            row * cell +
-                            cell / 2
-                    });
+                if (y > maxY) {
+                    maxY = y;
                 }
             }
         }
     }
 
+    if (
+        minX >= rasterWidth
+    ) {
+
+        return [];
+    }
+
+    /*
+        Convert raster pixels into screen coordinates.
+    */
+
+    const actualWidth =
+        maxX -
+        minX;
+
+    const actualHeight =
+        maxY -
+        minY;
+
+    const desiredWidth =
+        Math.min(
+            width * 0.90,
+            width - 30
+        );
+
+    const desiredHeight =
+        Math.min(
+            height * 0.48,
+            height - 40
+        );
+
+    const scale =
+        Math.min(
+            desiredWidth /
+                Math.max(
+                    actualWidth,
+                    1
+                ),
+            desiredHeight /
+                Math.max(
+                    actualHeight,
+                    1
+                )
+        );
+
+    const finalWidth =
+        actualWidth *
+        scale;
+
+    const finalHeight =
+        actualHeight *
+        scale;
+
+    const startX =
+        (
+            width -
+            finalWidth
+        ) / 2;
+
+    const startY =
+        height * 0.38 -
+        finalHeight / 2;
+
+    const targets = [];
+
+    for (
+        let y = minY;
+        y <= maxY;
+        y += TEXT_SAMPLE_STEP
+    ) {
+
+        for (
+            let x = minX;
+            x <= maxX;
+            x += TEXT_SAMPLE_STEP
+        ) {
+
+            const index =
+                (
+                    y *
+                    rasterWidth +
+                    x
+                ) * 4;
+
+            const alpha =
+                data[index + 3];
+
+            if (
+                alpha > 100
+            ) {
+
+                targets.push({
+
+                    x:
+                        startX +
+                        (
+                            x -
+                            minX
+                        ) *
+                        scale,
+
+                    y:
+                        startY +
+                        (
+                            y -
+                            minY
+                        ) *
+                        scale
+                });
+            }
+        }
+    }
 
     return targets;
 }
 
+/*
+    Creates a single text firework rocket.
 
-/* =========================================================
-   TEXT ROCKET
-========================================================= */
+    No sound occurs during its flight.
+*/
 
 function createTextRocket(
     targetX,
@@ -2175,20 +1952,16 @@ function createTextRocket(
             width * 0.85
         );
 
-
     const startY =
         height + 50;
-
 
     const dx =
         targetX -
         startX;
 
-
     const dy =
         targetY -
         startY;
-
 
     const distance =
         Math.sqrt(
@@ -2196,10 +1969,8 @@ function createTextRocket(
             dy * dy
         );
 
-
     const speed =
         9.5;
-
 
     rockets.push({
 
@@ -2221,25 +1992,17 @@ function createTextRocket(
 
         palette,
 
-        type:
-            "text",
+        type: "text",
 
-        age:
-            -delay,
+        age: -delay,
 
         trail: [],
 
         textTargets,
 
         exploded: false
-
     });
 }
-
-
-/* =========================================================
-   TEXT FIREWORK
-========================================================= */
 
 function createTextExplosion(
     rocket
@@ -2247,16 +2010,16 @@ function createTextExplosion(
 
     textParticles.length = 0;
 
-
     const targets =
         rocket.textTargets ||
         [];
 
+    if (
+        !targets.length
+    ) {
 
-    if (!targets.length) {
         return;
     }
-
 
     const centerX =
         rocket.x;
@@ -2264,14 +2027,15 @@ function createTextExplosion(
     const centerY =
         rocket.y;
 
-
     const palette =
         rocket.palette;
 
-
     /*
-        Every lit pixel is a real
-        tiny firework particle.
+        10 particles for every text target.
+
+        Each one receives a slightly different target
+        position so they form a dense sparkling stroke
+        rather than sitting perfectly on top of one another.
     */
 
     for (
@@ -2283,115 +2047,142 @@ function createTextExplosion(
         const target =
             targets[i];
 
+        for (
+            let j = 0;
+            j <
+                PARTICLES_PER_TEXT_PIXEL;
+            j++
+        ) {
 
-        const angle =
-            random(
-                0,
-                Math.PI * 2
-            );
+            if (
+                textParticles.length >=
+                MAX_TEXT_PARTICLES
+            ) {
 
+                break;
+            }
 
-        const burstDistance =
-            random(
-                45,
-                155
-            );
-
-
-        const burstX =
-            centerX +
-            Math.cos(angle) *
-            burstDistance;
-
-
-        const burstY =
-            centerY +
-            Math.sin(angle) *
-            burstDistance;
-
-
-        const burstSpeed =
-            random(
-                2.8,
-                7.2
-            );
-
-
-        textParticles.push({
-
-            x: centerX,
-            y: centerY,
-
-            vx:
-                Math.cos(angle) *
-                burstSpeed,
-
-            vy:
-                Math.sin(angle) *
-                burstSpeed,
-
-            burstX,
-            burstY,
-
-            targetX:
-                target.x,
-
-            targetY:
-                target.y,
-
-            life: 0,
-
-            assembleDelay:
-                random(
-                    18,
-                    50
-                ) +
-                (
-                    i /
-                    targets.length
-                ) *
-                random(
-                    0,
-                    20
-                ),
-
-            size:
-                random(
-                    1.1,
-                    2.3
-                ),
-
-            color:
-                pick(palette),
-
-            phase:
+            const angle =
                 random(
                     0,
                     Math.PI * 2
-                ),
+                );
 
-            trail: [],
+            const burstDistance =
+                random(
+                    35,
+                    155
+                );
 
-            assembled:
-                false,
+            const burstX =
+                centerX +
+                Math.cos(angle) *
+                burstDistance;
 
-            bright:
-                Math.random() <
-                0.30
-        });
-    }
+            const burstY =
+                centerY +
+                Math.sin(angle) *
+                burstDistance;
 
+            const burstSpeed =
+                random(
+                    2.8,
+                    7.2
+                );
 
-    /*
-        Extra loose sparks surrounding
-        the forming letters.
-    */
+            /*
+                Spread the 10 particles slightly around
+                their target so the letter has thickness.
+            */
 
-    for (
-        let i = 0;
-        i < 140;
-        i++
-    ) {
+            const targetSpread =
+                random(
+                    0.15,
+                    0.85
+                );
+
+            const targetAngle =
+                random(
+                    0,
+                    Math.PI * 2
+                );
+
+            const particleTargetX =
+                target.x +
+                Math.cos(
+                    targetAngle
+                ) *
+                targetSpread;
+
+            const particleTargetY =
+                target.y +
+                Math.sin(
+                    targetAngle
+                ) *
+                targetSpread;
+
+            textParticles.push({
+
+                x: centerX,
+                y: centerY,
+
+                vx:
+                    Math.cos(angle) *
+                    burstSpeed,
+
+                vy:
+                    Math.sin(angle) *
+                    burstSpeed,
+
+                burstX,
+                burstY,
+
+                targetX:
+                    particleTargetX,
+
+                targetY:
+                    particleTargetY,
+
+                life: 0,
+
+                assembleDelay:
+                    random(
+                        18,
+                        58
+                    ) +
+                    (
+                        i /
+                        targets.length
+                    ) *
+                    random(
+                        0,
+                        28
+                    ),
+
+                size:
+                    random(
+                        0.60,
+                        1.45
+                    ),
+
+                color:
+                    pick(palette),
+
+                phase:
+                    random(
+                        0,
+                        Math.PI * 2
+                    ),
+
+                trail: [],
+
+                assembled: false,
+
+                bright:
+                    Math.random() <
+                    0.22
+            });
+        }
 
         if (
             textParticles.length >=
@@ -2400,7 +2191,26 @@ function createTextExplosion(
 
             break;
         }
+    }
 
+    /*
+        Extra loose sparks around the text explosion.
+
+        These are separate from the 10-per-pixel count.
+    */
+
+    const looseCount =
+        Math.min(
+            140,
+            MAX_TEXT_PARTICLES -
+                textParticles.length
+        );
+
+    for (
+        let i = 0;
+        i < looseCount;
+        i++
+    ) {
 
         const angle =
             random(
@@ -2408,13 +2218,11 @@ function createTextExplosion(
                 Math.PI * 2
             );
 
-
         const speed =
             random(
                 2.5,
                 8
             );
-
 
         textParticles.push({
 
@@ -2429,11 +2237,8 @@ function createTextExplosion(
                 Math.sin(angle) *
                 speed,
 
-            targetX:
-                centerX,
-
-            targetY:
-                centerY,
+            targetX: centerX,
+            targetY: centerY,
 
             life: 0,
 
@@ -2442,8 +2247,8 @@ function createTextExplosion(
 
             size:
                 random(
-                    0.65,
-                    1.7
+                    0.55,
+                    1.5
                 ),
 
             color:
@@ -2457,20 +2262,18 @@ function createTextExplosion(
 
             trail: [],
 
-            assembled:
-                false,
+            assembled: false,
 
             loose: true,
 
             bright:
                 Math.random() <
-                0.20
+                0.16
         });
     }
 
-
     /*
-        Sound ONLY here, at explosion.
+        Sound happens only here: at the explosion.
     */
 
     playTextFireworkSound(
@@ -2478,9 +2281,8 @@ function createTextExplosion(
     );
 }
 
-
 /* =========================================================
-   UPDATE TEXT PARTICLES
+   PARTICLE UPDATES
 ========================================================= */
 
 function updateTextParticles() {
@@ -2495,29 +2297,23 @@ function updateTextParticles() {
         const p =
             textParticles[i];
 
-
         p.life++;
-
 
         p.trail.push({
 
             x: p.x,
             y: p.y
-
         });
 
-
         if (
-            p.trail.length >
-            4
+            p.trail.length > 5
         ) {
 
             p.trail.shift();
         }
 
-
         /*
-            Loose sparks.
+            Loose sparks simply explode outward.
         */
 
         if (
@@ -2530,21 +2326,17 @@ function updateTextParticles() {
             p.y +=
                 p.vy;
 
-
             p.vx *=
                 0.975;
 
             p.vy *=
                 0.975;
 
-
             p.vy +=
                 0.018;
 
-
             if (
-                p.life >
-                78
+                p.life > 78
             ) {
 
                 textParticles.splice(
@@ -2553,13 +2345,12 @@ function updateTextParticles() {
                 );
             }
 
-
             continue;
         }
 
-
         /*
-            Particles first fly outward.
+            First phase:
+            fly outward like a real firework.
         */
 
         if (
@@ -2573,36 +2364,31 @@ function updateTextParticles() {
             p.y +=
                 p.vy;
 
-
             p.vx *=
                 0.965;
 
             p.vy *=
                 0.965;
 
-
             p.vy +=
                 0.010;
-
 
             continue;
         }
 
-
         /*
-            Then they fly toward their
-            exact letter positions.
+            Second phase:
+            pull the particles toward their exact
+            text locations.
         */
 
         const dx =
             p.targetX -
             p.x;
 
-
         const dy =
             p.targetY -
             p.y;
-
 
         const distance =
             Math.sqrt(
@@ -2610,21 +2396,17 @@ function updateTextParticles() {
                 dy * dy
             );
 
-
         if (
-            distance >
-            3.5
+            distance > 3.5
         ) {
 
             p.vx +=
                 dx *
                 0.020;
 
-
             p.vy +=
                 dy *
                 0.020;
-
 
             p.vx *=
                 0.91;
@@ -2632,24 +2414,22 @@ function updateTextParticles() {
             p.vy *=
                 0.91;
 
-
             p.x +=
                 p.vx;
 
             p.y +=
                 p.vy;
 
-
         } else {
-
-            /*
-                Particle has reached its
-                assigned bitmap pixel.
-            */
 
             p.assembled =
                 true;
 
+            /*
+                Tiny movement while holding the letter
+                makes the text sparkle instead of looking
+                like a static image.
+            */
 
             p.x =
                 p.targetX +
@@ -2659,7 +2439,6 @@ function updateTextParticles() {
                     p.phase
                 ) *
                 0.42;
-
 
             p.y =
                 p.targetY +
@@ -2671,14 +2450,12 @@ function updateTextParticles() {
                 0.42;
         }
 
-
         /*
-            Long enough to hold the letters.
+            Long enough to hold the word.
         */
 
         if (
-            p.life >
-            520
+            p.life > 520
         ) {
 
             textParticles.splice(
@@ -2688,11 +2465,6 @@ function updateTextParticles() {
         }
     }
 }
-
-
-/* =========================================================
-   UPDATE NORMAL PARTICLES
-========================================================= */
 
 function updateParticles() {
 
@@ -2706,17 +2478,14 @@ function updateParticles() {
         const p =
             particles[i];
 
-
         p.vx *=
             p.drag;
 
         p.vy *=
             p.drag;
 
-
         p.vy +=
             p.gravity;
-
 
         p.x +=
             p.vx;
@@ -2724,18 +2493,11 @@ function updateParticles() {
         p.y +=
             p.vy;
 
-
         p.life--;
-
-
-        /*
-            Crackle sparks.
-        */
 
         if (
             p.crackle &&
-            Math.random() <
-                0.025 &&
+            Math.random() < 0.025 &&
             particles.length <
                 MAX_PARTICLES
         ) {
@@ -2754,20 +2516,17 @@ function updateParticles() {
                     break;
                 }
 
-
                 const angle =
                     random(
                         0,
                         Math.PI * 2
                     );
 
-
                 const speed =
                     random(
                         1,
                         3
                     );
-
 
                 particles.push({
 
@@ -2782,11 +2541,8 @@ function updateParticles() {
                         Math.sin(angle) *
                         speed,
 
-                    gravity:
-                        0.035,
-
-                    drag:
-                        0.96,
+                    gravity: 0.035,
+                    drag: 0.96,
 
                     life:
                         random(
@@ -2794,8 +2550,7 @@ function updateParticles() {
                             40
                         ),
 
-                    maxLife:
-                        40,
+                    maxLife: 40,
 
                     size:
                         random(
@@ -2814,7 +2569,6 @@ function updateParticles() {
             }
         }
 
-
         if (
             p.life <= 0
         ) {
@@ -2827,9 +2581,8 @@ function updateParticles() {
     }
 }
 
-
 /* =========================================================
-   UPDATE ROCKETS
+   ROCKET UPDATE
 ========================================================= */
 
 function updateRockets() {
@@ -2844,9 +2597,7 @@ function updateRockets() {
         const r =
             rockets[i];
 
-
         r.age++;
-
 
         if (
             r.age < 0
@@ -2855,23 +2606,18 @@ function updateRockets() {
             continue;
         }
 
-
         r.trail.push({
 
             x: r.x,
             y: r.y
-
         });
 
-
         if (
-            r.trail.length >
-            9
+            r.trail.length > 9
         ) {
 
             r.trail.shift();
         }
-
 
         r.x +=
             r.vx;
@@ -2879,20 +2625,16 @@ function updateRockets() {
         r.y +=
             r.vy;
 
-
         r.vy +=
             0.018;
-
 
         const dx =
             r.targetX -
             r.x;
 
-
         const dy =
             r.targetY -
             r.y;
-
 
         const distance =
             Math.sqrt(
@@ -2900,10 +2642,10 @@ function updateRockets() {
                 dy * dy
             );
 
-
         if (
             distance < 18 ||
-            r.y <= r.targetY
+            r.y <=
+                r.targetY
         ) {
 
             if (
@@ -2912,7 +2654,6 @@ function updateRockets() {
 
                 r.exploded =
                     true;
-
 
                 if (
                     r.type ===
@@ -2931,7 +2672,6 @@ function updateRockets() {
                 }
             }
 
-
             rockets.splice(
                 i,
                 1
@@ -2940,9 +2680,8 @@ function updateRockets() {
     }
 }
 
-
 /* =========================================================
-   DRAW ROCKETS
+   DRAWING
 ========================================================= */
 
 function drawRockets() {
@@ -2958,7 +2697,6 @@ function drawRockets() {
             continue;
         }
 
-
         for (
             let i = 0;
             i < r.trail.length;
@@ -2968,23 +2706,18 @@ function drawRockets() {
             const point =
                 r.trail[i];
 
-
             const alpha =
                 i /
                 r.trail.length;
-
 
             ctx.globalAlpha =
                 alpha *
                 0.50;
 
-
             ctx.fillStyle =
                 "#ffffff";
 
-
             ctx.beginPath();
-
 
             ctx.arc(
                 point.x,
@@ -2994,21 +2727,16 @@ function drawRockets() {
                 Math.PI * 2
             );
 
-
             ctx.fill();
         }
-
 
         ctx.globalAlpha =
             1;
 
-
         ctx.fillStyle =
             "#ffffff";
 
-
         ctx.beginPath();
-
 
         ctx.arc(
             r.x,
@@ -3018,15 +2746,9 @@ function drawRockets() {
             Math.PI * 2
         );
 
-
         ctx.fill();
     }
 }
-
-
-/* =========================================================
-   DRAW NORMAL PARTICLES
-========================================================= */
 
 function drawParticles() {
 
@@ -3037,11 +2759,10 @@ function drawParticles() {
         const alpha =
             clamp(
                 p.life /
-                p.maxLife,
+                    p.maxLife,
                 0,
                 1
             );
-
 
         const twinkle =
             0.65 +
@@ -3052,18 +2773,14 @@ function drawParticles() {
                 0.015
             );
 
-
         ctx.globalAlpha =
             alpha *
             twinkle;
 
-
         ctx.fillStyle =
             p.color;
 
-
         ctx.beginPath();
-
 
         ctx.arc(
             p.x,
@@ -3073,15 +2790,9 @@ function drawParticles() {
             Math.PI * 2
         );
 
-
         ctx.fill();
     }
 }
-
-
-/* =========================================================
-   DRAW TEXT PARTICLES
-========================================================= */
 
 function drawTextParticles() {
 
@@ -3089,8 +2800,8 @@ function drawTextParticles() {
         const p of textParticles
     ) {
 
-        let alpha = 1;
-
+        let alpha =
+            1;
 
         if (
             p.loose
@@ -3100,12 +2811,11 @@ function drawTextParticles() {
                 clamp(
                     1 -
                     p.life /
-                    78,
+                        78,
                     0,
                     1
                 );
         }
-
 
         const sparkle =
             0.72 +
@@ -3116,14 +2826,12 @@ function drawTextParticles() {
                 0.018
             );
 
-
         ctx.globalAlpha =
             alpha *
             sparkle;
 
-
         /*
-            Tiny trail.
+            Tiny particle trails.
         */
 
         if (
@@ -3132,12 +2840,10 @@ function drawTextParticles() {
 
             ctx.beginPath();
 
-
             ctx.moveTo(
                 p.trail[0].x,
                 p.trail[0].y
             );
-
 
             for (
                 let i = 1;
@@ -3151,32 +2857,26 @@ function drawTextParticles() {
                 );
             }
 
-
             ctx.strokeStyle =
                 p.color;
 
-
             ctx.lineWidth =
                 Math.max(
-                    0.45,
-                    p.size * 0.55
+                    0.35,
+                    p.size * 0.52
                 );
-
 
             ctx.stroke();
         }
 
-
         /*
-            Main tiny firework spark.
+            Main tiny spark.
         */
 
         ctx.fillStyle =
             p.color;
 
-
         ctx.beginPath();
-
 
         ctx.arc(
             p.x,
@@ -3186,12 +2886,10 @@ function drawTextParticles() {
             Math.PI * 2
         );
 
-
         ctx.fill();
 
-
         /*
-            White-hot center on selected sparks.
+            Some particles have a white-hot core.
         */
 
         if (
@@ -3203,95 +2901,78 @@ function drawTextParticles() {
                 sparkle *
                 0.85;
 
-
             ctx.fillStyle =
                 "#ffffff";
 
-
             ctx.beginPath();
-
 
             ctx.arc(
                 p.x,
                 p.y,
                 p.size *
-                0.42,
+                    0.42,
                 0,
                 Math.PI * 2
             );
-
 
             ctx.fill();
         }
     }
 }
 
+function drawBackground() {
+
+    ctx.globalCompositeOperation =
+        "source-over";
+
+    ctx.fillStyle =
+        "rgba(0, 0, 8, 0.22)";
+
+    ctx.fillRect(
+        0,
+        0,
+        width,
+        height
+    );
+}
 
 /* =========================================================
-   SHOW SETTINGS
+   SHOW TIMING
 ========================================================= */
 
 const SHOW_DURATION =
-    5 *
-    60 *
-    1000;
-
+    5 * 60 * 1000;
 
 const FIREWORK_BUFFER =
     400;
 
-
 const MIN_LAUNCH_INTERVAL =
     550;
-
 
 const MAX_LAUNCH_INTERVAL =
     800;
 
-
 const MAX_ROCKETS =
     28;
-
 
 const MAX_PARTICLES =
     3400;
 
+let showRunning = false;
+let finaleRunning = false;
+let showFinished = false;
 
-const MAX_TEXT_PARTICLES =
-    900;
+let showStartTime = 0;
+let nextLaunchTime = 0;
+let nextSpecialTime = 0;
 
-
-/* =========================================================
-   SHOW STATE
-========================================================= */
-
-let showRunning =
-    false;
-
-let finaleRunning =
-    false;
-
-let showFinished =
-    false;
-
-let showStartTime =
-    0;
-
-let nextLaunchTime =
-    0;
-
-let nextSpecialTime =
-    0;
-
-let showItemIndex =
-    0;
+let showItemIndex = 0;
 
 let birthdayName =
     "ZAYDEN";
 
-
 /* =========================================================
-   MAIN FIREWORK LAUNCH
+   MAIN SHOW
 ========================================================= */
 
 function launchShowItem(
@@ -3306,24 +2987,20 @@ function launchShowItem(
         return;
     }
 
-
     const item =
         showItems[
             showItemIndex %
             showItems.length
         ];
 
-
     showItemIndex++;
-
 
     const count =
         Math.min(
             item.count,
             MAX_ROCKETS -
-            rockets.length
+                rockets.length
         );
-
 
     for (
         let i = 0;
@@ -3337,22 +3014,23 @@ function launchShowItem(
                 width * 0.90
             );
 
-
         const targetY =
             random(
                 height * 0.13,
                 height * 0.56
             );
 
-
         createRocket(
             targetX,
             targetY,
+
             palettes[
                 item.palette %
                 palettes.length
             ],
+
             item.type,
+
             random(
                 0.9,
                 1.12
@@ -3361,11 +3039,6 @@ function launchShowItem(
         );
     }
 }
-
-
-/* =========================================================
-   SPECIAL SEQUENCES
-========================================================= */
 
 function specialSequence(
     intensity = 1
@@ -3376,7 +3049,6 @@ function specialSequence(
             0,
             5
         );
-
 
     if (
         sequence === 0
@@ -3405,7 +3077,6 @@ function specialSequence(
             );
         }
 
-
     } else if (
         sequence === 1
     ) {
@@ -3415,7 +3086,6 @@ function specialSequence(
                 0,
                 palettes.length - 1
             );
-
 
         for (
             let i = 0;
@@ -3433,21 +3103,27 @@ function specialSequence(
                     ) {
 
                         createRocket(
+
                             width *
                             (
                                 0.20 +
-                                i * 0.15
+                                i *
+                                0.15
                             ),
+
                             random(
                                 height * 0.18,
                                 height * 0.48
                             ),
+
                             palettes[
                                 palette
                             ],
+
                             i % 2 === 0
                                 ? "ring"
                                 : "sphere",
+
                             intensity
                         );
                     }
@@ -3456,7 +3132,6 @@ function specialSequence(
                 i * 170
             );
         }
-
 
     } else if (
         sequence === 2
@@ -3478,21 +3153,26 @@ function specialSequence(
                     ) {
 
                         createRocket(
+
                             random(
                                 width * 0.20,
                                 width * 0.80
                             ),
+
                             random(
                                 height * 0.18,
                                 height * 0.43
                             ),
+
                             palettes[
                                 randomInt(
                                     0,
                                     palettes.length - 1
                                 )
                             ],
+
                             "doubleRing",
+
                             intensity
                         );
                     }
@@ -3501,7 +3181,6 @@ function specialSequence(
                 i * 280
             );
         }
-
 
     } else if (
         sequence === 3
@@ -3523,26 +3202,31 @@ function specialSequence(
                     ) {
 
                         createRocket(
+
                             random(
                                 width * 0.08,
                                 width * 0.92
                             ),
+
                             random(
                                 height * 0.18,
                                 height * 0.55
                             ),
+
                             palettes[
                                 randomInt(
                                     0,
                                     palettes.length - 1
                                 )
                             ],
+
                             pick([
                                 "sphere",
                                 "ring",
                                 "peony",
                                 "chrysanthemum"
                             ]),
+
                             intensity
                         );
                     }
@@ -3551,7 +3235,6 @@ function specialSequence(
                 i * 130
             );
         }
-
 
     } else if (
         sequence === 4
@@ -3573,25 +3256,30 @@ function specialSequence(
                     ) {
 
                         createRocket(
+
                             random(
                                 width * 0.15,
                                 width * 0.85
                             ),
+
                             random(
                                 height * 0.15,
                                 height * 0.50
                             ),
+
                             palettes[
                                 randomInt(
                                     0,
                                     palettes.length - 1
                                 )
                             ],
+
                             pick([
                                 "willow",
                                 "golden",
                                 "crackle"
                             ]),
+
                             intensity
                         );
                     }
@@ -3600,7 +3288,6 @@ function specialSequence(
                 i * 190
             );
         }
-
 
     } else {
 
@@ -3620,20 +3307,24 @@ function specialSequence(
                     ) {
 
                         createRocket(
+
                             random(
                                 width * 0.05,
                                 width * 0.95
                             ),
+
                             random(
                                 height * 0.12,
                                 height * 0.52
                             ),
+
                             palettes[
                                 randomInt(
                                     0,
                                     palettes.length - 1
                                 )
                             ],
+
                             pick([
                                 "sphere",
                                 "ring",
@@ -3641,6 +3332,7 @@ function specialSequence(
                                 "spiral",
                                 "cross"
                             ]),
+
                             intensity
                         );
                     }
@@ -3651,11 +3343,6 @@ function specialSequence(
         }
     }
 }
-
-
-/* =========================================================
-   MAIN SHOW SCHEDULER
-========================================================= */
 
 function scheduleMainShow(
     now
@@ -3668,11 +3355,9 @@ function scheduleMainShow(
         return;
     }
 
-
     const elapsed =
         now -
         showStartTime;
-
 
     if (
         elapsed >=
@@ -3684,59 +3369,44 @@ function scheduleMainShow(
         return;
     }
 
-
     const progress =
         elapsed /
         SHOW_DURATION;
 
-
     let intensity =
         0.95;
 
-
     if (
-        progress >
-        0.55
+        progress > 0.55
     ) {
 
         intensity =
             1.05;
     }
 
-
     if (
-        progress >
-        0.70
+        progress > 0.70
     ) {
 
         intensity =
             1.12;
     }
 
-
     if (
-        progress >
-        0.80
+        progress > 0.80
     ) {
 
         intensity =
             1.20;
     }
 
-
     if (
-        progress >
-        0.93
+        progress > 0.93
     ) {
 
         intensity =
             1.30;
     }
-
-
-    /*
-        400 ms scheduling buffer.
-    */
 
     if (
         now +
@@ -3748,7 +3418,6 @@ function scheduleMainShow(
             intensity
         );
 
-
         nextLaunchTime =
             now +
             random(
@@ -3756,7 +3425,6 @@ function scheduleMainShow(
                 MAX_LAUNCH_INTERVAL
             );
     }
-
 
     if (
         now +
@@ -3768,7 +3436,6 @@ function scheduleMainShow(
             intensity
         );
 
-
         nextSpecialTime =
             now +
             random(
@@ -3777,10 +3444,8 @@ function scheduleMainShow(
             );
     }
 
-
     if (
-        progress >
-        0.92 &&
+        progress > 0.92 &&
         Math.random() <
             0.025
     ) {
@@ -3791,7 +3456,6 @@ function scheduleMainShow(
         );
     }
 }
-
 
 /* =========================================================
    FINALE
@@ -3807,36 +3471,37 @@ function beginFinale() {
         return;
     }
 
-
     showRunning =
         false;
 
     finaleRunning =
         true;
 
+    rockets.length =
+        0;
 
-    rockets.length = 0;
-    particles.length = 0;
-    textParticles.length = 0;
+    particles.length =
+        0;
 
+    textParticles.length =
+        0;
 
     const finalePalette = [
 
         "#ffffff",
+
         "#ffe066",
+
         "#74c0fc",
+
         "#ff6b6b"
-
     ];
-
 
     const centerX =
         width / 2;
 
-
     const centerY =
         height * 0.38;
-
 
     /*
         HAPPY
@@ -3847,14 +3512,12 @@ function beginFinale() {
             "HAPPY"
         );
 
-
     createTextRocket(
         centerX,
         centerY,
         finalePalette,
         happyTargets
     );
-
 
     /*
         BIRTHDAY
@@ -3870,15 +3533,13 @@ function beginFinale() {
                 return;
             }
 
-
-            textParticles.length = 0;
-
+            textParticles.length =
+                0;
 
             const targets =
                 createLetterTargets(
                     "BIRTHDAY"
                 );
-
 
             createTextRocket(
                 centerX,
@@ -3891,9 +3552,8 @@ function beginFinale() {
         5000
     );
 
-
     /*
-        ENTERED NAME
+        NAME
     */
 
     setTimeout(
@@ -3906,15 +3566,13 @@ function beginFinale() {
                 return;
             }
 
-
-            textParticles.length = 0;
-
+            textParticles.length =
+                0;
 
             const targets =
                 createLetterTargets(
                     birthdayName
                 );
-
 
             createTextRocket(
                 centerX,
@@ -3926,7 +3584,6 @@ function beginFinale() {
         },
         9700
     );
-
 
     /*
         NAME AGAIN
@@ -3942,15 +3599,13 @@ function beginFinale() {
                 return;
             }
 
-
-            textParticles.length = 0;
-
+            textParticles.length =
+                0;
 
             const targets =
                 createLetterTargets(
                     birthdayName
                 );
-
 
             createTextRocket(
                 centerX,
@@ -3963,9 +3618,8 @@ function beginFinale() {
         13500
     );
 
-
     /*
-        End.
+        Finish.
     */
 
     setTimeout(
@@ -3977,36 +3631,17 @@ function beginFinale() {
             showFinished =
                 true;
 
-            textParticles.length = 0;
+            textParticles.length =
+                0;
 
         },
         18100
     );
 }
 
-
 /* =========================================================
-   RENDER
+   ANIMATION LOOP
 ========================================================= */
-
-function drawBackground() {
-
-    ctx.globalCompositeOperation =
-        "source-over";
-
-
-    ctx.fillStyle =
-        "rgba(0, 0, 8, 0.22)";
-
-
-    ctx.fillRect(
-        0,
-        0,
-        width,
-        height
-    );
-}
-
 
 function animate(
     now
@@ -4016,13 +3651,10 @@ function animate(
         animate
     );
 
-
     drawBackground();
-
 
     ctx.globalCompositeOperation =
         "lighter";
-
 
     if (
         showRunning
@@ -4033,13 +3665,11 @@ function animate(
         );
     }
 
-
     updateRockets();
 
     updateParticles();
 
     updateTextParticles();
-
 
     drawRockets();
 
@@ -4047,23 +3677,19 @@ function animate(
 
     drawTextParticles();
 
-
     ctx.globalAlpha =
         1;
-
 
     ctx.globalCompositeOperation =
         "source-over";
 }
 
-
 requestAnimationFrame(
     animate
 );
 
-
 /* =========================================================
-   START
+   UI
 ========================================================= */
 
 const startScreen =
@@ -4071,18 +3697,15 @@ const startScreen =
         "startScreen"
     );
 
-
 const nameInput =
     document.getElementById(
         "nameInput"
     );
 
-
 const startButton =
     document.getElementById(
         "startButton"
     );
-
 
 function sanitizeName(
     value
@@ -4105,32 +3728,31 @@ function sanitizeName(
         );
 }
 
-
 function startShow() {
 
     initAudio();
-
 
     const enteredName =
         sanitizeName(
             nameInput.value
         );
 
-
     birthdayName =
         enteredName ||
         "ZAYDEN";
-
 
     startScreen.classList.add(
         "hidden"
     );
 
+    rockets.length =
+        0;
 
-    rockets.length = 0;
-    particles.length = 0;
-    textParticles.length = 0;
+    particles.length =
+        0;
 
+    textParticles.length =
+        0;
 
     showRunning =
         true;
@@ -4141,23 +3763,17 @@ function startShow() {
     showFinished =
         false;
 
-
     showItemIndex =
         0;
-
 
     showStartTime =
         performance.now();
 
-
     const now =
         showStartTime;
 
-
     nextLaunchTime =
-        now +
-        250;
-
+        now + 250;
 
     nextSpecialTime =
         now +
@@ -4167,12 +3783,10 @@ function startShow() {
         );
 }
 
-
 startButton.addEventListener(
     "click",
     startShow
 );
-
 
 nameInput.addEventListener(
     "keydown",
@@ -4187,7 +3801,6 @@ nameInput.addEventListener(
         }
     }
 );
-
 
 /* =========================================================
    TOUCH / ZOOM PROTECTION
@@ -4205,7 +3818,6 @@ document.addEventListener(
     }
 );
 
-
 document.addEventListener(
     "gesturestart",
     event => {
@@ -4217,7 +3829,6 @@ document.addEventListener(
         passive: false
     }
 );
-
 
 document.addEventListener(
     "dblclick",
