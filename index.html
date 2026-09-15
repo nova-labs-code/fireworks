@@ -11,142 +11,148 @@
 <title>Birthday Fireworks</title>
 
 <style>
-* {
-    box-sizing: border-box;
-}
+    * {
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+    }
 
-html,
-body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    background: #000;
-    touch-action: none;
-    font-family: Arial, Helvetica, sans-serif;
-}
+    html,
+    body {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #000008;
+        font-family: Arial, Helvetica, sans-serif;
+        touch-action: none;
+    }
 
-body {
-    position: relative;
-}
+    body {
+        position: fixed;
+        inset: 0;
+    }
 
-canvas {
-    display: block;
-    width: 100%;
-    height: 100%;
-    background: #000;
-}
+    canvas {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        display: block;
+    }
 
-#nameScreen {
-    position: fixed;
-    inset: 0;
-    z-index: 20;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 24px;
-    background:
-        radial-gradient(circle at 50% 35%, rgba(38, 80, 150, 0.24), transparent 45%),
-        #000;
-}
+    #ui {
+        position: absolute;
+        inset: 0;
+        z-index: 5;
+        pointer-events: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 
-#nameBox {
-    width: min(440px, 100%);
-    padding: 30px;
-    border: 1px solid rgba(255,255,255,0.14);
-    border-radius: 24px;
-    background: rgba(10,10,18,0.88);
-    box-shadow:
-        0 0 70px rgba(0,120,255,0.14),
-        inset 0 0 30px rgba(255,255,255,0.025);
-    text-align: center;
-}
+    #startScreen {
+        pointer-events: auto;
+        width: min(92vw, 520px);
+        padding: 30px;
+        border-radius: 24px;
+        background: rgba(8, 8, 20, 0.92);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        box-shadow:
+            0 20px 70px rgba(0, 0, 0, 0.55),
+            inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        text-align: center;
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+    }
 
-#nameBox h1 {
-    margin: 0 0 10px;
-    color: #fff;
-    font-size: clamp(30px, 8vw, 46px);
-    letter-spacing: 2px;
-}
+    #startScreen h1 {
+        margin: 0 0 10px;
+        color: white;
+        font-size: clamp(30px, 8vw, 48px);
+        letter-spacing: 2px;
+    }
 
-#nameBox p {
-    margin: 0 0 22px;
-    color: rgba(255,255,255,0.65);
-    line-height: 1.5;
-}
+    #startScreen p {
+        margin: 0 0 22px;
+        color: rgba(255, 255, 255, 0.72);
+        line-height: 1.5;
+        font-size: 15px;
+    }
 
-#nameInput {
-    width: 100%;
-    height: 54px;
-    padding: 0 16px;
-    border: 1px solid rgba(255,255,255,0.16);
-    border-radius: 14px;
-    outline: none;
-    background: rgba(255,255,255,0.06);
-    color: #fff;
-    font-size: 18px;
-    text-align: center;
-}
+    #nameInput {
+        width: 100%;
+        height: 52px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 14px;
+        outline: none;
+        background: rgba(255, 255, 255, 0.07);
+        color: white;
+        text-align: center;
+        font-size: 18px;
+        padding: 0 16px;
+        margin-bottom: 14px;
+    }
 
-#nameInput:focus {
-    border-color: rgba(80,170,255,0.8);
-    box-shadow: 0 0 25px rgba(30,130,255,0.16);
-}
+    #nameInput::placeholder {
+        color: rgba(255, 255, 255, 0.38);
+    }
 
-#startButton {
-    width: 100%;
-    height: 54px;
-    margin-top: 12px;
-    border: 0;
-    border-radius: 14px;
-    background: linear-gradient(135deg, #2979ff, #7c4dff);
-    color: white;
-    font-size: 17px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    cursor: pointer;
-}
+    #startButton {
+        width: 100%;
+        height: 54px;
+        border: 0;
+        border-radius: 14px;
+        background: white;
+        color: #080812;
+        font-weight: 800;
+        font-size: 17px;
+        cursor: pointer;
+    }
 
-#startButton:active {
-    transform: scale(0.98);
-}
+    #startButton:active {
+        transform: scale(0.98);
+    }
 
-#showInfo {
-    position: fixed;
-    z-index: 10;
-    top: max(16px, env(safe-area-inset-top));
-    left: 50%;
-    transform: translateX(-50%);
-    padding: 8px 14px;
-    border-radius: 999px;
-    background: rgba(0,0,0,0.34);
-    border: 1px solid rgba(255,255,255,0.08);
-    color: rgba(255,255,255,0.55);
-    font-size: 12px;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    pointer-events: none;
-}
+    #finaleText {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: clamp(38px, 12vw, 100px);
+        font-weight: 900;
+        letter-spacing: 5px;
+        text-align: center;
+        text-shadow:
+            0 0 10px white,
+            0 0 25px white,
+            0 0 50px white;
+        opacity: 0;
+        transition: opacity 0.25s ease;
+        pointer-events: none;
+    }
 
-#finaleText {
-    position: fixed;
-    z-index: 15;
-    inset: 0;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    pointer-events: none;
-    color: white;
-    font-size: clamp(42px, 12vw, 110px);
-    font-weight: 900;
-    letter-spacing: 5px;
-    text-align: center;
-    text-shadow:
-        0 0 8px white,
-        0 0 25px rgba(100,170,255,0.9),
-        0 0 55px rgba(120,80,255,0.7);
-}
+    #finaleText.visible {
+        opacity: 1;
+    }
+
+    #hint {
+        position: absolute;
+        left: 50%;
+        bottom: 20px;
+        transform: translateX(-50%);
+        color: rgba(255,255,255,0.35);
+        font-size: 11px;
+        letter-spacing: 1px;
+        pointer-events: none;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        #finaleText {
+            transition: none;
+        }
+    }
 </style>
 </head>
 
@@ -154,13 +160,14 @@ canvas {
 
 <canvas id="canvas"></canvas>
 
-<div id="nameScreen">
-    <div id="nameBox">
+<div id="ui">
+
+    <div id="startScreen">
         <h1>Birthday Fireworks</h1>
 
         <p>
-            Enter the birthday person's name and enjoy a full
-            five-minute digital fireworks show.
+            A continuous 5-minute fireworks show followed by a special
+            fireworks finale.
         </p>
 
         <input
@@ -169,31 +176,29 @@ canvas {
             maxlength="20"
             autocomplete="off"
             autocapitalize="characters"
-            placeholder="Birthday Name"
+            placeholder="Enter a name"
         >
 
         <button id="startButton">
-            Start Fireworks
+            Start Show
         </button>
     </div>
-</div>
 
-<div id="showInfo">
-    Birthday Firework Show
-</div>
+    <div id="finaleText"></div>
 
-<div id="finaleText"></div>
+</div>
 
 <script>
+"use strict";
+
+/* =========================================================
+   CANVAS
+========================================================= */
+
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d", {
     alpha: false
 });
-
-const nameScreen = document.getElementById("nameScreen");
-const nameInput = document.getElementById("nameInput");
-const startButton = document.getElementById("startButton");
-const finaleText = document.getElementById("finaleText");
 
 let width = 0;
 let height = 0;
@@ -225,11 +230,15 @@ resizeCanvas();
 const SHOW_DURATION = 5 * 60 * 1000;
 
 /*
-    New fireworks are introduced about every 0.55–0.80 seconds.
+    Fireworks are still launched continuously.
 
-    Because fireworks themselves remain on screen much longer
-    than this, multiple bursts overlap continuously.
+    The 400ms buffer is NOT a visible pause.
+    It gives the scheduler room to spread expensive work
+    across frames instead of creating large simultaneous
+    CPU spikes.
 */
+const FIREWORK_BUFFER = 400;
+
 const MIN_LAUNCH_INTERVAL = 550;
 const MAX_LAUNCH_INTERVAL = 800;
 
@@ -245,7 +254,9 @@ let nextContinuousLaunch = 0;
 let nextSpecialLaunch = 2500;
 
 let birthdayName = "";
+
 let finaleRunning = false;
+let finaleStarted = false;
 
 
 /* =========================================================
@@ -253,32 +264,213 @@ let finaleRunning = false;
 ========================================================= */
 
 const palettes = [
-    ["#ff1744", "#ff4081", "#ffffff"],
-    ["#2979ff", "#00b0ff", "#ffffff"],
-    ["#d500f9", "#7c4dff", "#ffffff"],
-    ["#00e676", "#76ff03", "#ffffff"],
-    ["#ffc107", "#ff9800", "#fff176"],
-    ["#00e5ff", "#2979ff", "#ffffff"],
-    ["#ff4081", "#d500f9", "#ffffff"],
-    ["#ff7043", "#ff1744", "#fff176"],
-    ["#536dfe", "#00e5ff", "#ffffff"],
-    ["#c6ff00", "#00e676", "#fff176"],
-    ["#ff00aa", "#7c4dff", "#00e5ff"],
-    ["#ffffff", "#00e5ff", "#7c4dff"],
-    ["#fff176", "#ffffff", "#ff9800"],
-    ["#00bfa5", "#00e676", "#ffffff"],
-    ["#ff3d71", "#ff1744", "#ffc107"],
-    ["#651fff", "#d500f9", "#00e5ff"],
-    ["#40c4ff", "#2979ff", "#7c4dff"],
-    ["#ff6d00", "#ffab00", "#fff176"],
-    ["#00e676", "#00b0ff", "#ffffff"],
-    ["#ff4081", "#00e5ff", "#ffffff"]
+    ["#ff304f", "#ff6b81", "#ffffff"],
+    ["#2d8cff", "#66b3ff", "#ffffff"],
+    ["#38e878", "#8affad", "#ffffff"],
+    ["#b44cff", "#d58cff", "#ffffff"],
+    ["#ff9d28", "#ffd166", "#ffffff"],
+    ["#22d3ee", "#67e8f9", "#ffffff"],
+    ["#ff4fd8", "#ff8de8", "#ffffff"],
+    ["#ffe45e", "#fff3a3", "#ffffff"],
+    ["#ff5c33", "#ff9b7a", "#ffffff"],
+    ["#7c5cff", "#a996ff", "#ffffff"],
+    ["#35ffca", "#8ffff0", "#ffffff"],
+    ["#ff4477", "#ffb0c5", "#ffffff"]
 ];
 
 
 /* =========================================================
-   HELPERS
+   FIREWORK PRESETS
+   100+ VARIETIES
 ========================================================= */
+
+const showItems = [
+
+    { type: "sphere", palette: 0, count: 1 },
+    { type: "sphere", palette: 1, count: 2 },
+    { type: "sphere", palette: 2, count: 1 },
+    { type: "sphere", palette: 3, count: 2 },
+    { type: "sphere", palette: 4, count: 1 },
+
+    { type: "ring", palette: 0, count: 1 },
+    { type: "ring", palette: 1, count: 2 },
+    { type: "ring", palette: 2, count: 1 },
+    { type: "ring", palette: 3, count: 2 },
+    { type: "ring", palette: 4, count: 1 },
+
+    { type: "doubleRing", palette: 0, count: 1 },
+    { type: "doubleRing", palette: 1, count: 1 },
+    { type: "doubleRing", palette: 2, count: 1 },
+    { type: "doubleRing", palette: 3, count: 1 },
+    { type: "doubleRing", palette: 4, count: 1 },
+
+    { type: "willow", palette: 4, count: 1 },
+    { type: "willow", palette: 7, count: 2 },
+    { type: "willow", palette: 4, count: 2 },
+    { type: "willow", palette: 7, count: 1 },
+
+    { type: "crackle", palette: 0, count: 1 },
+    { type: "crackle", palette: 1, count: 1 },
+    { type: "crackle", palette: 2, count: 2 },
+    { type: "crackle", palette: 3, count: 1 },
+    { type: "crackle", palette: 5, count: 2 },
+
+    { type: "chrysanthemum", palette: 0, count: 1 },
+    { type: "chrysanthemum", palette: 1, count: 1 },
+    { type: "chrysanthemum", palette: 2, count: 1 },
+    { type: "chrysanthemum", palette: 3, count: 2 },
+    { type: "chrysanthemum", palette: 4, count: 1 },
+
+    { type: "peony", palette: 0, count: 1 },
+    { type: "peony", palette: 1, count: 2 },
+    { type: "peony", palette: 2, count: 1 },
+    { type: "peony", palette: 5, count: 2 },
+    { type: "peony", palette: 6, count: 1 },
+
+    { type: "fan", palette: 0, count: 1 },
+    { type: "fan", palette: 1, count: 1 },
+    { type: "fan", palette: 2, count: 1 },
+    { type: "fan", palette: 3, count: 1 },
+    { type: "fan", palette: 4, count: 1 },
+
+    { type: "heart", palette: 0, count: 1 },
+    { type: "heart", palette: 6, count: 1 },
+    { type: "heart", palette: 1, count: 1 },
+    { type: "heart", palette: 3, count: 1 },
+
+    { type: "spiral", palette: 0, count: 1 },
+    { type: "spiral", palette: 1, count: 1 },
+    { type: "spiral", palette: 2, count: 1 },
+    { type: "spiral", palette: 3, count: 1 },
+    { type: "spiral", palette: 5, count: 1 },
+
+    { type: "cross", palette: 0, count: 1 },
+    { type: "cross", palette: 1, count: 1 },
+    { type: "cross", palette: 2, count: 1 },
+    { type: "cross", palette: 3, count: 1 },
+
+    { type: "saturn", palette: 0, count: 1 },
+    { type: "saturn", palette: 1, count: 1 },
+    { type: "saturn", palette: 2, count: 1 },
+    { type: "saturn", palette: 3, count: 1 },
+    { type: "saturn", palette: 4, count: 1 },
+
+    { type: "rainbow", palette: 0, count: 1 },
+    { type: "rainbow", palette: 1, count: 1 },
+    { type: "rainbow", palette: 2, count: 1 },
+    { type: "rainbow", palette: 3, count: 1 },
+
+    { type: "golden", palette: 4, count: 1 },
+    { type: "golden", palette: 7, count: 1 },
+
+    { type: "sphere", palette: 5, count: 2 },
+    { type: "sphere", palette: 6, count: 1 },
+    { type: "sphere", palette: 7, count: 2 },
+    { type: "sphere", palette: 8, count: 1 },
+    { type: "sphere", palette: 9, count: 2 },
+
+    { type: "ring", palette: 5, count: 1 },
+    { type: "ring", palette: 6, count: 2 },
+    { type: "ring", palette: 7, count: 1 },
+    { type: "ring", palette: 8, count: 2 },
+    { type: "ring", palette: 9, count: 1 },
+
+    { type: "doubleRing", palette: 5, count: 1 },
+    { type: "doubleRing", palette: 6, count: 1 },
+    { type: "doubleRing", palette: 7, count: 1 },
+    { type: "doubleRing", palette: 8, count: 1 },
+
+    { type: "willow", palette: 8, count: 1 },
+    { type: "willow", palette: 9, count: 1 },
+    { type: "willow", palette: 10, count: 1 },
+
+    { type: "crackle", palette: 6, count: 1 },
+    { type: "crackle", palette: 7, count: 1 },
+    { type: "crackle", palette: 8, count: 2 },
+
+    { type: "chrysanthemum", palette: 5, count: 1 },
+    { type: "chrysanthemum", palette: 6, count: 1 },
+    { type: "chrysanthemum", palette: 7, count: 2 },
+    { type: "chrysanthemum", palette: 8, count: 1 },
+
+    { type: "peony", palette: 8, count: 1 },
+    { type: "peony", palette: 9, count: 1 },
+    { type: "peony", palette: 10, count: 2 },
+    { type: "peony", palette: 11, count: 1 },
+
+    { type: "fan", palette: 5, count: 1 },
+    { type: "fan", palette: 6, count: 1 },
+    { type: "fan", palette: 7, count: 2 },
+    { type: "fan", palette: 8, count: 1 },
+
+    { type: "spiral", palette: 6, count: 1 },
+    { type: "spiral", palette: 7, count: 1 },
+    { type: "spiral", palette: 8, count: 1 },
+    { type: "spiral", palette: 9, count: 1 },
+
+    { type: "cross", palette: 4, count: 1 },
+    { type: "cross", palette: 5, count: 1 },
+    { type: "cross", palette: 6, count: 1 },
+    { type: "cross", palette: 7, count: 1 },
+
+    { type: "saturn", palette: 5, count: 1 },
+    { type: "saturn", palette: 6, count: 1 },
+    { type: "saturn", palette: 7, count: 1 },
+    { type: "saturn", palette: 8, count: 1 },
+
+    { type: "rainbow", palette: 4, count: 1 },
+    { type: "rainbow", palette: 5, count: 1 },
+    { type: "rainbow", palette: 6, count: 1 },
+
+    { type: "golden", palette: 4, count: 2 },
+    { type: "golden", palette: 7, count: 2 },
+
+    { type: "sphere", palette: 10, count: 1 },
+    { type: "sphere", palette: 11, count: 2 },
+    { type: "ring", palette: 10, count: 1 },
+    { type: "ring", palette: 11, count: 2 },
+    { type: "doubleRing", palette: 9, count: 1 },
+    { type: "doubleRing", palette: 10, count: 1 },
+    { type: "doubleRing", palette: 11, count: 1 },
+
+    { type: "chrysanthemum", palette: 9, count: 1 },
+    { type: "chrysanthemum", palette: 10, count: 1 },
+    { type: "chrysanthemum", palette: 11, count: 1 },
+
+    { type: "fan", palette: 9, count: 1 },
+    { type: "fan", palette: 10, count: 1 },
+    { type: "fan", palette: 11, count: 1 },
+
+    { type: "heart", palette: 6, count: 2 },
+    { type: "heart", palette: 0, count: 2 },
+
+    { type: "spiral", palette: 10, count: 1 },
+    { type: "spiral", palette: 11, count: 1 },
+
+    { type: "cross", palette: 8, count: 1 },
+    { type: "cross", palette: 9, count: 1 },
+    { type: "cross", palette: 10, count: 1 },
+    { type: "cross", palette: 11, count: 1 },
+
+    { type: "saturn", palette: 9, count: 1 },
+    { type: "saturn", palette: 10, count: 1 },
+    { type: "saturn", palette: 11, count: 1 },
+
+    { type: "rainbow", palette: 7, count: 1 },
+    { type: "rainbow", palette: 8, count: 1 },
+    { type: "rainbow", palette: 9, count: 1 },
+
+    { type: "golden", palette: 4, count: 3 },
+    { type: "golden", palette: 7, count: 3 }
+];
+
+
+/* =========================================================
+   PARTICLES
+========================================================= */
+
+const rockets = [];
+const particles = [];
 
 function random(min, max) {
     return Math.random() * (max - min) + min;
@@ -288,24 +480,24 @@ function randomInt(min, max) {
     return Math.floor(random(min, max + 1));
 }
 
-function pick(array) {
+function randomChoice(array) {
     return array[Math.floor(Math.random() * array.length)];
 }
 
-function distance(x1, y1, x2, y2) {
-    return Math.hypot(x2 - x1, y2 - y1);
+function hexToRgb(hex) {
+    const value = hex.replace("#", "");
+
+    return {
+        r: parseInt(value.substring(0, 2), 16),
+        g: parseInt(value.substring(2, 4), 16),
+        b: parseInt(value.substring(4, 6), 16)
+    };
 }
 
-function randomPalette() {
-    return pick(palettes);
-}
+function colorWithAlpha(color, alpha) {
+    const rgb = hexToRgb(color);
 
-function randomTargetX() {
-    return random(width * 0.08, width * 0.92);
-}
-
-function randomTargetY() {
-    return random(height * 0.13, height * 0.52);
+    return `rgba(${rgb.r},${rgb.g},${rgb.b},${alpha})`;
 }
 
 
@@ -313,1949 +505,748 @@ function randomTargetY() {
    ROCKET
 ========================================================= */
 
-class Rocket {
-    constructor(options = {}) {
-        this.x = options.x ?? random(width * 0.1, width * 0.9);
-        this.y = height + random(10, 35);
-
-        this.targetX = options.targetX ?? randomTargetX();
-        this.targetY = options.targetY ?? randomTargetY();
-
-        this.color = options.color ?? pick(randomPalette());
-
-        this.type = options.type || "sphere";
-
-        this.speed = options.speed ?? random(8.5, 13.5);
-
-        this.vx = 0;
-        this.vy = -this.speed;
-
-        this.gravity = options.gravity ?? 0.055;
-
-        this.trail = [];
-        this.maxTrail = randomInt(7, 13);
-
-        this.dead = false;
-
-        this.exploded = false;
-
-        this.life = 0;
-        this.delay = options.delay || 0;
-
-        this.age = 0;
-
-        this.hueShift = random(-20, 20);
-    }
-
-    update() {
-        if (this.delay > 0) {
-            this.delay--;
-            return;
-        }
-
-        this.age++;
-
-        this.trail.push({
-            x: this.x,
-            y: this.y
-        });
-
-        if (this.trail.length > this.maxTrail) {
-            this.trail.shift();
-        }
-
-        const dx = this.targetX - this.x;
-        const dy = this.targetY - this.y;
-
-        const dist = Math.hypot(dx, dy);
-
-        if (dist < 28 || this.vy > -1.5) {
-            this.explode();
-            this.dead = true;
-            return;
-        }
-
-        const steer = 0.012;
-
-        this.vx += dx * steer;
-        this.vy += dy * steer;
-
-        const velocity = Math.hypot(this.vx, this.vy);
-
-        if (velocity > this.speed) {
-            this.vx = this.vx / velocity * this.speed;
-            this.vy = this.vy / velocity * this.speed;
-        }
-
-        this.x += this.vx;
-        this.y += this.vy;
-
-        this.vy += this.gravity;
-    }
-
-    draw() {
-        if (this.delay > 0) return;
-
-        ctx.save();
-
-        for (let i = 0; i < this.trail.length; i++) {
-            const point = this.trail[i];
-            const alpha = i / this.trail.length;
-
-            ctx.globalAlpha = alpha * 0.55;
-
-            ctx.beginPath();
-            ctx.arc(
-                point.x,
-                point.y,
-                1 + alpha * 1.7,
-                0,
-                Math.PI * 2
-            );
-
-            ctx.fillStyle = this.color;
-            ctx.fill();
-        }
-
-        ctx.globalAlpha = 1;
-
-        ctx.shadowBlur = 18;
-        ctx.shadowColor = this.color;
-
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, 2.7, 0, Math.PI * 2);
-        ctx.fillStyle = "#fff";
-        ctx.fill();
-
-        ctx.restore();
-    }
-
-    explode() {
-        if (this.exploded) return;
-
-        this.exploded = true;
-
-        createExplosion(
-            this.x,
-            this.y,
-            this.color,
-            this.type
-        );
-    }
-}
-
-
-/* =========================================================
-   PARTICLE
-========================================================= */
-
-class Particle {
-    constructor(x, y, options = {}) {
-        this.x = x;
-        this.y = y;
-
-        this.vx = options.vx ?? random(-3, 3);
-        this.vy = options.vy ?? random(-3, 3);
-
-        this.gravity = options.gravity ?? 0.035;
-
-        this.drag = options.drag ?? 0.985;
-
-        this.life = options.life ?? random(65, 115);
-        this.maxLife = this.life;
-
-        this.size = options.size ?? random(1, 2.8);
-
-        this.color = options.color ?? "#ffffff";
-
-        this.twinkle = options.twinkle ?? true;
-
-        this.alpha = 1;
-
-        this.type = options.type || "normal";
-
-        this.decay = options.decay ?? random(0.008, 0.018);
-    }
-
-    update() {
-        this.vx *= this.drag;
-        this.vy *= this.drag;
-
-        this.vy += this.gravity;
-
-        this.x += this.vx;
-        this.y += this.vy;
-
-        this.life--;
-
-        this.alpha = Math.max(
-            0,
-            this.life / this.maxLife
-        );
-    }
-
-    draw() {
-        if (this.alpha <= 0) return;
-
-        let alpha = this.alpha;
-
-        if (this.twinkle) {
-            alpha *= 0.75 + Math.random() * 0.25;
-        }
-
-        ctx.globalAlpha = alpha;
-
-        ctx.beginPath();
-
-        ctx.arc(
-            this.x,
-            this.y,
-            this.size,
-            0,
-            Math.PI * 2
-        );
-
-        ctx.fillStyle = this.color;
-        ctx.fill();
-    }
-
-    get dead() {
-        return this.life <= 0;
-    }
-}
-
-
-/* =========================================================
-   FIREWORK ARRAYS
-========================================================= */
-
-const rockets = [];
-const particles = [];
-
-function addRocket(options) {
+function createRocket(
+    targetX,
+    targetY,
+    palette,
+    type = "sphere",
+    power = 1
+) {
     if (rockets.length >= MAX_ROCKETS) {
-        rockets.shift();
+        return;
     }
 
-    rockets.push(new Rocket(options));
-}
+    const startX = random(width * 0.08, width * 0.92);
+    const startY = height + 12;
 
-function addParticle(x, y, options) {
-    if (particles.length >= MAX_PARTICLES) {
-        particles.splice(
-            0,
-            Math.max(1, Math.floor(MAX_PARTICLES * 0.08))
-        );
-    }
+    const dx = targetX - startX;
+    const dy = targetY - startY;
 
-    particles.push(
-        new Particle(x, y, options)
-    );
-}
+    const distance = Math.sqrt(dx * dx + dy * dy);
 
+    const speed = random(7.5, 10.5) * power;
 
-/* =========================================================
-   SPECIAL PARTICLE EFFECTS
-========================================================= */
-
-function flash(x, y, color, radius = 45) {
-    addParticle(x, y, {
-        vx: 0,
-        vy: 0,
-        gravity: 0,
-        drag: 1,
-        life: 18,
-        size: radius,
-        color,
-        twinkle: false,
-        type: "flash"
+    rockets.push({
+        x: startX,
+        y: startY,
+        vx: dx / distance * speed,
+        vy: dy / distance * speed,
+        targetY,
+        palette,
+        type,
+        trail: [],
+        age: 0,
+        maxAge: random(55, 85)
     });
 }
 
-function createStarCore(x, y, color) {
-    for (let i = 0; i < 20; i++) {
-        const angle = Math.random() * Math.PI * 2;
-        const speed = random(1.5, 4);
-
-        addParticle(x, y, {
-            vx: Math.cos(angle) * speed,
-            vy: Math.sin(angle) * speed,
-            gravity: 0.015,
-            life: randomInt(35, 65),
-            size: random(1.5, 3.2),
-            color: "#ffffff"
-        });
-    }
-
-    flash(x, y, color, 30);
-}
-
-function createRing(x, y, color, radius = 5) {
-    const count = randomInt(45, 75);
-
-    for (let i = 0; i < count; i++) {
-        const angle = (Math.PI * 2 * i) / count;
-
-        const speed = radius / 8;
-
-        addParticle(x, y, {
-            vx: Math.cos(angle) * speed,
-            vy: Math.sin(angle) * speed,
-            gravity: 0.018,
-            drag: 0.991,
-            life: randomInt(70, 110),
-            size: random(1.4, 2.7),
-            color
-        });
-    }
-}
-
-function createWillow(x, y, color) {
-    const count = randomInt(70, 110);
-
-    for (let i = 0; i < count; i++) {
-        const angle = random(0, Math.PI * 2);
-        const speed = random(1.5, 5.4);
-
-        addParticle(x, y, {
-            vx: Math.cos(angle) * speed,
-            vy: Math.sin(angle) * speed - random(0.5, 2),
-            gravity: random(0.055, 0.085),
-            drag: 0.992,
-            life: randomInt(120, 190),
-            size: random(1.2, 2.5),
-            color
-        });
-    }
-}
-
-function createCometBurst(x, y, colors) {
-    const count = randomInt(18, 30);
-
-    for (let i = 0; i < count; i++) {
-        const angle = Math.random() * Math.PI * 2;
-        const speed = random(3, 7);
-
-        const color = pick(colors);
-
-        addParticle(x, y, {
-            vx: Math.cos(angle) * speed,
-            vy: Math.sin(angle) * speed,
-            gravity: 0.045,
-            drag: 0.987,
-            life: randomInt(85, 125),
-            size: random(2, 3.4),
-            color
-        });
-    }
-}
-
-function createCrackle(x, y, colors) {
-    const count = randomInt(35, 60);
-
-    for (let i = 0; i < count; i++) {
-        const angle = Math.random() * Math.PI * 2;
-        const speed = random(1.5, 6);
-
-        addParticle(x, y, {
-            vx: Math.cos(angle) * speed,
-            vy: Math.sin(angle) * speed,
-            gravity: 0.04,
-            drag: 0.985,
-            life: randomInt(25, 65),
-            size: random(1.3, 2.6),
-            color: pick(colors),
-            twinkle: true
-        });
-    }
-}
-
 
 /* =========================================================
-   EXPLOSION TYPES
+   EXPLOSIONS
 ========================================================= */
 
-function createExplosion(x, y, color, type = "sphere") {
-    const palette = randomPalette();
-
-    let colors = [
-        color,
-        ...palette
-    ];
-
-    colors = [...new Set(colors)];
-
-    const count = randomInt(65, 115);
-
-    if (type === "ring") {
-        createRing(x, y, color, random(28, 48));
-        createStarCore(x, y, color);
+function createExplosion(
+    x,
+    y,
+    palette,
+    type,
+    power = 1
+) {
+    if (particles.length >= MAX_PARTICLES) {
         return;
     }
 
-    if (type === "doubleRing") {
-        createRing(x, y, color, 35);
+    const baseCount = Math.floor(
+        random(75, 125) * power
+    );
 
-        setTimeout(() => {
-            if (!showActive && !finaleRunning) return;
+    const colors = palette;
 
-            createRing(
+    if (type === "sphere" || type === "peony") {
+
+        for (let i = 0; i < baseCount; i++) {
+
+            const angle = Math.random() * Math.PI * 2;
+            const speed = random(2.2, 6.5) * power;
+
+            particles.push({
                 x,
                 y,
-                pick(colors),
-                62
-            );
-        }, 100);
-
-        createStarCore(x, y, color);
-        return;
-    }
-
-    if (type === "willow") {
-        createWillow(x, y, color);
-        createStarCore(x, y, color);
-        return;
-    }
-
-    if (type === "crackle") {
-        createCometBurst(x, y, colors);
-        createCrackle(x, y, colors);
-        return;
-    }
-
-    if (type === "chrysanthemum") {
-        for (let i = 0; i < count; i++) {
-            const angle =
-                Math.random() * Math.PI * 2;
-
-            const speed =
-                random(2.5, 6.5);
-
-            addParticle(x, y, {
                 vx: Math.cos(angle) * speed,
                 vy: Math.sin(angle) * speed,
-                gravity: 0.025,
-                drag: 0.989,
-                life: randomInt(85, 140),
-                size: random(1.2, 2.6),
-                color: pick(colors)
-            });
-        }
-
-        createStarCore(x, y, color);
-        return;
-    }
-
-    if (type === "peony") {
-        for (let i = 0; i < count + 30; i++) {
-            const angle =
-                Math.random() * Math.PI * 2;
-
-            const speed =
-                random(1.5, 5.8);
-
-            addParticle(x, y, {
-                vx: Math.cos(angle) * speed,
-                vy: Math.sin(angle) * speed,
-                gravity: 0.02,
-                drag: 0.988,
-                life: randomInt(75, 120),
-                size: random(1.5, 3),
-                color: pick(colors)
-            });
-        }
-
-        flash(x, y, color, 38);
-        return;
-    }
-
-    if (type === "fan") {
-        const direction = Math.random() > 0.5 ? -1 : 1;
-
-        for (let i = 0; i < count; i++) {
-            const angle =
-                direction *
-                random(
-                    Math.PI * 0.08,
-                    Math.PI * 0.92
-                );
-
-            const speed =
-                random(2.5, 6.8);
-
-            addParticle(x, y, {
-                vx: Math.cos(angle) * speed,
-                vy: -Math.abs(Math.sin(angle) * speed),
                 gravity: 0.035,
-                life: randomInt(75, 125),
-                size: random(1.3, 2.8),
-                color: pick(colors)
+                friction: 0.985,
+                life: random(55, 105),
+                maxLife: 105,
+                size: random(1.2, 2.7),
+                color: randomChoice(colors),
+                type: "normal"
             });
         }
 
-        createStarCore(x, y, color);
-        return;
-    }
+    } else if (type === "ring") {
 
-    if (type === "heart") {
+        const count = Math.floor(110 * power);
+
         for (let i = 0; i < count; i++) {
-            const t =
-                (Math.PI * 2 * i) / count;
 
-            const hx =
-                16 * Math.pow(Math.sin(t), 3);
+            const angle = (Math.PI * 2 * i) / count;
+            const speed = random(4.0, 5.7) * power;
 
-            const hy =
-                -(
-                    13 * Math.cos(t) -
-                    5 * Math.cos(2 * t) -
-                    2 * Math.cos(3 * t) -
-                    Math.cos(4 * t)
-                );
-
-            const scale = random(0.18, 0.32);
-
-            addParticle(x, y, {
-                vx: hx * scale,
-                vy: hy * scale,
-                gravity: 0.025,
-                drag: 0.99,
-                life: randomInt(75, 115),
-                size: random(1.4, 2.8),
-                color: pick(colors)
-            });
-        }
-
-        createStarCore(x, y, color);
-        return;
-    }
-
-    if (type === "spiral") {
-        for (let i = 0; i < count + 30; i++) {
-            const t = i * 0.34;
-
-            const radius = i * 0.055;
-
-            const angle =
-                t + Math.random() * 0.2;
-
-            const speed =
-                2.3 + radius;
-
-            addParticle(x, y, {
+            particles.push({
+                x,
+                y,
                 vx: Math.cos(angle) * speed,
                 vy: Math.sin(angle) * speed,
-                gravity: 0.02,
-                drag: 0.99,
-                life: randomInt(75, 125),
-                size: random(1.2, 2.5),
-                color: pick(colors)
-            });
-        }
-
-        createStarCore(x, y, color);
-        return;
-    }
-
-    if (type === "cross") {
-        for (let i = 0; i < count; i++) {
-            const axis =
-                i % 2 === 0
-                    ? 0
-                    : Math.PI / 2;
-
-            const angle =
-                axis +
-                (Math.random() - 0.5) * 0.18;
-
-            const speed =
-                random(2, 7);
-
-            addParticle(x, y, {
-                vx: Math.cos(angle) * speed,
-                vy: Math.sin(angle) * speed,
-                gravity: 0.02,
-                life: randomInt(75, 120),
-                size: random(1.3, 2.8),
-                color: pick(colors)
-            });
-        }
-
-        createStarCore(x, y, color);
-        return;
-    }
-
-    if (type === "saturn") {
-        for (let i = 0; i < count; i++) {
-            const angle =
-                Math.random() * Math.PI * 2;
-
-            const speed =
-                random(2, 5.5);
-
-            addParticle(x, y, {
-                vx: Math.cos(angle) * speed,
-                vy: Math.sin(angle) * speed * 0.55,
                 gravity: 0.025,
-                life: randomInt(75, 120),
-                size: random(1.4, 2.6),
-                color: pick(colors)
-            });
-        }
-
-        for (let i = 0; i < 80; i++) {
-            const angle =
-                Math.random() * Math.PI * 2;
-
-            const rx = 1.8;
-            const ry = 0.42;
-
-            addParticle(x, y, {
-                vx: Math.cos(angle) * rx * random(3, 5),
-                vy: Math.sin(angle) * ry * random(3, 5),
-                gravity: 0.015,
-                life: randomInt(80, 125),
+                friction: 0.988,
+                life: random(65, 95),
+                maxLife: 95,
                 size: random(1.3, 2.5),
-                color: pick(colors)
+                color: randomChoice(colors),
+                type: "normal"
             });
         }
 
-        createStarCore(x, y, color);
-        return;
-    }
+    } else if (type === "doubleRing") {
 
-    if (type === "rainbow") {
-        const rainbow = [
-            "#ff1744",
-            "#ff9800",
-            "#fff176",
-            "#00e676",
-            "#00e5ff",
-            "#2979ff",
-            "#d500f9"
-        ];
+        const count = Math.floor(85 * power);
 
-        for (let i = 0; i < count + 50; i++) {
-            const angle =
-                Math.random() * Math.PI * 2;
+        for (let ring = 0; ring < 2; ring++) {
 
-            const speed =
-                random(2, 6.2);
+            const radiusSpeed =
+                ring === 0
+                    ? random(3.2, 4.0)
+                    : random(5.0, 6.0);
 
-            addParticle(x, y, {
+            for (let i = 0; i < count; i++) {
+
+                const angle = (Math.PI * 2 * i) / count;
+
+                particles.push({
+                    x,
+                    y,
+                    vx: Math.cos(angle) * radiusSpeed,
+                    vy: Math.sin(angle) * radiusSpeed,
+                    gravity: 0.028,
+                    friction: 0.988,
+                    life: random(65, 105),
+                    maxLife: 105,
+                    size: random(1.2, 2.5),
+                    color: colors[ring % colors.length],
+                    type: "normal"
+                });
+            }
+        }
+
+    } else if (type === "willow") {
+
+        for (let i = 0; i < baseCount; i++) {
+
+            const angle = random(0, Math.PI * 2);
+            const speed = random(2.5, 5.8) * power;
+
+            particles.push({
+                x,
+                y,
                 vx: Math.cos(angle) * speed,
-                vy: Math.sin(angle) * speed,
-                gravity: 0.025,
-                drag: 0.989,
-                life: randomInt(75, 125),
-                size: random(1.4, 2.8),
-                color: rainbow[
-                    i % rainbow.length
-                ]
+                vy: Math.sin(angle) * speed - 1,
+                gravity: 0.075,
+                friction: 0.994,
+                life: random(90, 145),
+                maxLife: 145,
+                size: random(1.3, 2.8),
+                color: randomChoice(colors),
+                type: "normal"
             });
         }
 
-        createStarCore(x, y, "#ffffff");
-        return;
-    }
+    } else if (type === "crackle") {
 
-    if (type === "golden") {
-        const gold = [
-            "#fff176",
-            "#ffc107",
-            "#ffb300",
-            "#ff9800",
-            "#ffffff"
-        ];
+        for (let i = 0; i < baseCount; i++) {
 
-        for (let i = 0; i < count + 35; i++) {
-            const angle =
-                Math.random() * Math.PI * 2;
+            const angle = Math.random() * Math.PI * 2;
+            const speed = random(2, 7) * power;
 
-            const speed =
-                random(1.8, 5.7);
-
-            addParticle(x, y, {
+            particles.push({
+                x,
+                y,
                 vx: Math.cos(angle) * speed,
                 vy: Math.sin(angle) * speed,
                 gravity: 0.04,
-                drag: 0.989,
-                life: randomInt(100, 170),
-                size: random(1.4, 3),
-                color: pick(gold)
+                friction: 0.982,
+                life: random(40, 90),
+                maxLife: 90,
+                size: random(1.5, 3),
+                color: randomChoice(colors),
+                type: "crackle",
+                crackleTimer: random(4, 15)
             });
         }
 
-        createStarCore(x, y, "#fff176");
-        return;
-    }
+    } else if (type === "chrysanthemum") {
 
-    /* Standard sphere */
+        for (let i = 0; i < baseCount * 1.15; i++) {
 
-    for (let i = 0; i < count; i++) {
-        const angle =
-            Math.random() * Math.PI * 2;
+            const angle = Math.random() * Math.PI * 2;
+            const speed = random(3, 7) * power;
 
-        const speed =
-            Math.pow(Math.random(), 0.55) *
-            random(3.5, 7);
+            particles.push({
+                x,
+                y,
+                vx: Math.cos(angle) * speed,
+                vy: Math.sin(angle) * speed,
+                gravity: 0.032,
+                friction: 0.986,
+                life: random(75, 115),
+                maxLife: 115,
+                size: random(1.2, 2.5),
+                color: colors[i % colors.length],
+                type: "normal"
+            });
+        }
 
-        addParticle(x, y, {
-            vx: Math.cos(angle) * speed,
-            vy: Math.sin(angle) * speed,
-            gravity: random(0.02, 0.045),
-            drag: random(0.985, 0.992),
-            life: randomInt(70, 125),
-            size: random(1.3, 2.8),
-            color: pick(colors)
-        });
-    }
+    } else if (type === "fan") {
 
-    createStarCore(x, y, color);
+        const direction = random(-0.35, 0.35);
 
-    if (Math.random() < 0.35) {
-        createCrackle(x, y, colors);
+        for (let i = 0; i < baseCount; i++) {
+
+            const angle =
+                -Math.PI / 2 +
+                direction +
+                random(-0.75, 0.75);
+
+            const speed = random(3.5, 7) * power;
+
+            particles.push({
+                x,
+                y,
+                vx: Math.cos(angle) * speed,
+                vy: Math.sin(angle) * speed,
+                gravity: 0.04,
+                friction: 0.987,
+                life: random(65, 105),
+                maxLife: 105,
+                size: random(1.2, 2.5),
+                color: randomChoice(colors),
+                type: "normal"
+            });
+        }
+
+    } else if (type === "heart") {
+
+        const count = Math.floor(125 * power);
+
+        for (let i = 0; i < count; i++) {
+
+            const t =
+                (Math.PI * 2 * i) / count;
+
+            const hx = 16 * Math.pow(Math.sin(t), 3);
+            const hy =
+                13 * Math.cos(t)
+                - 5 * Math.cos(2 * t)
+                - 2 * Math.cos(3 * t)
+                - Math.cos(4 * t);
+
+            const scale = random(0.25, 0.38) * power;
+
+            particles.push({
+                x,
+                y,
+                vx: hx * scale,
+                vy: -hy * scale,
+                gravity: 0.028,
+                friction: 0.988,
+                life: random(70, 110),
+                maxLife: 110,
+                size: random(1.4, 2.5),
+                color: randomChoice(colors),
+                type: "normal"
+            });
+        }
+
+    } else if (type === "spiral") {
+
+        const count = Math.floor(125 * power);
+
+        for (let i = 0; i < count; i++) {
+
+            const t =
+                (i / count) * Math.PI * 10;
+
+            const radius =
+                (i / count) * random(2.5, 6);
+
+            particles.push({
+                x,
+                y,
+                vx: Math.cos(t) * radius,
+                vy: Math.sin(t) * radius,
+                gravity: 0.035,
+                friction: 0.986,
+                life: random(70, 110),
+                maxLife: 110,
+                size: random(1.2, 2.5),
+                color: colors[i % colors.length],
+                type: "normal"
+            });
+        }
+
+    } else if (type === "cross") {
+
+        const count = Math.floor(70 * power);
+
+        for (let arm = 0; arm < 4; arm++) {
+
+            const angle =
+                arm * Math.PI / 2;
+
+            for (let i = 0; i < count; i++) {
+
+                const spread =
+                    random(-0.045, 0.045);
+
+                const speed =
+                    random(2.5, 7) * power;
+
+                particles.push({
+                    x,
+                    y,
+                    vx:
+                        Math.cos(angle + spread) *
+                        speed,
+                    vy:
+                        Math.sin(angle + spread) *
+                        speed,
+                    gravity: 0.03,
+                    friction: 0.987,
+                    life: random(65, 105),
+                    maxLife: 105,
+                    size: random(1.2, 2.5),
+                    color: randomChoice(colors),
+                    type: "normal"
+                });
+            }
+        }
+
+    } else if (type === "saturn") {
+
+        for (let i = 0; i < baseCount; i++) {
+
+            const angle =
+                Math.random() * Math.PI * 2;
+
+            const speed =
+                random(2.5, 6) * power;
+
+            particles.push({
+                x,
+                y,
+                vx: Math.cos(angle) * speed,
+                vy: Math.sin(angle) * speed,
+                gravity: 0.03,
+                friction: 0.987,
+                life: random(65, 105),
+                maxLife: 105,
+                size: random(1.2, 2.4),
+                color: randomChoice(colors),
+                type: "normal"
+            });
+        }
+
+        const ringCount = Math.floor(100 * power);
+
+        for (let i = 0; i < ringCount; i++) {
+
+            const angle =
+                (Math.PI * 2 * i) / ringCount;
+
+            const speed = 5.2 * power;
+
+            particles.push({
+                x,
+                y,
+                vx: Math.cos(angle) * speed,
+                vy: Math.sin(angle) * speed * 0.32,
+                gravity: 0.02,
+                friction: 0.988,
+                life: random(60, 95),
+                maxLife: 95,
+                size: random(1.2, 2.3),
+                color: colors[1 % colors.length],
+                type: "normal"
+            });
+        }
+
+    } else if (type === "rainbow") {
+
+        for (let i = 0; i < baseCount * 1.1; i++) {
+
+            const angle =
+                Math.random() * Math.PI * 2;
+
+            const speed =
+                random(2.5, 6.5) * power;
+
+            particles.push({
+                x,
+                y,
+                vx: Math.cos(angle) * speed,
+                vy: Math.sin(angle) * speed,
+                gravity: 0.035,
+                friction: 0.986,
+                life: random(65, 105),
+                maxLife: 105,
+                size: random(1.2, 2.5),
+                color:
+                    palettes[
+                        i % palettes.length
+                    ][0],
+                type: "normal"
+            });
+        }
+
+    } else if (type === "golden") {
+
+        for (let i = 0; i < baseCount * 1.2; i++) {
+
+            const angle =
+                Math.random() * Math.PI * 2;
+
+            const speed =
+                random(2.2, 6.3) * power;
+
+            particles.push({
+                x,
+                y,
+                vx: Math.cos(angle) * speed,
+                vy: Math.sin(angle) * speed,
+                gravity: 0.055,
+                friction: 0.992,
+                life: random(90, 145),
+                maxLife: 145,
+                size: random(1.3, 2.8),
+                color: randomChoice(colors),
+                type: "normal"
+            });
+        }
     }
 }
 
 
 /* =========================================================
-   120+ SHOW VARIATIONS
-========================================================= */
-
-const fireworkTypes = [
-    "sphere",
-    "ring",
-    "doubleRing",
-    "willow",
-    "crackle",
-    "chrysanthemum",
-    "peony",
-    "fan",
-    "heart",
-    "spiral",
-    "cross",
-    "saturn",
-    "rainbow",
-    "golden"
-];
-
-
-/*
-    More than 100 individual presets.
-
-    Each one is deliberately different so the continuous
-    launcher isn't simply repeating the same firework.
-*/
-
-const showItems = [
-    { type:"sphere", palette:0, count:3 },
-    { type:"ring", palette:1, count:2 },
-    { type:"doubleRing", palette:2, count:2 },
-    { type:"willow", palette:4, count:2 },
-    { type:"crackle", palette:0, count:3 },
-    { type:"chrysanthemum", palette:5, count:3 },
-    { type:"peony", palette:6, count:2 },
-    { type:"fan", palette:7, count:3 },
-    { type:"heart", palette:0, count:2 },
-    { type:"spiral", palette:2, count:2 },
-    { type:"cross", palette:1, count:3 },
-    { type:"saturn", palette:4, count:2 },
-    { type:"rainbow", palette:0, count:2 },
-    { type:"golden", palette:4, count:3 },
-
-    { type:"sphere", palette:8, count:4 },
-    { type:"ring", palette:9, count:2 },
-    { type:"doubleRing", palette:10, count:3 },
-    { type:"willow", palette:11, count:2 },
-    { type:"crackle", palette:12, count:3 },
-    { type:"chrysanthemum", palette:13, count:3 },
-    { type:"peony", palette:14, count:3 },
-    { type:"fan", palette:15, count:2 },
-    { type:"heart", palette:6, count:2 },
-    { type:"spiral", palette:7, count:3 },
-    { type:"cross", palette:3, count:3 },
-    { type:"saturn", palette:5, count:2 },
-    { type:"rainbow", palette:2, count:3 },
-    { type:"golden", palette:10, count:3 },
-
-    { type:"sphere", palette:15, count:3 },
-    { type:"ring", palette:16, count:2 },
-    { type:"doubleRing", palette:17, count:2 },
-    { type:"willow", palette:18, count:3 },
-    { type:"crackle", palette:19, count:3 },
-    { type:"chrysanthemum", palette:0, count:3 },
-    { type:"peony", palette:1, count:3 },
-    { type:"fan", palette:2, count:3 },
-    { type:"heart", palette:3, count:2 },
-    { type:"spiral", palette:4, count:3 },
-    { type:"cross", palette:5, count:2 },
-    { type:"saturn", palette:6, count:2 },
-    { type:"rainbow", palette:7, count:3 },
-    { type:"golden", palette:8, count:3 },
-
-    { type:"sphere", palette:9, count:3 },
-    { type:"ring", palette:10, count:2 },
-    { type:"doubleRing", palette:11, count:2 },
-    { type:"willow", palette:12, count:3 },
-    { type:"crackle", palette:13, count:3 },
-    { type:"chrysanthemum", palette:14, count:3 },
-    { type:"peony", palette:15, count:2 },
-    { type:"fan", palette:16, count:3 },
-    { type:"heart", palette:17, count:2 },
-    { type:"spiral", palette:18, count:3 },
-    { type:"cross", palette:19, count:3 },
-    { type:"saturn", palette:0, count:2 },
-    { type:"rainbow", palette:1, count:3 },
-    { type:"golden", palette:2, count:3 },
-
-    { type:"sphere", palette:3, count:4 },
-    { type:"ring", palette:4, count:2 },
-    { type:"doubleRing", palette:5, count:3 },
-    { type:"willow", palette:6, count:3 },
-    { type:"crackle", palette:7, count:3 },
-    { type:"chrysanthemum", palette:8, count:3 },
-    { type:"peony", palette:9, count:3 },
-    { type:"fan", palette:10, count:2 },
-    { type:"heart", palette:11, count:2 },
-    { type:"spiral", palette:12, count:3 },
-    { type:"cross", palette:13, count:3 },
-    { type:"saturn", palette:14, count:2 },
-    { type:"rainbow", palette:15, count:3 },
-    { type:"golden", palette:16, count:3 },
-
-    { type:"sphere", palette:17, count:3 },
-    { type:"ring", palette:18, count:2 },
-    { type:"doubleRing", palette:19, count:2 },
-    { type:"willow", palette:0, count:3 },
-    { type:"crackle", palette:1, count:3 },
-    { type:"chrysanthemum", palette:2, count:4 },
-    { type:"peony", palette:3, count:3 },
-    { type:"fan", palette:4, count:3 },
-    { type:"heart", palette:5, count:2 },
-    { type:"spiral", palette:6, count:3 },
-    { type:"cross", palette:7, count:3 },
-    { type:"saturn", palette:8, count:2 },
-    { type:"rainbow", palette:9, count:3 },
-    { type:"golden", palette:10, count:3 },
-
-    { type:"sphere", palette:11, count:3 },
-    { type:"ring", palette:12, count:2 },
-    { type:"doubleRing", palette:13, count:3 },
-    { type:"willow", palette:14, count:3 },
-    { type:"crackle", palette:15, count:3 },
-    { type:"chrysanthemum", palette:16, count:3 },
-    { type:"peony", palette:17, count:3 },
-    { type:"fan", palette:18, count:3 },
-    { type:"heart", palette:19, count:2 },
-    { type:"spiral", palette:0, count:3 },
-    { type:"cross", palette:1, count:3 },
-    { type:"saturn", palette:2, count:2 },
-    { type:"rainbow", palette:3, count:3 },
-    { type:"golden", palette:4, count:3 },
-
-    { type:"sphere", palette:5, count:4 },
-    { type:"ring", palette:6, count:2 },
-    { type:"doubleRing", palette:7, count:3 },
-    { type:"willow", palette:8, count:3 },
-    { type:"crackle", palette:9, count:3 },
-    { type:"chrysanthemum", palette:10, count:4 },
-    { type:"peony", palette:11, count:3 },
-    { type:"fan", palette:12, count:3 },
-    { type:"heart", palette:13, count:2 },
-    { type:"spiral", palette:14, count:3 },
-    { type:"cross", palette:15, count:3 },
-    { type:"saturn", palette:16, count:2 },
-    { type:"rainbow", palette:17, count:3 },
-    { type:"golden", palette:18, count:3 },
-
-    { type:"sphere", palette:19, count:4 },
-    { type:"ring", palette:0, count:3 },
-    { type:"doubleRing", palette:1, count:3 },
-    { type:"willow", palette:2, count:3 },
-    { type:"crackle", palette:3, count:4 },
-    { type:"chrysanthemum", palette:4, count:4 },
-    { type:"peony", palette:5, count:3 },
-    { type:"fan", palette:6, count:3 },
-    { type:"heart", palette:7, count:2 },
-    { type:"spiral", palette:8, count:3 },
-    { type:"cross", palette:9, count:3 },
-    { type:"saturn", palette:10, count:3 },
-    { type:"rainbow", palette:11, count:3 },
-    { type:"golden", palette:12, count:4 },
-
-    { type:"sphere", palette:13, count:4 },
-    { type:"ring", palette:14, count:3 },
-    { type:"doubleRing", palette:15, count:3 },
-    { type:"willow", palette:16, count:4 },
-    { type:"crackle", palette:17, count:4 },
-    { type:"chrysanthemum", palette:18, count:4 },
-    { type:"peony", palette:19, count:3 },
-    { type:"fan", palette:0, count:4 },
-    { type:"heart", palette:1, count:2 },
-    { type:"spiral", palette:2, count:4 },
-    { type:"cross", palette:3, count:4 },
-    { type:"saturn", palette:4, count:3 },
-    { type:"rainbow", palette:5, count:4 },
-    { type:"golden", palette:6, count:4 },
-
-    { type:"sphere", palette:7, count:4 },
-    { type:"ring", palette:8, count:3 },
-    { type:"doubleRing", palette:9, count:3 },
-    { type:"willow", palette:10, count:4 },
-    { type:"crackle", palette:11, count:4 },
-    { type:"chrysanthemum", palette:12, count:4 },
-    { type:"peony", palette:13, count:4 },
-    { type:"fan", palette:14, count:4 },
-    { type:"heart", palette:15, count:2 },
-    { type:"spiral", palette:16, count:4 },
-    { type:"cross", palette:17, count:4 },
-    { type:"saturn", palette:18, count:3 },
-    { type:"rainbow", palette:19, count:4 },
-    { type:"golden", palette:0, count:4 }
-];
-
-
-/* =========================================================
-   LAUNCH ONE SHOW ITEM
+   SHOW ITEM LAUNCHER
 ========================================================= */
 
 let showItemIndex = 0;
 
 function launchShowItem(intensity = 1) {
+
+    /*
+        Keep the large preset variety, but prevent the launcher
+        from adding excessive work when the particle system is full.
+    */
+
+    if (
+        rockets.length >= MAX_ROCKETS ||
+        particles.length >= MAX_PARTICLES * 0.88
+    ) {
+        return;
+    }
+
+    /*
+        The preset list cycles through all 100+ varieties.
+        Individual positions, colors, power and timing remain
+        randomized.
+    */
     const item =
         showItems[
-            showItemIndex %
-            showItems.length
+            showItemIndex % showItems.length
         ];
 
     showItemIndex++;
 
     const palette =
-        palettes[item.palette % palettes.length];
+        palettes[
+            item.palette % palettes.length
+        ];
 
-    let amount =
-        Math.round(
-            item.count *
-            intensity
-        );
+    const power =
+        random(0.88, 1.12) *
+        intensity;
 
-    amount = Math.max(1, amount);
+    for (
+        let i = 0;
+        i < item.count;
+        i++
+    ) {
 
-    /*
-        Keep special effects distributed around
-        the entire screen instead of clustering.
-    */
+        const targetX =
+            random(
+                width * 0.10,
+                width * 0.90
+            );
 
-    const baseX =
-        random(width * 0.12, width * 0.88);
+        const targetY =
+            random(
+                height * 0.13,
+                height * 0.53
+            );
 
-    const baseY =
-        random(height * 0.13, height * 0.47);
-
-    for (let i = 0; i < amount; i++) {
-        let targetX =
-            baseX +
-            random(-Math.min(width * 0.25, 180),
-                   Math.min(width * 0.25, 180));
-
-        let targetY =
-            baseY +
-            random(-45, 45);
-
-        targetX = Math.max(
-            width * 0.06,
-            Math.min(width * 0.94, targetX)
-        );
-
-        targetY = Math.max(
-            height * 0.10,
-            Math.min(height * 0.58, targetY)
-        );
-
-        addRocket({
+        createRocket(
             targetX,
             targetY,
-            color: pick(palette),
-            type: item.type,
-            speed: random(9, 13.5)
-        });
+            palette,
+            item.type,
+            power
+        );
     }
 }
 
 
 /* =========================================================
-   SPECIAL OVERLAPPING SEQUENCES
+   SPECIAL RANDOM SEQUENCES
 ========================================================= */
 
-function launchSpecialSequence() {
-    const intensity =
-        Math.min(
-            2.5,
-            1 +
-            (showElapsed / SHOW_DURATION) * 1.5
-        );
+function specialSequence() {
+
+    if (!showActive || finaleRunning) {
+        return;
+    }
 
     const sequence =
         randomInt(0, 9);
 
+    const centerX = width / 2;
+
     if (sequence === 0) {
-        for (let i = 0; i < 4; i++) {
-            addRocket({
-                targetX:
-                    width * (0.18 + i * 0.21),
-                targetY:
-                    random(height * 0.18, height * 0.38),
-                color:
-                    pick(
-                        palettes[
-                            randomInt(
-                                0,
-                                palettes.length - 1
-                            )
-                        ]
-                    ),
-                type:
-                    pick([
-                        "ring",
-                        "chrysanthemum",
-                        "peony"
-                    ])
-            });
-        }
-    }
 
-    if (sequence === 1) {
-        for (let i = 0; i < 6; i++) {
-            addRocket({
-                targetX:
-                    random(
-                        width * 0.1,
-                        width * 0.9
-                    ),
-                targetY:
-                    random(
-                        height * 0.15,
-                        height * 0.48
-                    ),
-                color:
-                    pick(
-                        palettes[
-                            randomInt(
-                                0,
-                                palettes.length - 1
-                            )
-                        ]
-                    ),
-                type:
-                    pick([
-                        "sphere",
-                        "crackle",
-                        "fan"
-                    ])
-            });
-        }
-    }
-
-    if (sequence === 2) {
-        for (let i = 0; i < 5; i++) {
-            addRocket({
-                targetX:
-                    width * (
-                        0.15 +
-                        i * 0.175
-                    ),
-                targetY:
-                    random(
-                        height * 0.18,
-                        height * 0.43
-                    ),
-                color:
-                    pick(
-                        palettes[
-                            randomInt(
-                                0,
-                                palettes.length - 1
-                            )
-                        ]
-                    ),
-                type:
-                    "golden"
-            });
-        }
-    }
-
-    if (sequence === 3) {
-        addRocket({
-            targetX: width * 0.5,
-            targetY: height * 0.25,
-            color: "#ff4081",
-            type: "heart"
-        });
-
-        addRocket({
-            targetX: width * 0.5,
-            targetY: height * 0.25,
-            color: "#ffffff",
-            type: "ring"
-        });
-    }
-
-    if (sequence === 4) {
         for (let i = 0; i < 3; i++) {
-            addRocket({
-                targetX:
-                    random(
-                        width * 0.12,
-                        width * 0.88
-                    ),
-                targetY:
-                    random(
-                        height * 0.15,
-                        height * 0.42
-                    ),
-                color:
-                    pick([
-                        "#ffffff",
-                        "#fff176",
-                        "#ffc107"
-                    ]),
-                type: "willow"
-            });
-        }
-    }
 
-    if (sequence === 5) {
-        for (let i = 0; i < 5; i++) {
-            addRocket({
-                targetX:
-                    width * (
-                        0.1 +
-                        i * 0.2
-                    ),
-                targetY:
-                    random(
-                        height * 0.18,
-                        height * 0.45
-                    ),
-                color:
-                    pick(
-                        palettes[
-                            randomInt(
-                                0,
-                                palettes.length - 1
-                            )
-                        ]
-                    ),
-                type:
-                    pick([
-                        "spiral",
-                        "cross",
-                        "saturn"
-                    ])
-            });
-        }
-    }
-
-    if (sequence === 6) {
-        for (let i = 0; i < Math.round(3 * intensity); i++) {
-            addRocket({
-                targetX:
-                    random(
-                        width * 0.15,
-                        width * 0.85
-                    ),
-                targetY:
-                    random(
-                        height * 0.15,
-                        height * 0.5
-                    ),
-                color:
-                    pick(
-                        palettes[
-                            randomInt(
-                                0,
-                                palettes.length - 1
-                            )
-                        ]
-                    ),
-                type:
-                    "rainbow"
-            });
-        }
-    }
-
-    if (sequence === 7) {
-        const centerX = width * 0.5;
-
-        for (let i = 0; i < 7; i++) {
-            addRocket({
-                targetX:
-                    centerX +
-                    (i - 3) *
-                    width *
-                    0.09,
-                targetY:
-                    random(
-                        height * 0.2,
-                        height * 0.43
-                    ),
-                color:
-                    pick(
-                        palettes[
-                            randomInt(
-                                0,
-                                palettes.length - 1
-                            )
-                        ]
-                    ),
-                type:
-                    pick([
-                        "peony",
-                        "chrysanthemum",
-                        "crackle"
-                    ])
-            });
-        }
-    }
-
-    if (sequence === 8) {
-        addRocket({
-            targetX: width * 0.5,
-            targetY: height * 0.22,
-            color: "#00e5ff",
-            type: "doubleRing"
-        });
-
-        addRocket({
-            targetX: width * 0.5,
-            targetY: height * 0.22,
-            color: "#ffffff",
-            type: "saturn"
-        });
-    }
-
-    if (sequence === 9) {
-        for (let i = 0; i < 8; i++) {
-            addRocket({
-                targetX:
-                    random(
-                        width * 0.07,
-                        width * 0.93
-                    ),
-                targetY:
-                    random(
-                        height * 0.12,
-                        height * 0.52
-                    ),
-                color:
-                    pick(
-                        palettes[
-                            randomInt(
-                                0,
-                                palettes.length - 1
-                            )
-                        ]
-                    ),
-                type:
-                    pick(fireworkTypes)
-            });
-        }
-    }
-}
-
-
-/* =========================================================
-   FINALE LETTERS
-========================================================= */
-
-const letterFont = {
-    A:[
-        "01110",
-        "10001",
-        "10001",
-        "11111",
-        "10001",
-        "10001",
-        "10001"
-    ],
-
-    B:[
-        "11110",
-        "10001",
-        "10001",
-        "11110",
-        "10001",
-        "10001",
-        "11110"
-    ],
-
-    C:[
-        "01111",
-        "10000",
-        "10000",
-        "10000",
-        "10000",
-        "10000",
-        "01111"
-    ],
-
-    D:[
-        "11110",
-        "10001",
-        "10001",
-        "10001",
-        "10001",
-        "10001",
-        "11110"
-    ],
-
-    E:[
-        "11111",
-        "10000",
-        "10000",
-        "11110",
-        "10000",
-        "10000",
-        "11111"
-    ],
-
-    F:[
-        "11111",
-        "10000",
-        "10000",
-        "11110",
-        "10000",
-        "10000",
-        "10000"
-    ],
-
-    G:[
-        "01111",
-        "10000",
-        "10000",
-        "10111",
-        "10001",
-        "10001",
-        "01111"
-    ],
-
-    H:[
-        "10001",
-        "10001",
-        "10001",
-        "11111",
-        "10001",
-        "10001",
-        "10001"
-    ],
-
-    I:[
-        "11111",
-        "00100",
-        "00100",
-        "00100",
-        "00100",
-        "00100",
-        "11111"
-    ],
-
-    J:[
-        "00111",
-        "00010",
-        "00010",
-        "00010",
-        "10010",
-        "10010",
-        "01100"
-    ],
-
-    K:[
-        "10001",
-        "10010",
-        "10100",
-        "11000",
-        "10100",
-        "10010",
-        "10001"
-    ],
-
-    L:[
-        "10000",
-        "10000",
-        "10000",
-        "10000",
-        "10000",
-        "10000",
-        "11111"
-    ],
-
-    M:[
-        "10001",
-        "11011",
-        "10101",
-        "10101",
-        "10001",
-        "10001",
-        "10001"
-    ],
-
-    N:[
-        "10001",
-        "11001",
-        "10101",
-        "10011",
-        "10001",
-        "10001",
-        "10001"
-    ],
-
-    O:[
-        "01110",
-        "10001",
-        "10001",
-        "10001",
-        "10001",
-        "10001",
-        "01110"
-    ],
-
-    P:[
-        "11110",
-        "10001",
-        "10001",
-        "11110",
-        "10000",
-        "10000",
-        "10000"
-    ],
-
-    Q:[
-        "01110",
-        "10001",
-        "10001",
-        "10001",
-        "10101",
-        "10010",
-        "01101"
-    ],
-
-    R:[
-        "11110",
-        "10001",
-        "10001",
-        "11110",
-        "10100",
-        "10010",
-        "10001"
-    ],
-
-    S:[
-        "01111",
-        "10000",
-        "10000",
-        "01110",
-        "00001",
-        "00001",
-        "11110"
-    ],
-
-    T:[
-        "11111",
-        "00100",
-        "00100",
-        "00100",
-        "00100",
-        "00100",
-        "00100"
-    ],
-
-    U:[
-        "10001",
-        "10001",
-        "10001",
-        "10001",
-        "10001",
-        "10001",
-        "01110"
-    ],
-
-    V:[
-        "10001",
-        "10001",
-        "10001",
-        "10001",
-        "01010",
-        "01010",
-        "00100"
-    ],
-
-    W:[
-        "10001",
-        "10001",
-        "10001",
-        "10101",
-        "10101",
-        "11011",
-        "10001"
-    ],
-
-    X:[
-        "10001",
-        "10001",
-        "01010",
-        "00100",
-        "01010",
-        "10001",
-        "10001"
-    ],
-
-    Y:[
-        "10001",
-        "10001",
-        "01010",
-        "00100",
-        "00100",
-        "00100",
-        "00100"
-    ],
-
-    Z:[
-        "11111",
-        "00001",
-        "00010",
-        "00100",
-        "01000",
-        "10000",
-        "11111"
-    ]
-};
-
-
-function createLetterTargets(text) {
-    const clean =
-        text
-            .toUpperCase()
-            .replace(/[^A-Z ]/g, "")
-            .trim();
-
-    const letters =
-        clean.split("");
-
-    const spacing = 1;
-
-    let totalUnits = 0;
-
-    for (const char of letters) {
-        if (char === " ") {
-            totalUnits += 4;
-        } else {
-            totalUnits += 5 + spacing;
-        }
-    }
-
-    totalUnits =
-        Math.max(
-            1,
-            totalUnits - spacing
-        );
-
-    const cell =
-        Math.min(
-            18,
-            Math.max(
-                4,
-                width * 0.88 / totalUnits
-            )
-        );
-
-    const totalWidth =
-        totalUnits * cell;
-
-    let startX =
-        (width - totalWidth) / 2;
-
-    const startY =
-        height * 0.32;
-
-    const targets = [];
-
-    for (const char of letters) {
-        if (char === " ") {
-            startX += 4 * cell;
-            continue;
-        }
-
-        const pattern =
-            letterFont[char];
-
-        if (!pattern) {
-            startX += 6 * cell;
-            continue;
-        }
-
-        for (let row = 0; row < 7; row++) {
-            for (let col = 0; col < 5; col++) {
-                if (pattern[row][col] === "1") {
-                    targets.push({
-                        x:
-                            startX +
-                            col * cell +
-                            cell * 0.5,
-
-                        y:
-                            startY +
-                            row * cell +
-                            cell * 0.5
-                    });
-                }
-            }
-        }
-
-        startX += 6 * cell;
-    }
-
-    return targets;
-}
-
-
-function launchLetterRocket(target, color, delay = 0) {
-    addRocket({
-        targetX: target.x,
-        targetY: target.y,
-        color,
-        type: "sphere",
-        speed: random(10, 13.5),
-        delay
-    });
-}
-
-
-function launchLetterFireworks(text) {
-    const targets =
-        createLetterTargets(text);
-
-    const colors = [
-        "#ffffff",
-        "#00e5ff",
-        "#2979ff",
-        "#d500f9",
-        "#ff4081",
-        "#ff1744",
-        "#ffc107",
-        "#76ff03"
-    ];
-
-    targets.forEach((target, index) => {
-        launchLetterRocket(
-            target,
-            colors[
-                index % colors.length
-            ],
-            Math.floor(index * 0.8)
-        );
-    });
-}
-
-
-/* =========================================================
-   FINALE BURSTS
-========================================================= */
-
-function finaleBurst(count) {
-    for (let i = 0; i < count; i++) {
-        addRocket({
-            targetX:
-                random(
-                    width * 0.08,
-                    width * 0.92
-                ),
-
-            targetY:
-                random(
-                    height * 0.12,
-                    height * 0.48
-                ),
-
-            color:
-                pick([
-                    "#ffffff",
-                    "#ff1744",
-                    "#ff4081",
-                    "#d500f9",
-                    "#7c4dff",
-                    "#2979ff",
-                    "#00e5ff",
-                    "#00e676",
-                    "#ffc107",
-                    "#ff9800"
-                ]),
-
-            type:
-                pick([
-                    "sphere",
+            createRocket(
+                centerX + random(-220, 220),
+                random(height * 0.18, height * 0.45),
+                randomChoice(palettes),
+                randomChoice([
                     "ring",
-                    "doubleRing",
-                    "rainbow",
-                    "golden",
+                    "sphere",
+                    "peony"
+                ]),
+                1
+            );
+        }
+
+    } else if (sequence === 1) {
+
+        for (let i = 0; i < 4; i++) {
+
+            createRocket(
+                width * (0.18 + i * 0.21),
+                random(height * 0.2, height * 0.48),
+                randomChoice(palettes),
+                "sphere",
+                0.9
+            );
+        }
+
+    } else if (sequence === 2) {
+
+        createRocket(
+            centerX,
+            height * 0.25,
+            randomChoice(palettes),
+            "heart",
+            1
+        );
+
+    } else if (sequence === 3) {
+
+        for (let i = 0; i < 3; i++) {
+
+            createRocket(
+                random(width * 0.15, width * 0.85),
+                random(height * 0.2, height * 0.45),
+                randomChoice(palettes),
+                "doubleRing",
+                0.9
+            );
+        }
+
+    } else if (sequence === 4) {
+
+        for (let i = 0; i < 5; i++) {
+
+            createRocket(
+                width * random(0.12, 0.88),
+                random(height * 0.2, height * 0.5),
+                palettes[
+                    i % palettes.length
+                ],
+                "fan",
+                0.85
+            );
+        }
+
+    } else if (sequence === 5) {
+
+        createRocket(
+            centerX,
+            height * 0.25,
+            palettes[4],
+            "golden",
+            1.15
+        );
+
+    } else if (sequence === 6) {
+
+        for (let i = 0; i < 2; i++) {
+
+            createRocket(
+                random(width * 0.2, width * 0.8),
+                random(height * 0.18, height * 0.4),
+                randomChoice(palettes),
+                "spiral",
+                1
+            );
+        }
+
+    } else if (sequence === 7) {
+
+        createRocket(
+            width * 0.25,
+            height * 0.3,
+            randomChoice(palettes),
+            "saturn",
+            1
+        );
+
+        createRocket(
+            width * 0.75,
+            height * 0.3,
+            randomChoice(palettes),
+            "saturn",
+            1
+        );
+
+    } else if (sequence === 8) {
+
+        createRocket(
+            centerX,
+            height * 0.28,
+            randomChoice(palettes),
+            "rainbow",
+            1.1
+        );
+
+    } else {
+
+        for (let i = 0; i < 3; i++) {
+
+            createRocket(
+                random(width * 0.12, width * 0.88),
+                random(height * 0.18, height * 0.5),
+                randomChoice(palettes),
+                randomChoice([
                     "chrysanthemum",
+                    "peony",
                     "crackle"
                 ]),
-
-            speed:
-                random(10, 14)
-        });
-    }
-}
-
-
-/* =========================================================
-   FINALE TEXT
-========================================================= */
-
-function setFinaleMessage(text) {
-    finaleText.textContent = text;
-    finaleText.style.display = "flex";
-}
-
-function hideFinaleMessage() {
-    finaleText.style.display = "none";
-}
-
-
-/* =========================================================
-   BIRTHDAY FINALE
-========================================================= */
-
-function runBirthdayFinale() {
-    if (finaleRunning) return;
-
-    finaleRunning = true;
-
-    showActive = false;
-
-    /*
-        HAPPY
-    */
-
-    setFinaleMessage("HAPPY");
-
-    launchLetterFireworks("HAPPY");
-
-    finaleBurst(10);
-
-    setTimeout(() => {
-        if (!finaleRunning) return;
-
-        hideFinaleMessage();
-
-        finaleBurst(14);
-
-        setFinaleMessage("BIRTHDAY");
-
-        launchLetterFireworks("BIRTHDAY");
-    }, 4300);
-
-    setTimeout(() => {
-        if (!finaleRunning) return;
-
-        hideFinaleMessage();
-
-        finaleBurst(18);
-
-        setFinaleMessage(
-            birthdayName.toUpperCase()
-        );
-
-        launchLetterFireworks(
-            birthdayName
-        );
-    }, 8800);
-
-    setTimeout(() => {
-        if (!finaleRunning) return;
-
-        hideFinaleMessage();
-
-        finaleBurst(24);
-
-        launchLetterFireworks(
-            birthdayName
-        );
-
-        for (let i = 0; i < 8; i++) {
-            setTimeout(() => {
-                finaleBurst(5);
-            }, i * 180);
-        }
-    }, 11600);
-
-    setTimeout(() => {
-        finaleRunning = false;
-        showFinished = true;
-        hideFinaleMessage();
-    }, 16500);
-}
-
-
-/* =========================================================
-   START SHOW
-========================================================= */
-
-function startFireworkShow() {
-    rockets.length = 0;
-    particles.length = 0;
-
-    showActive = true;
-    showFinished = false;
-    finaleRunning = false;
-
-    showStartTime =
-        performance.now();
-
-    showElapsed = 0;
-
-    showItemIndex = 0;
-
-    /*
-        Start immediately.
-    */
-
-    nextContinuousLaunch = 0;
-    nextSpecialLaunch = 1800;
-
-    launchShowItem(1.1);
-}
-
-
-/* =========================================================
-   CONTINUOUS SHOW SCHEDULER
-========================================================= */
-
-function updateShow(time) {
-    if (!showActive) {
-        return;
-    }
-
-    showElapsed =
-        time - showStartTime;
-
-    if (showElapsed >= SHOW_DURATION) {
-        showActive = false;
-
-        /*
-            Immediately transition into
-            the birthday finale.
-        */
-
-        runBirthdayFinale();
-        return;
-    }
-
-    /*
-        Main continuous launcher.
-
-        This is deliberately much faster than the
-        lifespan of a firework, causing the effects
-        to overlap instead of leaving the sky empty.
-    */
-
-    while (
-        showElapsed >= nextContinuousLaunch
-    ) {
-        const progress =
-            showElapsed / SHOW_DURATION;
-
-        /*
-            The show gradually becomes bigger.
-        */
-
-        let intensity =
-            1 +
-            progress * 1.8;
-
-        /*
-            Final minute becomes noticeably busier.
-        */
-
-        if (progress > 0.80) {
-            intensity += 0.65;
-        }
-
-        if (progress > 0.93) {
-            intensity += 0.8;
-        }
-
-        launchShowItem(
-            Math.min(
-                3.8,
-                intensity
-            )
-        );
-
-        /*
-            Random interval between 550 and 800 ms.
-        */
-
-        nextContinuousLaunch +=
-            random(
-                MIN_LAUNCH_INTERVAL,
-                MAX_LAUNCH_INTERVAL
+                1
             );
-    }
-
-    /*
-        Larger special sequences every few seconds.
-    */
-
-    while (
-        showElapsed >= nextSpecialLaunch
-    ) {
-        launchSpecialSequence();
-
-        nextSpecialLaunch +=
-            random(2600, 5200);
-    }
-
-    /*
-        Last 20 seconds:
-        keep the sky extremely active.
-    */
-
-    if (
-        showElapsed >
-        SHOW_DURATION - 20000
-    ) {
-        if (
-            Math.random() < 0.18
-        ) {
-            launchShowItem(2.8);
         }
     }
 }
 
 
 /* =========================================================
-   UPDATE
+   UPDATE ROCKETS
 ========================================================= */
 
-function update() {
+function updateRockets() {
+
     for (let i = rockets.length - 1; i >= 0; i--) {
+
         const rocket = rockets[i];
 
-        rocket.update();
+        rocket.age++;
 
-        if (rocket.dead) {
+        rocket.trail.push({
+            x: rocket.x,
+            y: rocket.y
+        });
+
+        if (rocket.trail.length > 8) {
+            rocket.trail.shift();
+        }
+
+        rocket.x += rocket.vx;
+        rocket.y += rocket.vy;
+
+        rocket.vy += 0.055;
+
+        const reachedTarget =
+            rocket.y <= rocket.targetY;
+
+        const slowed =
+            rocket.vy >= -0.4;
+
+        const oldAge =
+            rocket.age >= rocket.maxAge;
+
+        if (
+            reachedTarget ||
+            slowed ||
+            oldAge
+        ) {
+
+            createExplosion(
+                rocket.x,
+                rocket.y,
+                rocket.palette,
+                rocket.type,
+                1
+            );
+
             rockets.splice(i, 1);
         }
     }
+}
 
-    for (let i = particles.length - 1; i >= 0; i--) {
-        const particle = particles[i];
 
-        particle.update();
+/* =========================================================
+   UPDATE PARTICLES
+========================================================= */
 
-        if (particle.dead) {
+function updateParticles() {
+
+    for (
+        let i = particles.length - 1;
+        i >= 0;
+        i--
+    ) {
+
+        const p = particles[i];
+
+        p.x += p.vx;
+        p.y += p.vy;
+
+        p.vx *= p.friction;
+        p.vy *= p.friction;
+
+        p.vy += p.gravity;
+
+        p.life--;
+
+        if (
+            p.type === "crackle" &&
+            p.crackleTimer > 0
+        ) {
+            p.crackleTimer--;
+        }
+
+        if (p.life <= 0) {
             particles.splice(i, 1);
         }
     }
@@ -2267,14 +1258,12 @@ function update() {
 ========================================================= */
 
 function draw() {
-    /*
-        Very slight persistence creates beautiful trails
-        without allowing old fireworks to completely
-        disappear instantly.
-    */
 
-    ctx.globalCompositeOperation =
-        "source-over";
+    /*
+        Slight persistence creates trails without retaining
+        enough history to become expensive.
+    */
+    ctx.globalCompositeOperation = "source-over";
 
     ctx.fillStyle =
         "rgba(0, 0, 8, 0.22)";
@@ -2286,73 +1275,915 @@ function draw() {
         height
     );
 
-    ctx.globalCompositeOperation =
-        "lighter";
+    ctx.globalCompositeOperation = "lighter";
 
-    /*
-        Particles
-    */
 
-    ctx.save();
-
-    ctx.shadowBlur = 8;
-
-    for (const particle of particles) {
-        if (particle.type === "flash") {
-            ctx.globalAlpha =
-                particle.alpha * 0.12;
-
-            ctx.shadowBlur = 35;
-            ctx.shadowColor =
-                particle.color;
-
-            ctx.beginPath();
-
-            ctx.arc(
-                particle.x,
-                particle.y,
-                particle.size *
-                    particle.alpha,
-                0,
-                Math.PI * 2
-            );
-
-            ctx.fillStyle =
-                particle.color;
-
-            ctx.fill();
-
-            continue;
-        }
-
-        ctx.shadowBlur = 8;
-        ctx.shadowColor =
-            particle.color;
-
-        particle.draw();
-    }
-
-    ctx.restore();
-
-    /*
-        Rockets
-    */
+    /* ROCKET TRAILS */
 
     for (const rocket of rockets) {
-        rocket.draw();
+
+        for (
+            let i = 0;
+            i < rocket.trail.length;
+            i++
+        ) {
+
+            const point =
+                rocket.trail[i];
+
+            const alpha =
+                i /
+                rocket.trail.length *
+                0.65;
+
+            ctx.fillStyle =
+                colorWithAlpha(
+                    rocket.palette[0],
+                    alpha
+                );
+
+            const size =
+                1 +
+                i /
+                rocket.trail.length *
+                1.5;
+
+            ctx.fillRect(
+                point.x - size / 2,
+                point.y - size / 2,
+                size,
+                size
+            );
+        }
+
+        ctx.fillStyle =
+            rocket.palette[2];
+
+        ctx.beginPath();
+
+        ctx.arc(
+            rocket.x,
+            rocket.y,
+            2.2,
+            0,
+            Math.PI * 2
+        );
+
+        ctx.fill();
     }
 
-    ctx.globalAlpha = 1;
+
+    /* PARTICLES */
+
+    for (const p of particles) {
+
+        const alpha =
+            Math.max(
+                0,
+                Math.min(
+                    1,
+                    p.life / p.maxLife
+                )
+            );
+
+        ctx.fillStyle =
+            colorWithAlpha(
+                p.color,
+                alpha
+            );
+
+        ctx.beginPath();
+
+        ctx.arc(
+            p.x,
+            p.y,
+            p.size,
+            0,
+            Math.PI * 2
+        );
+
+        ctx.fill();
+    }
+
     ctx.globalCompositeOperation =
         "source-over";
 }
 
 
 /* =========================================================
-   MAIN LOOP
+   FINALE FONT
+   5x7 DIGITAL FIREWORK LETTERS
 ========================================================= */
 
+const letterFont = {
+
+    A: [
+        "01110",
+        "10001",
+        "10001",
+        "11111",
+        "10001",
+        "10001",
+        "10001"
+    ],
+
+    B: [
+        "11110",
+        "10001",
+        "10001",
+        "11110",
+        "10001",
+        "10001",
+        "11110"
+    ],
+
+    C: [
+        "01111",
+        "10000",
+        "10000",
+        "10000",
+        "10000",
+        "10000",
+        "01111"
+    ],
+
+    D: [
+        "11110",
+        "10001",
+        "10001",
+        "10001",
+        "10001",
+        "10001",
+        "11110"
+    ],
+
+    E: [
+        "11111",
+        "10000",
+        "10000",
+        "11110",
+        "10000",
+        "10000",
+        "11111"
+    ],
+
+    F: [
+        "11111",
+        "10000",
+        "10000",
+        "11110",
+        "10000",
+        "10000",
+        "10000"
+    ],
+
+    G: [
+        "01111",
+        "10000",
+        "10000",
+        "10111",
+        "10001",
+        "10001",
+        "01111"
+    ],
+
+    H: [
+        "10001",
+        "10001",
+        "10001",
+        "11111",
+        "10001",
+        "10001",
+        "10001"
+    ],
+
+    I: [
+        "11111",
+        "00100",
+        "00100",
+        "00100",
+        "00100",
+        "00100",
+        "11111"
+    ],
+
+    J: [
+        "00111",
+        "00010",
+        "00010",
+        "00010",
+        "00010",
+        "10010",
+        "01100"
+    ],
+
+    K: [
+        "10001",
+        "10010",
+        "10100",
+        "11000",
+        "10100",
+        "10010",
+        "10001"
+    ],
+
+    L: [
+        "10000",
+        "10000",
+        "10000",
+        "10000",
+        "10000",
+        "10000",
+        "11111"
+    ],
+
+    M: [
+        "10001",
+        "11011",
+        "10101",
+        "10101",
+        "10001",
+        "10001",
+        "10001"
+    ],
+
+    N: [
+        "10001",
+        "11001",
+        "10101",
+        "10011",
+        "10001",
+        "10001",
+        "10001"
+    ],
+
+    O: [
+        "01110",
+        "10001",
+        "10001",
+        "10001",
+        "10001",
+        "10001",
+        "01110"
+    ],
+
+    P: [
+        "11110",
+        "10001",
+        "10001",
+        "11110",
+        "10000",
+        "10000",
+        "10000"
+    ],
+
+    Q: [
+        "01110",
+        "10001",
+        "10001",
+        "10001",
+        "10101",
+        "10010",
+        "01101"
+    ],
+
+    R: [
+        "11110",
+        "10001",
+        "10001",
+        "11110",
+        "10100",
+        "10010",
+        "10001"
+    ],
+
+    S: [
+        "01111",
+        "10000",
+        "10000",
+        "01110",
+        "00001",
+        "00001",
+        "11110"
+    ],
+
+    T: [
+        "11111",
+        "00100",
+        "00100",
+        "00100",
+        "00100",
+        "00100",
+        "00100"
+    ],
+
+    U: [
+        "10001",
+        "10001",
+        "10001",
+        "10001",
+        "10001",
+        "10001",
+        "01110"
+    ],
+
+    V: [
+        "10001",
+        "10001",
+        "10001",
+        "10001",
+        "10001",
+        "01010",
+        "00100"
+    ],
+
+    W: [
+        "10001",
+        "10001",
+        "10001",
+        "10101",
+        "10101",
+        "11011",
+        "10001"
+    ],
+
+    X: [
+        "10001",
+        "10001",
+        "01010",
+        "00100",
+        "01010",
+        "10001",
+        "10001"
+    ],
+
+    Y: [
+        "10001",
+        "10001",
+        "01010",
+        "00100",
+        "00100",
+        "00100",
+        "00100"
+    ],
+
+    Z: [
+        "11111",
+        "00001",
+        "00010",
+        "00100",
+        "01000",
+        "10000",
+        "11111"
+    ],
+
+    " ": [
+        "00000",
+        "00000",
+        "00000",
+        "00000",
+        "00000",
+        "00000",
+        "00000"
+    ]
+};
+
+
+/* =========================================================
+   CREATE TEXT TARGETS
+========================================================= */
+
+function createLetterTargets(text) {
+
+    text =
+        text
+            .toUpperCase()
+            .replace(/[^A-Z ]/g, "");
+
+    if (!text) {
+        return [];
+    }
+
+    const patterns =
+        text
+            .split("")
+            .map(char =>
+                letterFont[char] ||
+                letterFont[" "]
+            );
+
+    const letterWidth = 5;
+    const letterGap = 1;
+
+    const totalColumns =
+        patterns.length * letterWidth +
+        Math.max(0, patterns.length - 1) * letterGap;
+
+    const maxWidth =
+        Math.min(
+            width * 0.88,
+            1100
+        );
+
+    const cellSize =
+        Math.min(
+            22,
+            maxWidth / totalColumns
+        );
+
+    const totalWidth =
+        totalColumns * cellSize;
+
+    const totalHeight =
+        7 * cellSize;
+
+    const startX =
+        (width - totalWidth) / 2;
+
+    const startY =
+        (height - totalHeight) / 2;
+
+    const targets = [];
+
+    let cursorColumn = 0;
+
+    for (const pattern of patterns) {
+
+        for (
+            let row = 0;
+            row < pattern.length;
+            row++
+        ) {
+
+            for (
+                let col = 0;
+                col < pattern[row].length;
+                col++
+            ) {
+
+                if (pattern[row][col] === "1") {
+
+                    targets.push({
+                        x:
+                            startX +
+                            (cursorColumn + col) *
+                            cellSize +
+                            cellSize / 2,
+
+                        y:
+                            startY +
+                            row *
+                            cellSize +
+                            cellSize / 2
+                    });
+                }
+            }
+        }
+
+        cursorColumn +=
+            letterWidth +
+            letterGap;
+    }
+
+    return targets;
+}
+
+
+/* =========================================================
+   FIREWORK TEXT
+========================================================= */
+
+function launchLetterFireworks(
+    text,
+    palette
+) {
+
+    const targets =
+        createLetterTargets(text);
+
+    if (!targets.length) {
+        return;
+    }
+
+    /*
+        Spread the rockets over time rather than launching
+        every letter particle simultaneously.
+    */
+    targets.forEach((target, index) => {
+
+        setTimeout(() => {
+
+            if (!finaleRunning) {
+                return;
+            }
+
+            if (
+                rockets.length >=
+                MAX_ROCKETS
+            ) {
+                return;
+            }
+
+            createRocket(
+                target.x,
+                target.y,
+                palette,
+                "sphere",
+                0.78
+            );
+
+        }, index * 24);
+    });
+}
+
+
+/* =========================================================
+   FINALE BURST
+========================================================= */
+
+function finaleBurst(
+    amount = 5
+) {
+
+    for (let i = 0; i < amount; i++) {
+
+        setTimeout(() => {
+
+            if (!finaleRunning) {
+                return;
+            }
+
+            createRocket(
+                random(
+                    width * 0.08,
+                    width * 0.92
+                ),
+                random(
+                    height * 0.16,
+                    height * 0.48
+                ),
+                randomChoice(palettes),
+                randomChoice([
+                    "sphere",
+                    "ring",
+                    "doubleRing",
+                    "chrysanthemum",
+                    "peony",
+                    "golden",
+                    "rainbow"
+                ]),
+                random(0.9, 1.25)
+            );
+
+        }, i * 260);
+    }
+}
+
+
+/* =========================================================
+   FINALE
+========================================================= */
+
+function runFinale() {
+
+    if (finaleStarted) {
+        return;
+    }
+
+    finaleStarted = true;
+    finaleRunning = true;
+
+    const finaleText =
+        document.getElementById("finaleText");
+
+    /*
+        Clear old show effects gradually by stopping new
+        main-show launches while allowing existing fireworks
+        to finish.
+    */
+
+    setTimeout(() => {
+
+        if (!finaleRunning) {
+            return;
+        }
+
+        finaleText.textContent = "HAPPY";
+        finaleText.classList.add("visible");
+
+        launchLetterFireworks(
+            "HAPPY",
+            randomChoice(palettes)
+        );
+
+        finaleBurst(6);
+
+    }, 500);
+
+
+    setTimeout(() => {
+
+        if (!finaleRunning) {
+            return;
+        }
+
+        finaleText.textContent = "BIRTHDAY";
+
+        launchLetterFireworks(
+            "BIRTHDAY",
+            randomChoice(palettes)
+        );
+
+        finaleBurst(8);
+
+    }, 4700);
+
+
+    setTimeout(() => {
+
+        if (!finaleRunning) {
+            return;
+        }
+
+        finaleText.textContent =
+            birthdayName;
+
+        launchLetterFireworks(
+            birthdayName,
+            randomChoice(palettes)
+        );
+
+        finaleBurst(10);
+
+    }, 9000);
+
+
+    setTimeout(() => {
+
+        if (!finaleRunning) {
+            return;
+        }
+
+        finaleText.textContent =
+            birthdayName;
+
+        launchLetterFireworks(
+            birthdayName,
+            randomChoice(palettes)
+        );
+
+        finaleBurst(14);
+
+    }, 12400);
+
+
+    setTimeout(() => {
+
+        finaleRunning = false;
+
+        finaleText.classList.remove("visible");
+
+        /*
+            Leave the final particles on screen for a moment,
+            then finish cleanly.
+        */
+
+        setTimeout(() => {
+
+            showFinished = true;
+
+        }, 1800);
+
+    }, 16500);
+}
+
+
+/* =========================================================
+   SHOW SCHEDULER
+========================================================= */
+
+function updateShow(time) {
+
+    if (!showActive || showFinished) {
+        return;
+    }
+
+    showElapsed =
+        time -
+        showStartTime;
+
+
+    /*
+        Main show ends here.
+        The finale then takes over.
+    */
+    if (
+        showElapsed >= SHOW_DURATION
+    ) {
+
+        showActive = false;
+
+        runFinale();
+
+        return;
+    }
+
+
+    /*
+        Increasing intensity over the course
+        of the show.
+    */
+    const progress =
+        showElapsed /
+        SHOW_DURATION;
+
+    let intensity = 1;
+
+    if (progress > 0.55) {
+        intensity += 0.18;
+    }
+
+    if (progress > 0.70) {
+        intensity += 0.25;
+    }
+
+    if (progress > 0.80) {
+        intensity += 0.65;
+    }
+
+    if (progress > 0.93) {
+        intensity += 0.8;
+    }
+
+
+    /*
+        CONTINUOUS FIREWORK SCHEDULER
+
+        The important part:
+
+        Instead of firing many fireworks during one frame,
+        the scheduler uses a 400ms preparation buffer.
+
+        This does NOT add a 400ms visible gap.
+        Existing fireworks remain active while new ones
+        are introduced.
+    */
+
+    if (
+        time >= nextContinuousLaunch -
+        FIREWORK_BUFFER
+    ) {
+
+        /*
+            Only perform the expensive creation once
+            the scheduler reaches the launch window.
+        */
+        if (
+            time >= nextContinuousLaunch
+        ) {
+
+            launchShowItem(intensity);
+
+            /*
+                Random interval keeps the show natural.
+            */
+            const interval =
+                random(
+                    MIN_LAUNCH_INTERVAL,
+                    MAX_LAUNCH_INTERVAL
+                );
+
+            /*
+                Schedule the next launch relative to
+                the previous launch rather than current
+                frame time. This prevents drift.
+            */
+            nextContinuousLaunch +=
+                interval;
+
+            /*
+                If the browser was temporarily busy,
+                don't queue dozens of missed launches.
+            */
+            if (
+                nextContinuousLaunch <
+                time - FIREWORK_BUFFER
+            ) {
+
+                nextContinuousLaunch =
+                    time +
+                    random(
+                        MIN_LAUNCH_INTERVAL,
+                        MAX_LAUNCH_INTERVAL
+                    );
+            }
+        }
+    }
+
+
+    /*
+        SPECIAL RANDOM EVENTS
+    */
+
+    if (
+        time >=
+        nextSpecialLaunch -
+        FIREWORK_BUFFER
+    ) {
+
+        if (
+            time >=
+            nextSpecialLaunch
+        ) {
+
+            specialSequence();
+
+            nextSpecialLaunch =
+                time +
+                random(
+                    2600,
+                    5200
+                );
+        }
+    }
+
+
+    /*
+        Extra activity during the final
+        portion of the main show.
+    */
+
+    if (
+        progress > 0.93 &&
+        time >= nextContinuousLaunch
+    ) {
+
+        launchShowItem(
+            intensity * 1.12
+        );
+    }
+}
+
+
+/* =========================================================
+   MAIN UPDATE
+========================================================= */
+
+function update() {
+
+    updateRockets();
+    updateParticles();
+
+    /*
+        Hard protection against runaway particle counts.
+    */
+    if (
+        particles.length >
+        MAX_PARTICLES
+    ) {
+
+        particles.splice(
+            0,
+            particles.length -
+            MAX_PARTICLES
+        );
+    }
+
+    if (
+        rockets.length >
+        MAX_ROCKETS
+    ) {
+
+        rockets.splice(
+            0,
+            rockets.length -
+            MAX_ROCKETS
+        );
+    }
+}
+
+
+/* =========================================================
+   ANIMATION LOOP
+========================================================= */
+
+let lastFrameTime = 0;
+
 function loop(time) {
+
+    /*
+        Ignore tiny duplicate timestamps and keep the
+        animation loop lightweight.
+    */
+    if (
+        time === lastFrameTime
+    ) {
+        requestAnimationFrame(loop);
+        return;
+    }
+
+    lastFrameTime = time;
+
     updateShow(time);
     update();
     draw();
@@ -2364,73 +2195,99 @@ requestAnimationFrame(loop);
 
 
 /* =========================================================
-   NAME HANDLING
+   START SHOW
 ========================================================= */
 
-nameInput.addEventListener(
-    "input",
-    () => {
-        let value =
-            nameInput.value
-                .toUpperCase()
-                .replace(/[^A-Z ]/g, "");
+const startScreen =
+    document.getElementById("startScreen");
 
-        nameInput.value =
-            value.slice(0, 20);
-    }
-);
+const nameInput =
+    document.getElementById("nameInput");
+
+const startButton =
+    document.getElementById("startButton");
 
 
-function beginFromInput() {
-    const enteredName =
-        nameInput.value
-            .toUpperCase()
-            .replace(/[^A-Z ]/g, "")
-            .trim();
+function cleanName(value) {
 
-    if (!enteredName) {
-        nameInput.focus();
-        return;
-    }
-
-    birthdayName =
-        enteredName.slice(0, 20);
-
-    nameScreen.style.display =
-        "none";
-
-    startFireworkShow();
+    return value
+        .toUpperCase()
+        .replace(/[^A-Z ]/g, "")
+        .replace(/\s+/g, " ")
+        .trim()
+        .slice(0, 20);
 }
 
 
 startButton.addEventListener(
     "click",
-    beginFromInput
+    () => {
+
+        birthdayName =
+            cleanName(
+                nameInput.value
+            );
+
+        if (!birthdayName) {
+            birthdayName = "ZAYDEN";
+        }
+
+        startScreen.style.display =
+            "none";
+
+        showActive = true;
+        showFinished = false;
+
+        finaleRunning = false;
+        finaleStarted = false;
+
+        showElapsed = 0;
+
+        showStartTime =
+            performance.now();
+
+        showItemIndex = 0;
+
+        rockets.length = 0;
+        particles.length = 0;
+
+        const now =
+            performance.now();
+
+        /*
+            First launch starts immediately.
+            There is no initial 5-second dead period.
+        */
+        nextContinuousLaunch =
+            now + 150;
+
+        nextSpecialLaunch =
+            now + 2800;
+    }
 );
+
+
+/* =========================================================
+   KEYBOARD SUPPORT
+========================================================= */
 
 nameInput.addEventListener(
     "keydown",
     event => {
+
         if (event.key === "Enter") {
-            beginFromInput();
+            startButton.click();
         }
     }
 );
 
 
 /* =========================================================
-   PREVENT USER-PLACED FIREWORKS
+   PREVENT ACCIDENTAL PAGE GESTURES
 ========================================================= */
 
-/*
-    There is intentionally no click/touch
-    firework launcher during the show.
-
-    The entire show is automated.
-*/
-
-canvas.addEventListener(
-    "pointerdown",
+document.addEventListener(
+    "touchmove",
     event => {
         event.preventDefault();
     },
@@ -2439,41 +2296,29 @@ canvas.addEventListener(
     }
 );
 
-canvas.addEventListener(
-    "pointermove",
+document.addEventListener(
+    "gesturestart",
     event => {
         event.preventDefault();
-    },
-    {
-        passive: false
     }
 );
 
-canvas.addEventListener(
-    "touchstart",
+document.addEventListener(
+    "dblclick",
     event => {
         event.preventDefault();
-    },
-    {
-        passive: false
     }
 );
 
 
 /* =========================================================
-   FINAL INITIALIZATION
+   NO USER FIREWORK PLACEMENT
 ========================================================= */
 
-ctx.fillStyle = "#000";
-ctx.fillRect(
-    0,
-    0,
-    width,
-    height
-);
-
-nameInput.focus();
-
+/*
+    The canvas intentionally has no click/touch firework
+    launcher. The entire show is automated.
+*/
 </script>
 
 </body>
