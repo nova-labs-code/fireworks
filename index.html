@@ -50,8 +50,8 @@
             background:
                 radial-gradient(
                     circle at center,
-                    #111 0%,
-                    #050505 45%,
+                    #151515 0%,
+                    #060606 48%,
                     #000 100%
                 );
 
@@ -65,14 +65,26 @@
 
         #nameBox h1 {
             margin: 0 0 10px;
+
             color: #fff;
-            font-size: clamp(32px, 8vw, 56px);
+
+            font-size:
+                clamp(
+                    34px,
+                    9vw,
+                    58px
+                );
+
+            font-weight: 800;
         }
 
         #nameBox p {
             margin: 0 0 24px;
+
             color: #aaa;
+
             font-size: 17px;
+            line-height: 1.5;
         }
 
         #nameInput {
@@ -87,7 +99,8 @@
             background: #111;
             color: #fff;
 
-            padding: 0 18px;
+            padding:
+                0 18px;
 
             font-size: 18px;
             text-align: center;
@@ -113,10 +126,13 @@
             font-weight: 700;
 
             cursor: pointer;
+
+            transition:
+                transform 0.15s ease;
         }
 
         #startButton:active {
-            transform: scale(0.98);
+            transform: scale(0.97);
         }
 
         #showInfo {
@@ -130,9 +146,16 @@
 
             pointer-events: none;
 
-            color: rgba(255, 255, 255, 0.75);
+            color:
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.75
+                );
 
             font-size: 14px;
+
             text-align: center;
 
             opacity: 0;
@@ -152,6 +175,7 @@
             inset: 0;
 
             display: flex;
+
             align-items: center;
             justify-content: center;
 
@@ -177,10 +201,18 @@
 
             text-align: center;
 
+            white-space: nowrap;
+
+            max-width: 100%;
+            padding: 20px;
+
+            overflow: hidden;
+
             text-shadow:
                 0 0 10px #fff,
                 0 0 25px #fff,
-                0 0 50px #fff;
+                0 0 50px #fff,
+                0 0 90px #fff;
 
             opacity: 0;
 
@@ -189,17 +221,20 @@
 
             transition:
                 opacity 0.5s ease,
-                transform 0.8s cubic-bezier(
-                    0.16,
-                    1,
-                    0.3,
-                    1
-                );
+                transform 0.8s
+                    cubic-bezier(
+                        0.16,
+                        1,
+                        0.3,
+                        1
+                    );
         }
 
         #finaleText.visible {
             opacity: 1;
-            transform: scale(1);
+
+            transform:
+                scale(1);
         }
     </style>
 </head>
@@ -212,11 +247,11 @@
 
     <div id="nameBox">
 
-        <h1>Birthday 🎆</h1>
+        <h1>Birthday Fireworks</h1>
 
         <p>
             Enter the birthday person's name
-            to start the show.
+            to begin the 8-minute show.
         </p>
 
         <input
@@ -225,6 +260,7 @@
             maxlength="20"
             autocomplete="off"
             autocapitalize="words"
+            spellcheck="false"
             placeholder="Name"
         >
 
@@ -243,13 +279,30 @@
 <div id="finaleText"></div>
 
 <script>
+/* =================================
+   CANVAS
+================================= */
+
 const canvas =
-    document.getElementById("canvas");
+    document.getElementById(
+        "canvas"
+    );
 
 const ctx =
-    canvas.getContext("2d", {
-        alpha: false
-    });
+    canvas.getContext(
+        "2d",
+        {
+            alpha: false
+        }
+    );
+
+let width = 0;
+let height = 0;
+let dpr = 1;
+
+/* =================================
+   UI
+================================= */
 
 const nameScreen =
     document.getElementById(
@@ -276,23 +329,26 @@ const finaleText =
         "finaleText"
     );
 
-let width = 0;
-let height = 0;
-let dpr = 1;
-
-/* ================================
+/* =================================
    PERFORMANCE
-================================ */
+================================= */
 
 const MAX_ROCKETS = 14;
 const MAX_PARTICLES = 1800;
+
 const LAUNCH_INTERVAL = 10;
 
-/* ================================
-   SHOW
-================================ */
+/* =================================
+   SHOW SETTINGS
+================================= */
 
-const SHOW_DURATION = 480000;
+/*
+    8 minutes.
+
+    8 * 60 * 1000
+*/
+const SHOW_DURATION =
+    480000;
 
 let showActive = false;
 let showFinished = false;
@@ -305,139 +361,208 @@ let nextShowEvent = 0;
 let birthdayName = "";
 
 /*
-    Users are not allowed to place
-    fireworks while this is false.
+    Manual fireworks stay disabled
+    throughout the entire show and
+    throughout the text finale.
 */
-let userFireworksEnabled = true;
+let userFireworksEnabled = false;
 
-/* ================================
+/* =================================
    SHOW EVENTS
-================================ */
+================================= */
 
 const showEvents = [
+
     {
         time: 0,
         pattern: "opening",
-        colors: ["#00b0ff", "#ffffff"],
+        colors: [
+            "#00b0ff",
+            "#ffffff"
+        ],
         rockets: 3
     },
 
     {
         time: 8,
         pattern: "burst",
-        colors: ["#ff4081", "#fff176"],
+        colors: [
+            "#ff4081",
+            "#fff176"
+        ],
         rockets: 3
     },
 
     {
         time: 18,
         pattern: "burst",
-        colors: ["#2979ff", "#00e676"],
+        colors: [
+            "#2979ff",
+            "#00e676"
+        ],
         rockets: 4
     },
 
     {
         time: 30,
         pattern: "double",
-        colors: ["#d500f9", "#00e5ff"],
+        colors: [
+            "#d500f9",
+            "#00e5ff"
+        ],
         rockets: 4
     },
 
     {
         time: 44,
         pattern: "golden",
-        colors: ["#ffc107", "#fff176", "#ffffff"],
+        colors: [
+            "#ffc107",
+            "#fff176",
+            "#ffffff"
+        ],
         rockets: 5
     },
 
     {
         time: 60,
         pattern: "fan",
-        colors: ["#ff1744", "#ff9800", "#ffc107"],
+        colors: [
+            "#ff1744",
+            "#ff9800",
+            "#ffc107"
+        ],
         rockets: 6
     },
 
     {
         time: 78,
         pattern: "ring",
-        colors: ["#7c4dff", "#00e5ff"],
+        colors: [
+            "#7c4dff",
+            "#00e5ff"
+        ],
         rockets: 5
     },
 
     {
         time: 96,
         pattern: "burst",
-        colors: ["#76ff03", "#00e676", "#ffffff"],
+        colors: [
+            "#76ff03",
+            "#00e676",
+            "#ffffff"
+        ],
         rockets: 6
     },
 
     {
         time: 116,
         pattern: "double",
-        colors: ["#ff00aa", "#9c27b0", "#ffffff"],
+        colors: [
+            "#ff00aa",
+            "#9c27b0",
+            "#ffffff"
+        ],
         rockets: 6
     },
 
     {
         time: 138,
         pattern: "golden",
-        colors: ["#ff9800", "#fff176", "#ffffff"],
+        colors: [
+            "#ff9800",
+            "#fff176",
+            "#ffffff"
+        ],
         rockets: 7
     },
 
     {
         time: 162,
         pattern: "fan",
-        colors: ["#2979ff", "#536dfe", "#d500f9"],
+        colors: [
+            "#2979ff",
+            "#536dfe",
+            "#d500f9"
+        ],
         rockets: 7
     },
 
     {
         time: 188,
         pattern: "ring",
-        colors: ["#00e5ff", "#00e676", "#ffffff"],
+        colors: [
+            "#00e5ff",
+            "#00e676",
+            "#ffffff"
+        ],
         rockets: 7
     },
 
     {
         time: 216,
         pattern: "burst",
-        colors: ["#ff1744", "#ff3d71", "#ffc107"],
+        colors: [
+            "#ff1744",
+            "#ff3d71",
+            "#ffc107"
+        ],
         rockets: 8
     },
 
     {
         time: 244,
         pattern: "double",
-        colors: ["#7c4dff", "#ff00aa", "#00b0ff"],
+        colors: [
+            "#7c4dff",
+            "#ff00aa",
+            "#00b0ff"
+        ],
         rockets: 8
     },
 
     {
         time: 272,
         pattern: "fan",
-        colors: ["#00e676", "#76ff03", "#fff176"],
+        colors: [
+            "#00e676",
+            "#76ff03",
+            "#fff176"
+        ],
         rockets: 8
     },
 
     {
         time: 300,
         pattern: "golden",
-        colors: ["#ffc107", "#ff9800", "#ffffff"],
+        colors: [
+            "#ffc107",
+            "#ff9800",
+            "#ffffff"
+        ],
         rockets: 9
     },
 
     {
         time: 326,
         pattern: "ring",
-        colors: ["#ff4081", "#d500f9", "#536dfe"],
+        colors: [
+            "#ff4081",
+            "#d500f9",
+            "#536dfe"
+        ],
         rockets: 9
     },
 
     {
         time: 350,
         pattern: "burst",
-        colors: ["#00e5ff", "#2979ff", "#ffffff"],
+        colors: [
+            "#00e5ff",
+            "#2979ff",
+            "#ffffff"
+        ],
         rockets: 10
     },
 
@@ -549,18 +674,18 @@ const showEvents = [
     }
 ];
 
-/* ================================
-   OBJECTS
-================================ */
+/* =================================
+   OBJECT ARRAYS
+================================= */
 
 const rockets = [];
 const particles = [];
 const flashes = [];
 const rings = [];
 
-/* ================================
-   INPUT
-================================ */
+/* =================================
+   POINTER
+================================= */
 
 let pointerDown = false;
 let pointerX = 0;
@@ -568,11 +693,12 @@ let pointerY = 0;
 
 let launchTimer = 0;
 
-/* ================================
+/* =================================
    COLORS
-================================ */
+================================= */
 
 const colors = [
+
     "#ff1744",
     "#ff3d71",
     "#ff4081",
@@ -595,9 +721,9 @@ const colors = [
     "#ffffff"
 ];
 
-/* ================================
+/* =================================
    RGB CACHE
-================================ */
+================================= */
 
 const rgb = {};
 
@@ -609,6 +735,7 @@ for (
         color.substring(1);
 
     rgb[color] = {
+
         r: parseInt(
             hex.substring(0, 2),
             16
@@ -631,7 +758,8 @@ function rgba(
     alpha
 ) {
 
-    const c = rgb[color];
+    const c =
+        rgb[color];
 
     if (!c) {
 
@@ -651,9 +779,9 @@ function rgba(
     )`;
 }
 
-/* ================================
+/* =================================
    RESIZE
-================================ */
+================================= */
 
 function resize() {
 
@@ -702,9 +830,9 @@ window.addEventListener(
 
 resize();
 
-/* ================================
-   RANDOM
-================================ */
+/* =================================
+   RANDOM HELPERS
+================================= */
 
 function random(
     min,
@@ -746,9 +874,93 @@ function differentColor(
     return result;
 }
 
-/* ================================
+/* =================================
+   SHOW TARGET
+================================= */
+
+function showRandomTarget() {
+
+    return {
+
+        x:
+            random(
+                width * 0.08,
+                width * 0.92
+            ),
+
+        y:
+            random(
+                height * 0.12,
+                height * 0.48
+            )
+    };
+}
+
+/* =================================
+   SHOW ROCKET
+================================= */
+
+function launchShowRocket(
+    event
+) {
+
+    if (
+        rockets.length >=
+        MAX_ROCKETS
+    ) {
+        return;
+    }
+
+    const target =
+        showRandomTarget();
+
+    rockets.push(
+        new Rocket(
+            target.x,
+            target.y,
+            event.colors
+        )
+    );
+}
+
+function triggerShowEvent(
+    event
+) {
+
+    const count =
+        Math.min(
+            event.rockets,
+            MAX_ROCKETS
+        );
+
+    for (
+        let i = 0;
+        i < count;
+        i++
+    ) {
+
+        setTimeout(
+            () => {
+
+                if (
+                    !showActive
+                ) {
+                    return;
+                }
+
+                launchShowRocket(
+                    event
+                );
+
+            },
+            i * 85
+        );
+    }
+}
+
+/* =================================
    ROCKET
-================================ */
+================================= */
 
 class Rocket {
 
@@ -787,6 +999,9 @@ class Rocket {
                 -10.2,
                 -8.6
             );
+
+        this.showColors =
+            showColors;
 
         this.color =
             showColors
@@ -883,35 +1098,78 @@ class Rocket {
 
     explode() {
 
-        const x = this.x;
-        const y = this.y;
+        const x =
+            this.x;
+
+        const y =
+            this.y;
 
         const mainColor =
             this.color;
 
-        const secondColor =
-            differentColor(
-                mainColor
-            );
+        let secondColor;
+
+        if (
+            this.showColors &&
+            this.showColors.length > 1
+        ) {
+
+            const available =
+                this.showColors.filter(
+                    color =>
+                        color !==
+                        mainColor
+                );
+
+            secondColor =
+                choose(
+                    available.length
+                        ? available
+                        : this.showColors
+                );
+
+        } else {
+
+            secondColor =
+                differentColor(
+                    mainColor
+                );
+        }
+
+        /* Flash */
 
         flashes.push({
+
             x: x,
             y: y,
+
             radius: 4,
-            maxRadius: random(
-                80,
-                120
-            ),
+
+            maxRadius:
+                random(
+                    80,
+                    120
+                ),
+
             life: 1
         });
 
+        /* Ring */
+
         rings.push({
+
             x: x,
             y: y,
+
             radius: 2,
+
             life: 1,
-            color: mainColor
+
+            color:
+                mainColor
         });
+
+        /* Main burst */
 
         const mainCount = 72;
 
@@ -935,15 +1193,21 @@ class Rocket {
                 new Particle(
                     x,
                     y,
+
                     Math.cos(angle) *
                         speed,
+
                     Math.sin(angle) *
                         speed,
+
                     mainColor,
+
                     "star"
                 )
             );
         }
+
+        /* Secondary burst */
 
         const secondaryCount = 24;
 
@@ -967,15 +1231,21 @@ class Rocket {
                 new Particle(
                     x,
                     y,
+
                     Math.cos(angle) *
                         speed,
+
                     Math.sin(angle) *
                         speed,
+
                     secondColor,
+
                     "star"
                 )
             );
         }
+
+        /* White core */
 
         for (
             let i = 0;
@@ -987,13 +1257,18 @@ class Rocket {
                 new Particle(
                     x,
                     y,
+
                     random(-2, 2),
                     random(-2, 2),
+
                     "#ffffff",
+
                     "core"
                 )
             );
         }
+
+        /* Crackle */
 
         for (
             let i = 0;
@@ -1015,15 +1290,21 @@ class Rocket {
                 new Particle(
                     x,
                     y,
+
                     Math.cos(angle) *
                         speed,
+
                     Math.sin(angle) *
                         speed,
+
                     "#ffffff",
+
                     "crackle"
                 )
             );
         }
+
+        /* Comets */
 
         for (
             let i = 0;
@@ -1036,17 +1317,24 @@ class Rocket {
                 Math.PI * 2;
 
             const speed =
-                random(4, 6);
+                random(
+                    4,
+                    6
+                );
 
             particles.push(
                 new Particle(
                     x,
                     y,
+
                     Math.cos(angle) *
                         speed,
+
                     Math.sin(angle) *
                         speed,
+
                     mainColor,
+
                     "comet"
                 )
             );
@@ -1054,9 +1342,9 @@ class Rocket {
     }
 }
 
-/* ================================
+/* =================================
    PARTICLE
-================================ */
+================================= */
 
 class Particle {
 
@@ -1174,16 +1462,24 @@ class Particle {
             }
         }
 
-        this.vx *= this.drag;
-        this.vy *= this.drag;
+        this.vx *=
+            this.drag;
 
-        this.vy += this.gravity;
+        this.vy *=
+            this.drag;
 
-        this.x += this.vx;
-        this.y += this.vy;
+        this.vy +=
+            this.gravity;
+
+        this.x +=
+            this.vx;
+
+        this.y +=
+            this.vy;
 
         if (
-            this.type === "crackle" &&
+            this.type ===
+                "crackle" &&
             Math.random() < 0.05
         ) {
 
@@ -1248,7 +1544,8 @@ class Particle {
                 pulse < -0.35
             ) {
 
-                alpha *= 0.35;
+                alpha *=
+                    0.35;
             }
         }
 
@@ -1313,9 +1610,9 @@ class Particle {
     }
 }
 
-/* ================================
+/* =================================
    FLASHES
-================================ */
+================================= */
 
 function updateFlashes() {
 
@@ -1335,7 +1632,8 @@ function updateFlashes() {
                 flash.radius
             ) * 0.42;
 
-        flash.life -= 0.17;
+        flash.life -=
+            0.17;
 
         if (
             flash.life <= 0
@@ -1427,9 +1725,9 @@ function drawFlashes() {
     }
 }
 
-/* ================================
+/* =================================
    RINGS
-================================ */
+================================= */
 
 function updateRings() {
 
@@ -1445,7 +1743,8 @@ function updateRings() {
 
         ring.radius += 5;
 
-        ring.life -= 0.035;
+        ring.life -=
+            0.035;
 
         if (
             ring.life <= 0
@@ -1487,118 +1786,13 @@ function drawRings() {
     }
 }
 
-/* ================================
-   ROCKET LAUNCHING
-================================ */
-
-function launchShowRocket(
-    event
-) {
-
-    if (
-        rockets.length >=
-        MAX_ROCKETS
-    ) {
-        return;
-    }
-
-    const targetX =
-        random(
-            width * 0.08,
-            width * 0.92
-        );
-
-    const targetY =
-        random(
-            height * 0.12,
-            height * 0.48
-        );
-
-    rockets.push(
-        new Rocket(
-            targetX,
-            targetY,
-            event.colors
-        )
-    );
-}
-
-function triggerShowEvent(
-    event
-) {
-
-    const count =
-        Math.min(
-            event.rockets,
-            MAX_ROCKETS
-        );
-
-    for (
-        let i = 0;
-        i < count;
-        i++
-    ) {
-
-        setTimeout(
-            () => {
-
-                if (
-                    !showActive ||
-                    showFinished
-                ) {
-                    return;
-                }
-
-                launchShowRocket(
-                    event
-                );
-
-            },
-            i * 85
-        );
-    }
-}
-
-/* ================================
-   SHOW EVENT PROCESSING
-================================ */
-
-function processShowEvents() {
-
-    if (
-        !showActive
-    ) {
-        return;
-    }
-
-    const elapsedSeconds =
-        showElapsed / 1000;
-
-    while (
-        nextShowEvent <
-            showEvents.length &&
-        showEvents[
-            nextShowEvent
-        ].time <=
-            elapsedSeconds
-    ) {
-
-        triggerShowEvent(
-            showEvents[
-                nextShowEvent
-            ]
-        );
-
-        nextShowEvent++;
-    }
-}
-
-/* ================================
-   LETTER FIREWORK
-================================ */
+/* =================================
+   LETTER FONT
+================================= */
 
 const letterFont = {
-    "A": [
+
+    A: [
         "01110",
         "10001",
         "10001",
@@ -1608,7 +1802,7 @@ const letterFont = {
         "10001"
     ],
 
-    "B": [
+    B: [
         "11110",
         "10001",
         "10001",
@@ -1618,7 +1812,7 @@ const letterFont = {
         "11110"
     ],
 
-    "C": [
+    C: [
         "01111",
         "10000",
         "10000",
@@ -1628,7 +1822,7 @@ const letterFont = {
         "01111"
     ],
 
-    "D": [
+    D: [
         "11110",
         "10001",
         "10001",
@@ -1638,7 +1832,7 @@ const letterFont = {
         "11110"
     ],
 
-    "E": [
+    E: [
         "11111",
         "10000",
         "10000",
@@ -1648,7 +1842,7 @@ const letterFont = {
         "11111"
     ],
 
-    "F": [
+    F: [
         "11111",
         "10000",
         "10000",
@@ -1658,7 +1852,7 @@ const letterFont = {
         "10000"
     ],
 
-    "G": [
+    G: [
         "01111",
         "10000",
         "10000",
@@ -1668,7 +1862,7 @@ const letterFont = {
         "01111"
     ],
 
-    "H": [
+    H: [
         "10001",
         "10001",
         "10001",
@@ -1678,7 +1872,7 @@ const letterFont = {
         "10001"
     ],
 
-    "I": [
+    I: [
         "11111",
         "00100",
         "00100",
@@ -1688,7 +1882,7 @@ const letterFont = {
         "11111"
     ],
 
-    "J": [
+    J: [
         "00111",
         "00010",
         "00010",
@@ -1698,7 +1892,7 @@ const letterFont = {
         "01100"
     ],
 
-    "K": [
+    K: [
         "10001",
         "10010",
         "10100",
@@ -1708,7 +1902,7 @@ const letterFont = {
         "10001"
     ],
 
-    "L": [
+    L: [
         "10000",
         "10000",
         "10000",
@@ -1718,7 +1912,7 @@ const letterFont = {
         "11111"
     ],
 
-    "M": [
+    M: [
         "10001",
         "11011",
         "10101",
@@ -1728,7 +1922,7 @@ const letterFont = {
         "10001"
     ],
 
-    "N": [
+    N: [
         "10001",
         "11001",
         "10101",
@@ -1738,7 +1932,7 @@ const letterFont = {
         "10001"
     ],
 
-    "O": [
+    O: [
         "01110",
         "10001",
         "10001",
@@ -1748,7 +1942,7 @@ const letterFont = {
         "01110"
     ],
 
-    "P": [
+    P: [
         "11110",
         "10001",
         "10001",
@@ -1758,7 +1952,7 @@ const letterFont = {
         "10000"
     ],
 
-    "Q": [
+    Q: [
         "01110",
         "10001",
         "10001",
@@ -1768,7 +1962,7 @@ const letterFont = {
         "01101"
     ],
 
-    "R": [
+    R: [
         "11110",
         "10001",
         "10001",
@@ -1778,7 +1972,7 @@ const letterFont = {
         "10001"
     ],
 
-    "S": [
+    S: [
         "01111",
         "10000",
         "10000",
@@ -1788,7 +1982,7 @@ const letterFont = {
         "11110"
     ],
 
-    "T": [
+    T: [
         "11111",
         "00100",
         "00100",
@@ -1798,7 +1992,7 @@ const letterFont = {
         "00100"
     ],
 
-    "U": [
+    U: [
         "10001",
         "10001",
         "10001",
@@ -1808,7 +2002,7 @@ const letterFont = {
         "01110"
     ],
 
-    "V": [
+    V: [
         "10001",
         "10001",
         "10001",
@@ -1818,7 +2012,7 @@ const letterFont = {
         "00100"
     ],
 
-    "W": [
+    W: [
         "10001",
         "10001",
         "10001",
@@ -1828,7 +2022,7 @@ const letterFont = {
         "10001"
     ],
 
-    "X": [
+    X: [
         "10001",
         "10001",
         "01010",
@@ -1838,7 +2032,7 @@ const letterFont = {
         "10001"
     ],
 
-    "Y": [
+    Y: [
         "10001",
         "10001",
         "01010",
@@ -1848,7 +2042,7 @@ const letterFont = {
         "00100"
     ],
 
-    "Z": [
+    Z: [
         "11111",
         "00001",
         "00010",
@@ -1858,6 +2052,10 @@ const letterFont = {
         "11111"
     ]
 };
+
+/* =================================
+   LETTER TARGETS
+================================= */
 
 function createLetterTargets(
     text
@@ -1871,8 +2069,7 @@ function createLetterTargets(
                 ""
             );
 
-    const letters =
-        [];
+    const letters = [];
 
     for (
         const character of text
@@ -1904,6 +2101,7 @@ function createLetterTargets(
     if (
         letters.length === 0
     ) {
+
         return [];
     }
 
@@ -1930,27 +2128,30 @@ function createLetterTargets(
     }
 
     /*
-        Keep the text comfortably
-        inside the screen.
+        The text gets smaller
+        automatically when needed
+        to fit the screen.
     */
+
     const maxWidth =
-        width * 0.86;
+        width * 0.88;
 
     let cell =
         Math.min(
-            18,
+            20,
             maxWidth /
                 totalColumns
         );
 
     cell =
         Math.max(
-            5,
+            4,
             cell
         );
 
     const totalWidth =
-        totalColumns * cell;
+        totalColumns *
+        cell;
 
     const startX =
         (
@@ -1997,6 +2198,7 @@ function createLetterTargets(
                 ) {
 
                     targets.push({
+
                         x:
                             startX +
                             (
@@ -2022,6 +2224,10 @@ function createLetterTargets(
     return targets;
 }
 
+/* =================================
+   LETTER FIREWORKS
+================================= */
+
 function launchLetterFireworks(
     text
 ) {
@@ -2031,20 +2237,33 @@ function launchLetterFireworks(
             text
         );
 
+    if (
+        targets.length === 0
+    ) {
+
+        return;
+    }
+
     /*
-        One rocket per visible
-        letter pixel, limited for
-        performance.
+        Limit the number of rockets
+        to keep the animation smooth.
     */
-    const maxLetterRockets =
+
+    const maxRockets =
         Math.min(
             targets.length,
-            150
+            120
         );
+
+    /*
+        Spread launches slightly so
+        the letters build themselves
+        instead of appearing all at once.
+    */
 
     for (
         let i = 0;
-        i < maxLetterRockets;
+        i < maxRockets;
         i++
     ) {
 
@@ -2054,49 +2273,93 @@ function launchLetterFireworks(
         const color =
             choose(colors);
 
-        const rocket =
-            new Rocket(
-                target.x,
-                target.y,
-                [color]
-            );
+        setTimeout(
+            () => {
 
-        rockets.push(
-            rocket
+                const rocket =
+                    new Rocket(
+                        target.x,
+                        target.y,
+                        [color]
+                    );
+
+                rockets.push(
+                    rocket
+                );
+
+            },
+            i * 18
         );
     }
 }
 
-/* ================================
-   FINALE
-================================ */
+/* =================================
+   EXTRA FINALE BURSTS
+================================= */
 
-const finaleMessages = [
-    "HAPPY",
-    "BIRTHDAY"
-];
-
-let finaleIndex = 0;
-let finaleRunning = false;
-
-function showFinaleMessage(
-    text
+function finaleBurst(
+    count = 10
 ) {
 
-    finaleText.textContent =
-        text;
+    for (
+        let i = 0;
+        i < count;
+        i++
+    ) {
+
+        setTimeout(
+            () => {
+
+                if (
+                    !finaleRunning
+                ) {
+                    return;
+                }
+
+                const event = {
+
+                    colors: [
+                        choose(colors)
+                    ],
+
+                    rockets: 1
+                };
+
+                launchShowRocket(
+                    event
+                );
+
+            },
+            i * 150
+        );
+    }
+}
+
+/* =================================
+   FINALE
+================================= */
+
+let finaleRunning =
+    false;
+
+function setFinaleMessage(
+    text
+) {
 
     finaleText.classList.remove(
         "visible"
     );
 
     /*
-        Allow the browser to process
-        the hidden state before
-        animating it in.
+        Wait for the hidden state to
+        render before animating in.
     */
+
     requestAnimationFrame(
         () => {
+
+            finaleText.textContent =
+                text;
 
             requestAnimationFrame(
                 () => {
@@ -2104,48 +2367,14 @@ function showFinaleMessage(
                     finaleText.classList.add(
                         "visible"
                     );
+
+                    launchLetterFireworks(
+                        text
+                    );
                 }
             );
         }
     );
-
-    launchLetterFireworks(
-        text
-    );
-
-    /*
-        Add extra fireworks around
-        the letter formation.
-    */
-    for (
-        let i = 0;
-        i < 10;
-        i++
-    ) {
-
-        const event = {
-            colors: [
-                choose(colors)
-            ],
-            rockets: 1
-        };
-
-        setTimeout(
-            () => {
-
-                if (
-                    finaleRunning
-                ) {
-
-                    launchShowRocket(
-                        event
-                    );
-                }
-
-            },
-            i * 180
-        );
-    }
 }
 
 function hideFinaleMessage() {
@@ -2160,22 +2389,33 @@ function runBirthdayFinale() {
     if (
         finaleRunning
     ) {
+
         return;
     }
 
-    finaleRunning = true;
+    finaleRunning =
+        true;
 
     showInfo.classList.remove(
         "visible"
     );
 
-    /*
-        HAPPY
-    */
-    showFinaleMessage(
+    /* =============================
+       HAPPY
+    ============================= */
+
+    setFinaleMessage(
         "HAPPY"
     );
 
+    finaleBurst(
+        14
+    );
+
+    /* =============================
+       BIRTHDAY
+    ============================= */
+
     setTimeout(
         () => {
 
@@ -2184,20 +2424,25 @@ function runBirthdayFinale() {
             setTimeout(
                 () => {
 
-                    /*
-                        BIRTHDAY
-                    */
-                    showFinaleMessage(
+                    setFinaleMessage(
                         "BIRTHDAY"
                     );
 
+                    finaleBurst(
+                        18
+                    );
+
                 },
                 600
             );
 
         },
-        4000
+        4500
     );
+
+    /* =============================
+       NAME
+    ============================= */
 
     setTimeout(
         () => {
@@ -2207,11 +2452,12 @@ function runBirthdayFinale() {
             setTimeout(
                 () => {
 
-                    /*
-                        ENTERED NAME
-                    */
-                    showFinaleMessage(
+                    setFinaleMessage(
                         birthdayName
+                    );
+
+                    finaleBurst(
+                        20
                     );
 
                 },
@@ -2219,18 +2465,25 @@ function runBirthdayFinale() {
             );
 
         },
-        8500
+        9500
     );
 
-    /*
-        Grand ending.
-    */
+    /* =============================
+       GRAND NAME FINALE
+    ============================= */
+
     setTimeout(
         () => {
 
+            /*
+                Rebuild the person's
+                name with another wave
+                of fireworks.
+            */
+
             for (
                 let i = 0;
-                i < 14;
+                i < 3;
                 i++
             ) {
 
@@ -2242,18 +2495,27 @@ function runBirthdayFinale() {
                         );
 
                     },
-                    i * 150
+                    i * 1000
                 );
             }
 
+            /*
+                Extra fireworks surrounding
+                the name.
+            */
+
+            finaleBurst(
+                24
+            );
+
         },
-        12000
+        12500
     );
 
-    /*
-        End the finale after
-        the final name display.
-    */
+    /* =============================
+       END
+    ============================= */
+
     setTimeout(
         () => {
 
@@ -2271,34 +2533,79 @@ function runBirthdayFinale() {
                     showActive =
                         false;
 
+                    /*
+                        The show has finished.
+                        Manual fireworks are still
+                        disabled because this birthday
+                        show is intended to be a show-only
+                        experience.
+                    */
+
                     userFireworksEnabled =
-                        true;
+                        false;
 
                     showInfo.textContent =
-                        "Show finished";
+                        "Birthday show finished";
 
                     showInfo.classList.add(
                         "visible"
                     );
 
                 },
-                700
+                800
             );
 
         },
-        17000
+        18000
     );
 }
 
-/* ================================
+/* =================================
+   PROCESS SHOW EVENTS
+================================= */
+
+function processShowEvents() {
+
+    if (
+        !showActive
+    ) {
+
+        return;
+    }
+
+    const elapsedSeconds =
+        showElapsed / 1000;
+
+    while (
+        nextShowEvent <
+            showEvents.length &&
+        showEvents[
+            nextShowEvent
+        ].time <=
+            elapsedSeconds
+    ) {
+
+        triggerShowEvent(
+            showEvents[
+                nextShowEvent
+            ]
+        );
+
+        nextShowEvent++;
+    }
+}
+
+/* =================================
    START SHOW
-================================ */
+================================= */
 
 function startFireworkShow() {
 
-    showActive = true;
+    showActive =
+        true;
 
-    showFinished = false;
+    showFinished =
+        false;
 
     userFireworksEnabled =
         false;
@@ -2322,9 +2629,9 @@ function startFireworkShow() {
     processShowEvents();
 }
 
-/* ================================
+/* =================================
    SHOW UPDATE
-================================ */
+================================= */
 
 function updateShow(
     time
@@ -2333,6 +2640,7 @@ function updateShow(
     if (
         !showActive
     ) {
+
         return;
     }
 
@@ -2341,25 +2649,21 @@ function updateShow(
         showStartTime;
 
     /*
-        The regular show is exactly
-        8 minutes.
-
-        The visual name finale begins
-        at the end of those 8 minutes.
+        Exactly 8 minutes of the
+        normal fireworks show.
     */
+
     if (
         showElapsed >=
         SHOW_DURATION
     ) {
 
-        showActive = false;
+        showActive =
+            false;
 
-        pointerDown = false;
+        pointerDown =
+            false;
 
-        /*
-            Keep manual fireworks
-            disabled during the finale.
-        */
         userFireworksEnabled =
             false;
 
@@ -2371,9 +2675,9 @@ function updateShow(
     processShowEvents();
 }
 
-/* ================================
-   POINTER
-================================ */
+/* =================================
+   POINTER POSITION
+================================= */
 
 function updatePointer(
     event
@@ -2391,22 +2695,19 @@ function updatePointer(
         rect.top;
 }
 
-/* ================================
-   USER FIREWORKS
-================================ */
+/* =================================
+   USER INPUT
+================================= */
 
 canvas.addEventListener(
     "pointerdown",
     event => {
 
         /*
-            This is the important
-            show lock.
-
-            During the birthday show
-            and finale, users cannot
-            create their own fireworks.
+            Completely block user
+            fireworks during the show.
         */
+
         if (
             !userFireworksEnabled ||
             showActive ||
@@ -2418,9 +2719,12 @@ canvas.addEventListener(
             return;
         }
 
-        pointerDown = true;
+        pointerDown =
+            true;
 
-        updatePointer(event);
+        updatePointer(
+            event
+        );
 
         canvas.setPointerCapture(
             event.pointerId
@@ -2437,7 +2741,9 @@ canvas.addEventListener(
     "pointermove",
     event => {
 
-        updatePointer(event);
+        updatePointer(
+            event
+        );
     }
 );
 
@@ -2445,7 +2751,8 @@ canvas.addEventListener(
     "pointerup",
     () => {
 
-        pointerDown = false;
+        pointerDown =
+            false;
     }
 );
 
@@ -2453,9 +2760,14 @@ canvas.addEventListener(
     "pointercancel",
     () => {
 
-        pointerDown = false;
+        pointerDown =
+            false;
     }
 );
+
+/* =================================
+   USER LAUNCH
+================================= */
 
 function launch() {
 
@@ -2464,6 +2776,7 @@ function launch() {
         showActive ||
         finaleRunning
     ) {
+
         return;
     }
 
@@ -2471,6 +2784,7 @@ function launch() {
         rockets.length >=
         MAX_ROCKETS
     ) {
+
         return;
     }
 
@@ -2481,6 +2795,10 @@ function launch() {
         )
     );
 }
+
+/* =================================
+   HOLD LAUNCHING
+================================= */
 
 function updateLaunching() {
 
@@ -2507,21 +2825,22 @@ function updateLaunching() {
     }
 }
 
-/* ================================
+/* =================================
    UPDATE
-================================ */
+================================= */
 
 function update(
     time
 ) {
 
-    updateShow(time);
+    updateShow(
+        time
+    );
 
     updateLaunching();
 
-    /*
-        Rockets.
-    */
+    /* Rockets */
+
     for (
         let i =
             rockets.length - 1;
@@ -2545,9 +2864,8 @@ function update(
         }
     }
 
-    /*
-        Particles.
-    */
+    /* Particles */
+
     for (
         let i =
             particles.length - 1;
@@ -2576,9 +2894,8 @@ function update(
     updateFlashes();
     updateRings();
 
-    /*
-        Safety limit.
-    */
+    /* Safety cap */
+
     if (
         particles.length >
         MAX_PARTICLES
@@ -2592,9 +2909,9 @@ function update(
     }
 }
 
-/* ================================
+/* =================================
    DRAW
-================================ */
+================================= */
 
 function draw() {
 
@@ -2633,9 +2950,9 @@ function draw() {
         "source-over";
 }
 
-/* ================================
+/* =================================
    MAIN LOOP
-================================ */
+================================= */
 
 let lastTime =
     performance.now();
@@ -2668,7 +2985,9 @@ function loop(
         i++
     ) {
 
-        update(time);
+        update(
+            time
+        );
     }
 
     draw();
@@ -2682,16 +3001,31 @@ requestAnimationFrame(
     loop
 );
 
-/* ================================
+/* =================================
    START BUTTON
-================================ */
+================================= */
 
 startButton.addEventListener(
     "click",
     () => {
 
-        const enteredName =
+        let enteredName =
             nameInput.value
+                .trim();
+
+        /*
+            The fireworks lettering uses
+            A-Z, so remove unsupported
+            characters.
+        */
+
+        enteredName =
+            enteredName
+                .toUpperCase()
+                .replace(
+                    /[^A-Z ]/g,
+                    ""
+                )
                 .trim();
 
         if (
@@ -2703,28 +3037,8 @@ startButton.addEventListener(
             return;
         }
 
-        /*
-            Limit the name to letters
-            and spaces so it can safely
-            become a fireworks word.
-        */
         birthdayName =
-            enteredName
-                .toUpperCase()
-                .replace(
-                    /[^A-Z ]/g,
-                    ""
-                )
-                .trim();
-
-        if (
-            !birthdayName
-        ) {
-
-            nameInput.focus();
-
-            return;
-        }
+            enteredName;
 
         nameScreen.style.display =
             "none";
@@ -2733,15 +3047,17 @@ startButton.addEventListener(
     }
 );
 
-/*
-    Enter key also starts the show.
-*/
+/* =================================
+   ENTER KEY
+================================= */
+
 nameInput.addEventListener(
     "keydown",
     event => {
 
         if (
-            event.key === "Enter"
+            event.key ===
+            "Enter"
         ) {
 
             startButton.click();
